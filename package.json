@@ -1,0 +1,53 @@
+{
+  "name": "favicons-webpack-plugin",
+  "version": "0.0.1",
+  "description": "Let webpack generate all your favicons and icons for you",
+  "main": "index.js",
+  "files": [
+    "index.js",
+    "lib/"
+  ],
+  "scripts": {
+    "lint": "semistandard",
+    "prepublish": "npm run test",
+    "posttest": "npm run lint",
+    "test": "ava"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jantimon/favicons-webpack-plugin.git"
+  },
+  "keywords": [
+    "webpack",
+    "plugin",
+    "html-webpack-plugin",
+    "favicon",
+    "icon"
+  ],
+  "author": "Jan Nicklas <j.nicklas@me.com> (https://github.com/jantimon)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jantimon/favicons-webpack-plugin/issues"
+  },
+  "semistandard": {
+    "parser": "babel-eslint"
+  },
+  "homepage": "https://github.com/jantimon/favicons-webpack-plugin",
+  "devDependencies": {
+    "ava": "^0.14.0",
+    "babel-eslint": "^6.0.2",
+    "denodeify": "^1.2.1",
+    "dir-compare": "^1.0.1",
+    "html-webpack-plugin": "^2.16.0",
+    "memory-fs": "^0.3.0",
+    "rimraf": "^2.5.2",
+    "semistandard": "^7.0.5",
+    "webpack": "^1.13.0"
+  },
+  "dependencies": {
+    "favicons": "^4.7.1",
+    "loader-utils": "^0.2.14",
+    "lodash": "^4.11.1",
+    "webpack": "^1.13.0"
+  }
+}
