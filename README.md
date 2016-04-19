@@ -34,7 +34,7 @@ plugins: [
     filename: 'iconstats-[hash].json',  // The name of the json containing all favicon information
     inject: true,                       // Inject the html into the html-webpack-plugin
     background: '#fff',                 // favicon background color (see https://github.com/haydenbleasel/favicons#usage)
-    title: 'Webpack App',               // favicon background color (see https://github.com/haydenbleasel/favicons#usage)
+    title: 'Webpack App',               // favicon app title (see https://github.com/haydenbleasel/favicons#usage)
 
     // which icons should be generated (see https://github.com/haydenbleasel/favicons#usage)
     icons: {
