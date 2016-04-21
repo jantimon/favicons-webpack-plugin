@@ -53,7 +53,7 @@ test('should generate the expected default result', async t => {
   const expected = path.resolve(__dirname, 'fixtures/expected/default');
   const compareResult = await dircompare.compare(outputPath, expected);
   const diffFiles = compareResult.diffSet.filter((diff) => diff.state !== 'equal');
-  t.deepEqual(diffFiles, []);
+  t.is(diffFiles[0], undefined);
 });
 
 test('should work together with the html-webpack-plugin', async t => {
@@ -68,5 +68,5 @@ test('should work together with the html-webpack-plugin', async t => {
   const expected = path.resolve(__dirname, 'fixtures/expected/default-with-html');
   const compareResult = await dircompare.compare(outputPath, expected);
   const diffFiles = compareResult.diffSet.filter((diff) => diff.state !== 'equal');
-  t.deepEqual(diffFiles, []);
+  t.is(diffFiles[0], undefined);
 });
