@@ -18,7 +18,7 @@ function FaviconsWebpackPlugin (options) {
     background: '#fff'
   }, options);
   this.options.icons = _.extend({
-    andriod: true,
+    android: true,
     appleIcon: true,
     appleStartup: true,
     coast: false,
