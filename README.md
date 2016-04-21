@@ -26,7 +26,7 @@ plugins: [
 This basic configuration will generate [37 different icons](https://github.com/jantimon/favicons-webpack-plugin/tree/master/test/fixtures/expected/default/icons-366a3768de05f9e78c392fa62b8fbb80) for iOS devices, Android devices and the Desktop browser out of your `my-logo.png` file.
 It will also generate a [JSON file with all information about the icons](https://github.com/jantimon/favicons-webpack-plugin/blob/master/test/fixtures/expected/default/iconstats.json) for you.
 
-If you add are using the [html-webpack-plugin](https://github.com/ampedandwired/html-webpack-plugin) it will also inject the necessary html for you:
+If you add are using my [html-webpack-plugin](https://github.com/ampedandwired/html-webpack-plugin) it will also inject the necessary html for you:
 
 https://github.com/jantimon/favicons-webpack-plugin/blob/master/test/fixtures/expected/default-with-html/index.html
 
