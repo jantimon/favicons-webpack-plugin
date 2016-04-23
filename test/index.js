@@ -46,11 +46,22 @@ test('should take an object with just the logo as argument', async t => {
 
 test('should generate the expected default result', async t => {
   const stats = await webpack(baseWebpackConfig(new FaviconsWebpackPlugin({
+    logo: LOGO_PATH
+  })));
+  const outputPath = stats.compilation.compiler.outputPath;
+  const expected = path.resolve(__dirname, 'fixtures/expected/default');
+  const compareResult = await dircompare.compare(outputPath, expected);
+  const diffFiles = compareResult.diffSet.filter((diff) => diff.state !== 'equal');
+  t.is(diffFiles[0], undefined);
+});
+
+test('should generate a configured JSON file', async t => {
+  const stats = await webpack(baseWebpackConfig(new FaviconsWebpackPlugin({
     logo: LOGO_PATH,
     filename: 'iconstats.json'
   })));
   const outputPath = stats.compilation.compiler.outputPath;
-  const expected = path.resolve(__dirname, 'fixtures/expected/default');
+  const expected = path.resolve(__dirname, 'fixtures/expected/default-with-json');
   const compareResult = await dircompare.compare(outputPath, expected);
   const diffFiles = compareResult.diffSet.filter((diff) => diff.state !== 'equal');
   t.is(diffFiles[0], undefined);
@@ -70,3 +81,4 @@ test('should work together with the html-webpack-plugin', async t => {
   const diffFiles = compareResult.diffSet.filter((diff) => diff.state !== 'equal');
   t.is(diffFiles[0], undefined);
 });
+

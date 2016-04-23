@@ -13,9 +13,10 @@ function FaviconsWebpackPlugin (options) {
   assert(options.logo, 'An input file is required');
   this.options = _.extend({
     prefix: 'icons-[hash]/',
-    filename: 'iconstats-[hash].json',
+    filename: false,
     inject: true,
-    background: '#fff'
+    background: '#fff',
+    _emitStatsFile: false
   }, options);
   this.options.icons = _.extend({
     android: true,
@@ -29,6 +30,11 @@ function FaviconsWebpackPlugin (options) {
     yandex: false,
     windows: false
   }, this.options.icons);
+  if (this.options.filename) {
+    this.options._emitStatsFile = true;
+  } else {
+    this.options.filename = 'favicons-webpack-plugin-working-file';
+  }
 }
 
 FaviconsWebpackPlugin.prototype.apply = function (compiler) {
@@ -56,6 +62,13 @@ FaviconsWebpackPlugin.prototype.apply = function (compiler) {
           callback(null, htmlPluginData);
         }
       });
+    });
+  }
+
+  if (!self.options._emitStatsFile) {
+    compiler.plugin('emit', function (compilation, callback) {
+      delete compilation.assets[self.options.filename];
+      callback();
     });
   }
 };
