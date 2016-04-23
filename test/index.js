@@ -89,7 +89,7 @@ test('should work together with the html-webpack-plugin', async t => {
   t.is(diffFiles[0], undefined);
 });
 
-test.only('should not recompile if there is a cache file', async t => {
+test('should not recompile if there is a cache file', async t => {
   const options = baseWebpackConfig([
     new FaviconsWebpackPlugin({
       logo: LOGO_PATH,
