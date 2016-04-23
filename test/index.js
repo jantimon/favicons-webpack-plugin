@@ -64,6 +64,7 @@ test('should generate a configured JSON file', async t => {
   const stats = await webpack(baseWebpackConfig(new FaviconsWebpackPlugin({
     logo: LOGO_PATH,
     emitStats: true,
+    persistentCache: false,
     statsFilename: 'iconstats.json'
   })));
   const outputPath = stats.compilation.compiler.outputPath;
