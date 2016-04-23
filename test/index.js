@@ -8,6 +8,11 @@ import HtmlWebpackPlugin from 'html-webpack-plugin';
 import dircompare from 'dir-compare';
 
 const webpack = denodeify(require('webpack'));
+const readFile = denodeify(require('fs').readFile);
+const writeFile = denodeify(require('fs').writeFile);
+const mkdirp = denodeify(require('mkdirp'));
+
+const compareOptions = {compareSize: true};
 let outputId = 0;
 const LOGO_PATH = path.resolve(__dirname, 'fixtures/logo.png');
 
@@ -50,7 +55,7 @@ test('should generate the expected default result', async t => {
   })));
   const outputPath = stats.compilation.compiler.outputPath;
   const expected = path.resolve(__dirname, 'fixtures/expected/default');
-  const compareResult = await dircompare.compare(outputPath, expected);
+  const compareResult = await dircompare.compare(outputPath, expected, compareOptions);
   const diffFiles = compareResult.diffSet.filter((diff) => diff.state !== 'equal');
   t.is(diffFiles[0], undefined);
 });
@@ -63,7 +68,7 @@ test('should generate a configured JSON file', async t => {
   })));
   const outputPath = stats.compilation.compiler.outputPath;
   const expected = path.resolve(__dirname, 'fixtures/expected/default-with-json');
-  const compareResult = await dircompare.compare(outputPath, expected);
+  const compareResult = await dircompare.compare(outputPath, expected, compareOptions);
   const diffFiles = compareResult.diffSet.filter((diff) => diff.state !== 'equal');
   t.is(diffFiles[0], undefined);
 });
@@ -79,7 +84,31 @@ test('should work together with the html-webpack-plugin', async t => {
   ]));
   const outputPath = stats.compilation.compiler.outputPath;
   const expected = path.resolve(__dirname, 'fixtures/expected/default-with-html');
-  const compareResult = await dircompare.compare(outputPath, expected);
+  const compareResult = await dircompare.compare(outputPath, expected, compareOptions);
+  const diffFiles = compareResult.diffSet.filter((diff) => diff.state !== 'equal');
+  t.is(diffFiles[0], undefined);
+});
+
+test.only('should not recompile if there is a cache file', async t => {
+  const options = baseWebpackConfig([
+    new FaviconsWebpackPlugin({
+      logo: LOGO_PATH,
+      emitStats: false
+    }),
+    new HtmlWebpackPlugin()
+  ]);
+
+  // Bring cache file in place
+  const cacheFile = 'icons-366a3768de05f9e78c392fa62b8fbb80/.cache';
+  const cacheFileExpected = path.resolve(__dirname, 'fixtures/expected/default-from-cache/', cacheFile);
+  const cacheFileDist = path.resolve(__dirname, options.output.path, cacheFile);
+  await mkdirp(path.dirname(cacheFileDist));
+  await writeFile(cacheFileDist, await readFile(cacheFileExpected));
+
+  const stats = await webpack(options);
+  const outputPath = stats.compilation.compiler.outputPath;
+  const expected = path.resolve(__dirname, 'fixtures/expected/default-from-cache');
+  const compareResult = await dircompare.compare(outputPath, expected, compareOptions);
   const diffFiles = compareResult.diffSet.filter((diff) => diff.state !== 'equal');
   t.is(diffFiles[0], undefined);
 });
