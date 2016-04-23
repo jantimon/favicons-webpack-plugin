@@ -58,7 +58,8 @@ test('should generate the expected default result', async t => {
 test('should generate a configured JSON file', async t => {
   const stats = await webpack(baseWebpackConfig(new FaviconsWebpackPlugin({
     logo: LOGO_PATH,
-    filename: 'iconstats.json'
+    emitStats: true,
+    statsFilename: 'iconstats.json'
   })));
   const outputPath = stats.compilation.compiler.outputPath;
   const expected = path.resolve(__dirname, 'fixtures/expected/default-with-json');
@@ -71,7 +72,8 @@ test('should work together with the html-webpack-plugin', async t => {
   const stats = await webpack(baseWebpackConfig([
     new FaviconsWebpackPlugin({
       logo: LOGO_PATH,
-      filename: 'iconstats.json'
+      emitStats: true,
+      statsFilename: 'iconstats.json'
     }),
     new HtmlWebpackPlugin()
   ]));

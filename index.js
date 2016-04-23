@@ -13,10 +13,10 @@ function FaviconsWebpackPlugin (options) {
   assert(options.logo, 'An input file is required');
   this.options = _.extend({
     prefix: 'icons-[hash]/',
-    filename: false,
+    emitStats: false,
+    statsFilename: 'iconstats-[hash].json',
     inject: true,
-    background: '#fff',
-    _emitStatsFile: false
+    background: '#fff'
   }, options);
   this.options.icons = _.extend({
     android: true,
@@ -30,19 +30,15 @@ function FaviconsWebpackPlugin (options) {
     yandex: false,
     windows: false
   }, this.options.icons);
-  if (this.options.filename) {
-    this.options._emitStatsFile = true;
-  } else {
-    this.options.filename = 'favicons-webpack-plugin-working-file';
-  }
 }
 
 FaviconsWebpackPlugin.prototype.apply = function (compiler) {
   var self = this;
   if (!self.options.title) {
-    self.options.title = guessAppName(compiler);
+    self.options.title = guessAppName(compiler.context);
   }
 
+  // Generate the favicons
   var compilationResult;
   compiler.plugin('make', function (compilation, callback) {
     childCompiler.compileTemplate(self.options, compiler.context, compilation)
@@ -53,30 +49,36 @@ FaviconsWebpackPlugin.prototype.apply = function (compiler) {
       .catch(callback);
   });
 
+  // Hook into the html-webpack-plugin processing
+  // and add the html
   if (self.options.inject) {
-    // Hook into the html-webpack-plugin processing
     compiler.plugin('compilation', function (compilation) {
       compilation.plugin('html-webpack-plugin-before-html-processing', function (htmlPluginData, callback) {
         if (htmlPluginData.plugin.options.favicons !== false) {
-          htmlPluginData.html = htmlPluginData.html.replace(/(<head[^>]*>)/i, '$1' + compilationResult.html.join(''));
+          htmlPluginData.html = htmlPluginData.html.replace(
+            /(<head[^>]*>)/i, '$1' + compilationResult.stats.html.join(''));
           callback(null, htmlPluginData);
         }
       });
     });
   }
 
-  if (!self.options._emitStatsFile) {
+  // Remove the stats from the output if they are not required
+  if (!self.options.emitStats) {
     compiler.plugin('emit', function (compilation, callback) {
-      delete compilation.assets[self.options.filename];
+      delete compilation.assets[compilationResult.outputName];
       callback();
     });
   }
 };
 
-function guessAppName (compiler) {
-  var packageJson = path.resolve(compiler.context, 'package.json');
+/**
+ * Tries to guess the name from the package.json
+ */
+function guessAppName (compilerWorkingDirectory) {
+  var packageJson = path.resolve(compilerWorkingDirectory, 'package.json');
   if (!fs.existsSync(packageJson)) {
-    packageJson = path.resolve(compiler.context, '../package.json');
+    packageJson = path.resolve(compilerWorkingDirectory, '../package.json');
     if (!fs.existsSync(packageJson)) {
       return 'Webpack App';
     }
