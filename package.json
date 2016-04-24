@@ -1,6 +1,6 @@
 {
   "name": "favicons-webpack-plugin",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Let webpack generate all your favicons and icons for you",
   "main": "index.js",
   "files": [
@@ -40,6 +40,7 @@
     "dir-compare": "^1.0.1",
     "html-webpack-plugin": "^2.16.0",
     "memory-fs": "^0.3.0",
+    "mkdirp": "^0.5.1",
     "rimraf": "^2.5.2",
     "semistandard": "^7.0.5",
     "webpack": "^1.13.0"

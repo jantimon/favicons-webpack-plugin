@@ -1,3 +1,7 @@
+# 0.0.4
+
++ Add persistent caching to generate the favicons only once
+
 # 0.0.3
 
 + Rename filename option to statsFilename
