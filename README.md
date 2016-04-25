@@ -54,6 +54,9 @@ plugins: [
     emitStats: false,
     // The name of the json containing all favicon information
     statsFilename: 'iconstats-[hash].json',
+    // Generate a cache file with control hashes and
+    // don't rebuild the favicons until those hashes change
+    persistentCache: true,
     // Inject the html into the html-webpack-plugin
     inject: true,
     // favicon background color (see https://github.com/haydenbleasel/favicons#usage)
