@@ -49,6 +49,7 @@
     "favicons": "^4.7.1",
     "loader-utils": "^0.2.14",
     "lodash": "^4.11.1",
+    "ncp": "^2.0.0",
     "webpack": "^1.13.0"
   }
 }
