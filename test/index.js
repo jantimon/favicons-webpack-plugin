@@ -6,6 +6,7 @@ import FaviconsWebpackPlugin from '..';
 import denodeify from 'denodeify';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import dircompare from 'dir-compare';
+import packageJson from '../package.json';
 
 const webpack = denodeify(require('webpack'));
 const readFile = denodeify(require('fs').readFile);
@@ -106,7 +107,9 @@ test('should not recompile if there is a cache file', async t => {
   const cacheFileExpected = path.resolve(__dirname, 'fixtures/expected/default-from-cache/', cacheFile);
   const cacheFileDist = path.resolve(__dirname, options.output.path, cacheFile);
   await mkdirp(path.dirname(cacheFileDist));
-  await writeFile(cacheFileDist, await readFile(cacheFileExpected));
+  const cache = JSON.parse(await readFile(cacheFileExpected));
+  cache.version = packageJson.version;
+  await writeFile(cacheFileDist, JSON.stringify(cache));
 
   const stats = await webpack(options);
   const outputPath = stats.compilation.compiler.outputPath;

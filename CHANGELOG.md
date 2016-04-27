@@ -1,3 +1,7 @@
+# 0.0.5
+
++ Invalidate cache on plugin version change
+
 # 0.0.4
 
 + Add persistent caching to generate the favicons only once
