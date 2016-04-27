@@ -50,26 +50,37 @@ FaviconsWebpackPlugin.prototype.apply = function (compiler) {
   // Generate the favicons
   var compilationResult;
   compiler.plugin('make', function (compilation, callback) {
-    checkCache(function (err, cacheResult) {
-      if (err) callback(err);
-      cacheHit = cacheResult;
-      if (cacheHit) {
-        cacheHit.getCompilationResult(function (err, result){
-          if (err) callback(err);
+    if (cache) {
+      cache.fetch()
+        .then(function (cacheResult) {
+          cacheHit = cacheResult;
+          if (cacheHit) {
+            cacheHit.getCompilationResult()
+              .then(function (cacheResult) {
+                compilationResult = cacheResult;
+                callback();
+              })
+              .catch(callback);
+          } else {
+            childCompiler.compileTemplate(self.options, compiler.context, compilation)
+              .then(function (result) {
+                compilationResult = result;
+                callback();
+               })
+              .catch(callback);
+          }
+        }
+      )
+    } else {
+      childCompiler.compileTemplate(self.options, compiler.context, compilation)
+        .then(function (result) {
           compilationResult = result;
           callback();
-        });
-      } else {
-        childCompiler.compileTemplate(self.options, compiler.context, compilation)
-          .then(function (result) {
-            compilationResult = result;
-            callback();
-          })
+         })
         .catch(callback);
-      }
     }
   });
-
+    
   // Hook into the html-webpack-plugin processing
   // and add the html
   if (self.options.inject) {
@@ -93,25 +104,17 @@ FaviconsWebpackPlugin.prototype.apply = function (compiler) {
   }
 
   // copy cache files or add new files to cache
-  if (self.options.peristentCache) {
+  if (cache) {
     compiler.plugin('after-emit', function (compilation, callback) {
       if (cacheHit) {
-        cacheHit.emit(callback);
+        cacheHit.emit().catch(callback);
       } else {
-        cache.put(compilationResult, callback);
+        cache.put(compilationResult).catch(callback);
       }
+      callback();
     });
   }
 };
-
-
-function checkCache (cache, callback(err, cacheResult) ){
-  if (cache) {
-    cache.fetch( callback ); 
-  } else {
-    callback(null, false);
-  }
-}
 
 /**
  * Tries to guess the name from the package.json
