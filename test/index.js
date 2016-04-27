@@ -79,7 +79,8 @@ test('should work together with the html-webpack-plugin', async t => {
     new FaviconsWebpackPlugin({
       logo: LOGO_PATH,
       emitStats: true,
-      statsFilename: 'iconstats.json'
+      statsFilename: 'iconstats.json',
+      persistentCache: false
     }),
     new HtmlWebpackPlugin()
   ]));
@@ -94,7 +95,8 @@ test('should not recompile if there is a cache file', async t => {
   const options = baseWebpackConfig([
     new FaviconsWebpackPlugin({
       logo: LOGO_PATH,
-      emitStats: false
+      emitStats: false,
+      persistentCache: true
     }),
     new HtmlWebpackPlugin()
   ]);
