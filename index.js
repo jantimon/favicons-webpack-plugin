@@ -40,45 +40,41 @@ FaviconsWebpackPlugin.prototype.apply = function (compiler) {
     self.options.title = guessAppName(compiler.context);
   }
 
-  // use cache?
-  var cache = false;
-  var cacheHit = false;
-  if (self.options.persistentCache) {
-    cache = new FaviconsCache(self.options, compiler.context, compiler.outputPath);
-  }
-
-  // Generate the favicons
+  // Generate the favicons - optionally use cache
+  var cacheResult;
   var compilationResult;
-  compiler.plugin('make', function (compilation, callback) {
-    if (cache) {
+  if (self.options.persistentCache) {
+    var cache = new FaviconsCache(self.options, compiler.context, compiler.outputPath);
+    compiler.plugin('make', function (compilation, callback) {
       cache.fetch()
-        .then(function (cacheResult) {
-          cacheHit = cacheResult;
-          if (cacheHit) {
-            cacheHit.getCompilationResult()
-              .then(function (cacheResult) {
-                compilationResult = cacheResult;
+        .then(function (fetchResult) {
+          cacheResult = fetchResult;
+          cacheResult.getCompilationResult()
+            .then(
+              function (cachedCompilationResult) {
+                compilationResult = cachedCompilationResult;
                 callback();
-              })
-              .catch(callback);
-          } else {
-            childCompiler.compileTemplate(self.options, compiler.context, compilation)
-              .then(function (result) {
-                compilationResult = result;
-                callback();
-              })
-              .catch(callback);
-          }
-        });
-    } else {
+              },
+              function () {
+                childCompiler.compileTemplate(self.options, compiler.context, compilation)
+                 .then(function (result) {
+                   compilationResult = result;
+                   callback();
+                 });
+              });
+        })
+        .catch(callback);
+    });
+  } else {
+    compiler.plugin('make', function (compilation, callback) {
       childCompiler.compileTemplate(self.options, compiler.context, compilation)
         .then(function (result) {
           compilationResult = result;
           callback();
         })
-        .catch(callback);
-    }
-  });
+      .catch(callback);
+    });
+  }
 
   // Hook into the html-webpack-plugin processing
   // and add the html
@@ -95,22 +91,27 @@ FaviconsWebpackPlugin.prototype.apply = function (compiler) {
   }
 
   // Remove the stats from the output if they are not required
-  if (!cacheHit && !self.options.emitStats) {
+  if (!self.options.emitStats) {
     compiler.plugin('emit', function (compilation, callback) {
-      delete compilation.assets[compilationResult.outputName];
+      // if the results did not come from the cache, they will be in the  compilation
+      // and must be removed
+      if (!self.options.persistentCache || !cacheResult.getCompilationResult()) {
+        delete compilation.assets[compilationResult.outputName];
+      }
       callback();
     });
   }
 
   // copy cache files or add new files to cache
-  if (cache) {
+  if (self.options.persistentCache) {
     compiler.plugin('after-emit', function (compilation, callback) {
-      if (cacheHit) {
-        cacheHit.emit().catch(callback);
+      if (cacheResult) {
+        cacheResult.postEmit()
+          .then(callback)
+          .catch(callback);
       } else {
-        cache.put(compilationResult).catch(callback);
+        callback();
       }
-      callback();
     });
   }
 };

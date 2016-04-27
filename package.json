@@ -11,7 +11,9 @@
     "lint": "semistandard",
     "prepublish": "npm run test",
     "posttest": "npm run lint",
-    "test": "ava"
+    "test": "ava",
+    "test:cache": "jasmine JASMINE_CONFIG_PATH=./cache-test/support/jasmine.json",
+    "debug:cache": "node-debug jasmine JASMINE_CONFIG_PATH=./cache-test/support/jasmine.json "
   },
   "repository": {
     "type": "git",
@@ -39,6 +41,7 @@
     "denodeify": "^1.2.1",
     "dir-compare": "^1.0.1",
     "html-webpack-plugin": "^2.16.0",
+    "jasmine": "^2.4.1",
     "memory-fs": "^0.3.0",
     "mkdirp": "^0.5.1",
     "rimraf": "^2.5.2",
