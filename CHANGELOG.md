@@ -1,3 +1,7 @@
+# 0.0.6
+
++ Add support for `devtool: 'eval'`
+
 # 0.0.5
 
 + Invalidate cache on plugin version change

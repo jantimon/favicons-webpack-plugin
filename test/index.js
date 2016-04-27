@@ -21,6 +21,7 @@ rimraf.sync(path.resolve(__dirname, '../dist'));
 
 function baseWebpackConfig (plugin) {
   return {
+    devtool: 'eval',
     entry: path.resolve(__dirname, 'fixtures/entry.js'),
     output: {
       path: path.resolve(__dirname, '../dist', 'test-' + (outputId++))
@@ -69,7 +70,7 @@ test('should generate a configured JSON file', async t => {
     statsFilename: 'iconstats.json'
   })));
   const outputPath = stats.compilation.compiler.outputPath;
-  const expected = path.resolve(__dirname, 'fixtures/expected/default-with-json');
+  const expected = path.resolve(__dirname, 'fixtures/expected/generate-json');
   const compareResult = await dircompare.compare(outputPath, expected, compareOptions);
   const diffFiles = compareResult.diffSet.filter((diff) => diff.state !== 'equal');
   t.is(diffFiles[0], undefined);
@@ -86,7 +87,7 @@ test('should work together with the html-webpack-plugin', async t => {
     new HtmlWebpackPlugin()
   ]));
   const outputPath = stats.compilation.compiler.outputPath;
-  const expected = path.resolve(__dirname, 'fixtures/expected/default-with-html');
+  const expected = path.resolve(__dirname, 'fixtures/expected/generate-html');
   const compareResult = await dircompare.compare(outputPath, expected, compareOptions);
   const diffFiles = compareResult.diffSet.filter((diff) => diff.state !== 'equal');
   t.is(diffFiles[0], undefined);
@@ -104,7 +105,7 @@ test('should not recompile if there is a cache file', async t => {
 
   // Bring cache file in place
   const cacheFile = 'icons-366a3768de05f9e78c392fa62b8fbb80/.cache';
-  const cacheFileExpected = path.resolve(__dirname, 'fixtures/expected/default-from-cache/', cacheFile);
+  const cacheFileExpected = path.resolve(__dirname, 'fixtures/expected/from-cache/', cacheFile);
   const cacheFileDist = path.resolve(__dirname, options.output.path, cacheFile);
   await mkdirp(path.dirname(cacheFileDist));
   const cache = JSON.parse(await readFile(cacheFileExpected));
@@ -113,7 +114,7 @@ test('should not recompile if there is a cache file', async t => {
 
   const stats = await webpack(options);
   const outputPath = stats.compilation.compiler.outputPath;
-  const expected = path.resolve(__dirname, 'fixtures/expected/default-from-cache');
+  const expected = path.resolve(__dirname, 'fixtures/expected/from-cache');
   const compareResult = await dircompare.compare(outputPath, expected, compareOptions);
   const diffFiles = compareResult.diffSet.filter((diff) => diff.state !== 'equal');
   t.is(diffFiles[0], undefined);
