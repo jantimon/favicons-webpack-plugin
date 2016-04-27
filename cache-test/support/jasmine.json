@@ -1,0 +1,8 @@
+{
+  "spec_dir": "cache-test",
+  "spec_files": [
+    "**/CacheTest.js"
+  ],
+  "stopSpecOnExpectationFailure": false,
+  "random": true
+}

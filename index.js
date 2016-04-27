@@ -16,7 +16,7 @@ function FaviconsWebpackPlugin (options) {
     prefix: 'icons-[hash]/',
     emitStats: false,
     statsFilename: 'iconstats-[hash].json',
-    persistentCache: true,
+    persistentCache: false,
     inject: true,
     background: '#fff'
   }, options);
@@ -44,7 +44,7 @@ FaviconsWebpackPlugin.prototype.apply = function (compiler) {
   var cache = false;
   var cacheHit = false;
   if (self.options.persistentCache) {
-    cache = new FaviconsCache(compiler.context, compiler.outputPath, self.options);
+    cache = new FaviconsCache(self.options, compiler.context, compiler.outputPath);
   }
 
   // Generate the favicons
@@ -66,21 +66,20 @@ FaviconsWebpackPlugin.prototype.apply = function (compiler) {
               .then(function (result) {
                 compilationResult = result;
                 callback();
-               })
+              })
               .catch(callback);
           }
-        }
-      )
+        });
     } else {
       childCompiler.compileTemplate(self.options, compiler.context, compilation)
         .then(function (result) {
           compilationResult = result;
           callback();
-         })
+        })
         .catch(callback);
     }
   });
-    
+
   // Hook into the html-webpack-plugin processing
   // and add the html
   if (self.options.inject) {
