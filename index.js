@@ -44,12 +44,12 @@ FaviconsWebpackPlugin.prototype.apply = function (compiler) {
   var cacheResult;
   var compilationResult;
   if (self.options.persistentCache) {
-    var cache = new FaviconsCache(self.options, compiler.context, compiler.outputPath);
+    var cache = new FaviconsCache(self.options, compiler.context);
     compiler.plugin('make', function (compilation, callback) {
       cache.fetch()
         .then(function (fetchResult) {
           cacheResult = fetchResult;
-          cacheResult.getCompilationResult()
+          cacheResult.getCachedCompilationResult()
             .then(
               function (cachedCompilationResult) {
                 compilationResult = cachedCompilationResult;
@@ -95,7 +95,7 @@ FaviconsWebpackPlugin.prototype.apply = function (compiler) {
     compiler.plugin('emit', function (compilation, callback) {
       // if the results did not come from the cache, they will be in the  compilation
       // and must be removed
-      if (!self.options.persistentCache || !cacheResult.getCompilationResult()) {
+      if (!self.options.persistentCache || cacheResult.isMiss()) {
         delete compilation.assets[compilationResult.outputName];
       }
       callback();
@@ -105,13 +105,13 @@ FaviconsWebpackPlugin.prototype.apply = function (compiler) {
   // copy cache files or add new files to cache
   if (self.options.persistentCache) {
     compiler.plugin('after-emit', function (compilation, callback) {
-      if (cacheResult) {
-        cacheResult.postEmit()
-          .then(callback)
-          .catch(callback);
-      } else {
-        callback();
-      }
+      cacheResult.postEmit(compilation.outputOptions.path, compilationResult)
+        .then(function () {
+          callback();
+        })
+        .catch(function (err) {
+          callback(err);
+        });
     });
   }
 };
