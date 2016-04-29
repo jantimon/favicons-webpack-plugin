@@ -154,6 +154,7 @@ describe('FaviconWebpackPlugin', function () {
         done);
     });
   });
+
   it('works with empty cache', function (done) {
     deleteDirs([OUTPUT_DIR, CACHE_DIR], function () {
       test(

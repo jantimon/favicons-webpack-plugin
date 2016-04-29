@@ -49,21 +49,18 @@ FaviconsWebpackPlugin.prototype.apply = function (compiler) {
       cache.fetch()
         .then(function (fetchResult) {
           cacheResult = fetchResult;
-          cacheResult.getCachedCompilationResult()
-            .then(
-              function (cachedCompilationResult) {
-                compilationResult = cachedCompilationResult;
-                callback();
-              },
-              function () {
-                childCompiler.compileTemplate(self.options, compiler.context, compilation)
-                 .then(function (result) {
-                   compilationResult = result;
-                   callback();
-                 });
-              });
-        })
-        .catch(callback);
+          return cacheResult.getCachedCompilationResult();
+        }).then(function (cachedCompilationResult) {
+          compilationResult = cachedCompilationResult;
+          callback();
+        }).catch(function () {
+          childCompiler.compileTemplate(self.options, compiler.context, compilation)
+            .then(function (result) {
+              compilationResult = result;
+              callback();
+            })
+          .catch(callback);
+        });
     });
   } else {
     compiler.plugin('make', function (compilation, callback) {
@@ -107,9 +104,10 @@ FaviconsWebpackPlugin.prototype.apply = function (compiler) {
     compiler.plugin('after-emit', function (compilation, callback) {
       cacheResult.postEmit(compilation.outputOptions.path, compilationResult)
         .then(function () {
+          // callback call deliberately wrapped in a function to discard any passed arguments
           callback();
-        })
-        .catch(function (err) {
+        },
+        function (err) {
           callback(err);
         });
     });
