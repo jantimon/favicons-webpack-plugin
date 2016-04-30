@@ -53,7 +53,10 @@ FaviconsWebpackPlugin.prototype.apply = function (compiler) {
         }).then(function (cachedCompilationResult) {
           compilationResult = cachedCompilationResult;
           callback();
-        }).catch(function () {
+        }).catch(function (err) {
+          if (err !== 'cache miss') {
+            compilation.warnings.push('favicons-webpack-plugin cache miss due to error:' + err);
+          }
           childCompiler.compileTemplate(self.options, compiler.context, compilation)
             .then(function (result) {
               compilationResult = result;
@@ -90,11 +93,7 @@ FaviconsWebpackPlugin.prototype.apply = function (compiler) {
   // Remove the stats from the output if they are not required
   if (!self.options.emitStats) {
     compiler.plugin('emit', function (compilation, callback) {
-      // if the results did not come from the cache, they will be in the  compilation
-      // and must be removed
-      if (!self.options.persistentCache || cacheResult.isMiss()) {
-        delete compilation.assets[compilationResult.outputName];
-      }
+      delete compilation.assets[compilationResult.outputName];
       callback();
     });
   }
