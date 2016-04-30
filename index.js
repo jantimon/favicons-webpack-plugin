@@ -106,10 +106,8 @@ FaviconsWebpackPlugin.prototype.apply = function (compiler) {
         .then(function () {
           // callback call deliberately wrapped in a function to discard any passed arguments
           callback();
-        },
-        function (err) {
-          callback(err);
-        });
+        })
+        .catch(callback);
     });
   }
 };

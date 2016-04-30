@@ -29,7 +29,6 @@ var WEBPACK_OPTIONS = {
     path: OUTPUT_DIR
   },
   plugins: [
-    new HtmlWebpackPlugin()
   ]
 };
 
@@ -59,7 +58,7 @@ var COMPARE_OPTIONS = {
 };
 
 // extend jasmine timeouts for slow processing
-var timeout = (typeof v8debug === 'object') ? 600000 : 5000;
+var timeout = (typeof v8debug === 'object') ? 600000 : 10000;
 jasmine.DEFAULT_TIMEOUT_INTERVAL = timeout;
 
 function test (description, webpackConfig, expectedDist, expectedCache, done) {
@@ -67,7 +66,7 @@ function test (description, webpackConfig, expectedDist, expectedCache, done) {
   webpack(webpackConfig, function (err, stats) {
     var duration = Date.now() - start;
     if (err) {
-      fail('Webpack error: ' + err);
+      fail(err);
       return done();
     }
     Promise.all([
@@ -85,10 +84,14 @@ function test (description, webpackConfig, expectedDist, expectedCache, done) {
 }
 
 function createWebpackOptions (faviconOptions) {
-  faviconOptions = Object.assign({}, FAVICON_OPTIONS, faviconOptions);
-  var faviconsPlugin = new FaviconsWebpackPlugin(faviconOptions);
+  // webpack options
   var webpackOptions = Object.assign({}, WEBPACK_OPTIONS);
-  webpackOptions.plugins.push(faviconsPlugin);
+  webpackOptions.plugins = [];
+  // html webpack options
+  webpackOptions.plugins.push(new HtmlWebpackPlugin());
+  // favicon options
+  faviconOptions = Object.assign({}, FAVICON_OPTIONS, faviconOptions);
+  webpackOptions.plugins.push(new FaviconsWebpackPlugin(faviconOptions));
   return webpackOptions;
 }
 
@@ -141,33 +144,49 @@ function deleteDirs (dirs, done) {
   .then(done);
 }
 
+/*
+ * TESTS START HERE
+ */
 describe('FaviconWebpackPlugin', function () {
+  beforeEach(function (done) {
+    deleteDirs([OUTPUT_DIR, CACHE_DIR], done);
+  });
+
   it('works without caching', function (done) {
-    deleteDirs([OUTPUT_DIR, CACHE_DIR], function () {
-      test(
-        'works without caching',
-        createWebpackOptions({
-          persistentCache: false
-        }),
-        path.resolve(__dirname, 'fixtures/expected/default-dist'),
-        null,
-        done);
-    });
+    test(
+      'works without caching',
+      createWebpackOptions({
+        persistentCache: false
+      }),
+      path.resolve(__dirname, 'fixtures/expected/default-dist'),
+      null,
+      done
+    );
   });
 
   it('works with empty cache', function (done) {
-    deleteDirs([OUTPUT_DIR, CACHE_DIR], function () {
-      test(
-        'works with empty cache',
-        createWebpackOptions(),
-        path.resolve(__dirname, 'fixtures/expected/default-dist'),
-        path.resolve(__dirname, 'fixtures/expected/default-cache'),
-        done);
-    });
+    test(
+      'works with empty cache',
+      createWebpackOptions(),
+      path.resolve(__dirname, 'fixtures/expected/default-dist'),
+      path.resolve(__dirname, 'fixtures/expected/default-cache'),
+      done
+    );
   });
+/*
+  it('works with empty cache 2', function (done) {
+    test(
+      'works with empty cache 2',
+      createWebpackOptions(),
+      path.resolve(__dirname, 'fixtures/expected/default-dist'),
+      path.resolve(__dirname, 'fixtures/expected/default-cache'),
+      done
+    );
+  });
+  */
 });
 
-// addititonal tests:
+// additional tests:
 // missing logo file
 // [hash] in prefix and stats file
 // different logo option ouputs - adds/removes
