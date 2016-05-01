@@ -1,6 +1,7 @@
 'use strict';
 var childCompiler = require('./lib/compiler.js');
 var FaviconsCache = require('./lib/cache.js');
+var FaviconsNullCache = require('./lib/nullcache.js');
 var assert = require('assert');
 var _ = require('lodash');
 var fs = require('fs');
@@ -40,41 +41,37 @@ FaviconsWebpackPlugin.prototype.apply = function (compiler) {
     self.options.title = guessAppName(compiler.context);
   }
 
-  // Generate the favicons - optionally use cache
+  // use a cache?
+  var cache = self.options.persistentCache
+            ? new FaviconsCache(self.options, compiler.context)
+            : new FaviconsNullCache();
+
+  // Generate the favicons
   var cacheResult;
   var compilationResult;
-  if (self.options.persistentCache) {
-    var cache = new FaviconsCache(self.options, compiler.context);
-    compiler.plugin('make', function (compilation, callback) {
-      cache.fetch()
-        .then(function (fetchResult) {
-          cacheResult = fetchResult;
-          return cacheResult.getCachedCompilationResult();
-        }).then(function (cachedCompilationResult) {
-          compilationResult = cachedCompilationResult;
-          callback();
-        }).catch(function (err) {
-          if (err !== 'cache miss') {
-            compilation.warnings.push('favicons-webpack-plugin cache miss due to error:' + err);
-          }
+  compiler.plugin('make', function (compilation, callback) {
+    cache.fetch()
+      .then(function (fetchResult) {
+        cacheResult = fetchResult;
+        return cacheResult.getCachedCompilationResult();
+      })
+      .then(function (cachedCompilationResult) {
+        compilationResult = cachedCompilationResult;
+        callback();
+      })
+      .catch(function (err) {
+        if (err === 'cache miss') {
           childCompiler.compileTemplate(self.options, compiler.context, compilation)
             .then(function (result) {
               compilationResult = result;
               callback();
             })
           .catch(callback);
-        });
-    });
-  } else {
-    compiler.plugin('make', function (compilation, callback) {
-      childCompiler.compileTemplate(self.options, compiler.context, compilation)
-        .then(function (result) {
-          compilationResult = result;
-          callback();
-        })
-      .catch(callback);
-    });
-  }
+        } else {
+          callback(err);
+        }
+      });
+  });
 
   // Hook into the html-webpack-plugin processing
   // and add the html
@@ -91,6 +88,7 @@ FaviconsWebpackPlugin.prototype.apply = function (compiler) {
   }
 
   // Remove the stats from the output if they are not required
+  // (a null op if a cache hit)
   if (!self.options.emitStats) {
     compiler.plugin('emit', function (compilation, callback) {
       delete compilation.assets[compilationResult.outputName];

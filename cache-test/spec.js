@@ -13,6 +13,7 @@ if (!global.Promise) {
 
 var path = require('path');
 var fs = require('fs');
+var format = require('util').format;
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var FaviconsWebpackPlugin = require('../index.js');
 var dirCompare = require('dir-compare');
@@ -54,17 +55,23 @@ var FAVICON_OPTIONS = {
 
 var COMPARE_OPTIONS = {
   compareSize: true,
-  compareContents: true,
-  noDiffSet: true
+  compareContents: true
+};
+
+var COMPARISON_STATES = {
+  'equal': '==',
+  'left': '->',
+  'right': '<-',
+  'distinct': '<>'
 };
 
 // extend jasmine timeouts for slow processing
 var timeout = (typeof v8debug === 'object') ? 600000 : 5000;
 jasmine.DEFAULT_TIMEOUT_INTERVAL = timeout;
 
-function test (description, webpackConfig, expectedDist, expectedCache, done) {
+function test (description, webpackConfig, expectedDist, expectedCache) {
   var recordDuration = startTiming(description);
-  runWebpack(webpackConfig)
+  return runWebpack(webpackConfig)
     .then(recordDuration)
     .then(function () {
       return Promise.all([
@@ -72,10 +79,9 @@ function test (description, webpackConfig, expectedDist, expectedCache, done) {
         makeDirComparePromise(expectedCache, CACHE_DIR)
       ]);
     })
-    .then(done)
     .catch(function (err) {
       fail(err);
-      done(err);
+      throw err;
     });
 }
 
@@ -92,13 +98,8 @@ function startTiming (description, start) {
 function makeDirComparePromise (expected, actual) {
   if (expected) {
     return dirCompare.compare(expected, actual, COMPARE_OPTIONS).then(function (compareResult) {
-      if (compareResult.same) {
-        Promise.resolve();
-      } else {
-        expected = expected.slice(ROOT_DIR.length);
-        actual = actual.slice(ROOT_DIR.length);
-        fail('Actual directory "' + actual + '" different to expected directory "' + expected + '"');
-        Promise.reject();
+      if (!compareResult.same) {
+        fail(detailDirectoryDifferences(expected, actual, compareResult));
       }
     });
   } else {
@@ -115,6 +116,26 @@ function makeDirComparePromise (expected, actual) {
       });
     });
   }
+}
+
+function detailDirectoryDifferences (expected, actual, compareResult) {
+  var output = [];
+  expected = expected.slice(ROOT_DIR.length);
+  actual = actual.slice(ROOT_DIR.length);
+  output.push('Actual directory "' + actual + '" different to expected directory "' + expected + '":');
+  output.push('equal: ' + compareResult.equal);
+  output.push('distinct: ' + compareResult.distinct);
+  output.push('expected: ' + compareResult.left);
+  output.push('actual: ' + compareResult.right);
+  output.push('differences: ' + compareResult.differences);
+  output.push('same: ' + compareResult.same);
+  compareResult.diffSet.forEach(function (entry) {
+    var state = COMPARISON_STATES[entry.state];
+    var name1 = entry.name1 ? entry.name1 : '';
+    var name2 = entry.name2 ? entry.name2 : '';
+    output.push(format('%s(%s)%s%s(%s)', name1, entry.type1, state, name2, entry.type2));
+  });
+  return output.join('\n');
 }
 
 function createWebpackOptions (includeHtml, faviconOptions) {
@@ -149,9 +170,10 @@ describe('FaviconWebpackPlugin', function () {
       'works without caching',
       createWebpackOptions(false, {persistentCache: false}),
       path.resolve(__dirname, 'fixtures/expected/default-dist'),
-      null,
-      done
-    );
+      null
+    )
+    .then(done)
+    .catch(done);
   });
 
   it('works with html without caching', function (done) {
@@ -159,9 +181,10 @@ describe('FaviconWebpackPlugin', function () {
       'works with html without caching',
       createWebpackOptions(true, {persistentCache: false}, true),
       path.resolve(__dirname, 'fixtures/expected/default-dist-with-html'),
-      null,
-      done
-    );
+      null
+    )
+    .then(done)
+    .catch(done);
   });
 
   it('works with empty cache', function (done) {
@@ -169,9 +192,10 @@ describe('FaviconWebpackPlugin', function () {
       'works with empty cache',
       createWebpackOptions(),
       path.resolve(__dirname, 'fixtures/expected/default-dist'),
-      path.resolve(__dirname, 'fixtures/expected/default-cache'),
-      done
-    );
+      path.resolve(__dirname, 'fixtures/expected/default-cache')
+    )
+    .then(done)
+    .catch(done);
   });
 
   it('works with html with empty cache', function (done) {
@@ -179,26 +203,10 @@ describe('FaviconWebpackPlugin', function () {
       'works with html with empty cache',
       createWebpackOptions(true),
       path.resolve(__dirname, 'fixtures/expected/default-dist-with-html'),
-      path.resolve(__dirname, 'fixtures/expected/default-cache'),
-      done
-    );
-  });
-
-  it('works with cache hit, dist directory cleared', function (done) {
-    var webpackOptions = createWebpackOptions();
-    runWebpack(webpackOptions)
-      .then(function () {
-        return deleteDir(OUTPUT_DIR);
-      })
-      .then(function () {
-        test(
-            'works with cache hit, dist directory cleared',
-            webpackOptions,
-            path.resolve(__dirname, 'fixtures/expected/default-dist'),
-            path.resolve(__dirname, 'fixtures/expected/default-cache'),
-            done
-          );
-      });
+      path.resolve(__dirname, 'fixtures/expected/default-cache')
+    )
+    .then(done)
+    .catch(done);
   });
 
   it('works with cache hit, dist directory still populated', function (done) {
@@ -209,9 +217,28 @@ describe('FaviconWebpackPlugin', function () {
             'works with cache hit, dist directory still populated',
             webpackOptions,
             path.resolve(__dirname, 'fixtures/expected/default-dist'),
-            path.resolve(__dirname, 'fixtures/expected/default-cache'),
-            done
-          );
+            path.resolve(__dirname, 'fixtures/expected/default-cache')
+            )
+          .then(done)
+          .catch(done);
+      });
+  });
+
+  it('works with cache hit, dist directory cleared', function (done) {
+    var webpackOptions = createWebpackOptions();
+    runWebpack(webpackOptions)
+      .then(function () {
+        return deleteDir(OUTPUT_DIR);
+      })
+      .then(function () {
+        return test(
+            'works with cache hit, dist directory cleared',
+            webpackOptions,
+            path.resolve(__dirname, 'fixtures/expected/default-dist'),
+            path.resolve(__dirname, 'fixtures/expected/default-cache')
+        )
+        .then(done)
+        .catch(done);
       });
   });
 });
