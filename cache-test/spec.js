@@ -55,7 +55,8 @@ var FAVICON_OPTIONS = {
 
 var COMPARE_OPTIONS = {
   compareSize: true,
-  compareContents: true
+  compareContents: true,
+  excludeFilter: '.compilationResult'
 };
 
 var COMPARISON_STATES = {
@@ -165,9 +166,9 @@ describe('FaviconWebpackPlugin', function () {
     deleteDirs([OUTPUT_DIR, CACHE_DIR], done);
   });
 
-  it('works without caching', function (done) {
+  it('no caching', function (done) {
     test(
-      'works without caching',
+      'no caching',
       createWebpackOptions(false, {persistentCache: false}),
       path.resolve(__dirname, 'fixtures/expected/default-dist'),
       null
@@ -176,10 +177,25 @@ describe('FaviconWebpackPlugin', function () {
     .catch(done);
   });
 
-  it('works with html without caching', function (done) {
+  it('no caching, with stats', function (done) {
     test(
-      'works with html without caching',
-      createWebpackOptions(true, {persistentCache: false}, true),
+      'no caching, with stats',
+      createWebpackOptions(false, {
+        persistentCache: false,
+        emitStats: true,
+        statsFilename: 'stats.json'
+      }),
+      path.resolve(__dirname, 'fixtures/expected/default-dist-with-stats'),
+      null
+    )
+    .then(done)
+    .catch(done);
+  });
+
+  it('no caching, with html', function (done) {
+    test(
+      'no caching, with html',
+      createWebpackOptions(true, {persistentCache: false}),
       path.resolve(__dirname, 'fixtures/expected/default-dist-with-html'),
       null
     )
@@ -187,9 +203,9 @@ describe('FaviconWebpackPlugin', function () {
     .catch(done);
   });
 
-  it('works with empty cache', function (done) {
+  it('empty cache, cache miss', function (done) {
     test(
-      'works with empty cache',
+      'empty cache, cache miss',
       createWebpackOptions(),
       path.resolve(__dirname, 'fixtures/expected/default-dist'),
       path.resolve(__dirname, 'fixtures/expected/default-cache')
@@ -198,9 +214,23 @@ describe('FaviconWebpackPlugin', function () {
     .catch(done);
   });
 
-  it('works with html with empty cache', function (done) {
+  it('empty cache, cache miss, with stats', function (done) {
     test(
-      'works with html with empty cache',
+      'empty cache, cache miss, with stats',
+      createWebpackOptions(false, {
+        emitStats: true,
+        statsFilename: 'stats.json'
+      }),
+      path.resolve(__dirname, 'fixtures/expected/default-dist-with-stats'),
+      path.resolve(__dirname, 'fixtures/expected/default-cache-with-stats')
+    )
+    .then(done)
+    .catch(done);
+  });
+
+  it('empty cache, cache miss, with html', function (done) {
+    test(
+      'empty cache, cache miss, with html',
       createWebpackOptions(true),
       path.resolve(__dirname, 'fixtures/expected/default-dist-with-html'),
       path.resolve(__dirname, 'fixtures/expected/default-cache')
@@ -209,12 +239,12 @@ describe('FaviconWebpackPlugin', function () {
     .catch(done);
   });
 
-  it('works with cache hit, dist directory still populated', function (done) {
+  it('cache hit, dist directory populated', function (done) {
     var webpackOptions = createWebpackOptions();
     runWebpack(webpackOptions)
       .then(function () {
         test(
-            'works with cache hit, dist directory still populated',
+            'cache hit, dist directory populated',
             webpackOptions,
             path.resolve(__dirname, 'fixtures/expected/default-dist'),
             path.resolve(__dirname, 'fixtures/expected/default-cache')
@@ -224,7 +254,7 @@ describe('FaviconWebpackPlugin', function () {
       });
   });
 
-  it('works with cache hit, dist directory cleared', function (done) {
+  it('cache hit, dist directory empty', function (done) {
     var webpackOptions = createWebpackOptions();
     runWebpack(webpackOptions)
       .then(function () {
@@ -232,7 +262,7 @@ describe('FaviconWebpackPlugin', function () {
       })
       .then(function () {
         return test(
-            'works with cache hit, dist directory cleared',
+            'cache hit, dist directory empty',
             webpackOptions,
             path.resolve(__dirname, 'fixtures/expected/default-dist'),
             path.resolve(__dirname, 'fixtures/expected/default-cache')
@@ -240,6 +270,27 @@ describe('FaviconWebpackPlugin', function () {
         .then(done)
         .catch(done);
       });
+  });
+
+  it('cache hit, dist directory empty, with stats', function (done) {
+    var webpackOptions = createWebpackOptions(false, {
+      emitStats: true,
+      statsFilename: 'stats.json'
+    });
+    runWebpack(webpackOptions)
+      .then(function () {
+        return deleteDir(OUTPUT_DIR);
+      })
+    .then(function () {
+      return test(
+          'cache hit, dist directory empty, with stats',
+          webpackOptions,
+          path.resolve(__dirname, 'fixtures/expected/default-dist-with-stats'),
+          path.resolve(__dirname, 'fixtures/expected/default-cache-with-stats')
+          )
+        .then(done)
+        .catch(done);
+    });
   });
 });
 
