@@ -20,6 +20,7 @@ var dirCompare = require('dir-compare');
 var makePromise = require('denodeify');
 var deleteDir = makePromise(require('rimraf'));
 var runWebpack = makePromise(require('webpack'));
+var copyDir = makePromise(require('ncp'));
 
 var ROOT_DIR = path.join(__dirname, '../');
 var OUTPUT_DIR = path.join(ROOT_DIR, 'dist');
@@ -74,6 +75,7 @@ function test (description, webpackConfig, expectedDist, expectedCache) {
   var recordDuration = startTiming(description);
   return runWebpack(webpackConfig)
     .then(recordDuration)
+    .then(checkForCompilationErrors)
     .then(function () {
       return Promise.all([
         makeDirComparePromise(expectedDist, OUTPUT_DIR),
@@ -88,12 +90,24 @@ function test (description, webpackConfig, expectedDist, expectedCache) {
 
 function startTiming (description, start) {
   start = start || Date.now();
-  return function () {
+  return function (webpackStats) {
     var duration = Date.now() - start;
     var msg = 'RUN COMPLETE : ' + description + ' : ' + duration + 'ms';
     console.log(msg);
-    return Promise.resolve();
+    return Promise.resolve(webpackStats);
   };
+}
+
+function checkForCompilationErrors (webpackStats) {
+  var compilationErrors = (webpackStats.compilation.errors || []).join('\n');
+  expect(compilationErrors).toBe('');
+  var compilationWarnings = (webpackStats.compilation.warnings || []).join('\n');
+  expect(compilationWarnings).toBe('');
+  if (compilationErrors === '' && compilationWarnings === '') {
+    return Promise.resolve();
+  } else {
+    return Promise.reject('compilation errors');
+  }
 }
 
 function makeDirComparePromise (expected, actual) {
@@ -150,12 +164,20 @@ function createWebpackOptions (includeHtml, faviconOptions) {
   return webpackOptions;
 }
 
-function deleteDirs (dirs, done) {
-  Promise.all(dirs.map(function (dir) {
+function deleteDirs (dirs) {
+  return Promise.all(dirs.map(function (dir) {
     return deleteDir(dir);
-  }))
-  .then(done)
-  .catch(done);
+  }));
+}
+
+function copyDirs (toDirs, fromDirs) {
+  return Promise.all(toDirs.map(function (to, index) {
+    return copyDir(to, fromDirs[index]);
+  }));
+}
+
+function endErr (done) {
+  return function (err) { fail(err); done(); };
 }
 
 /*
@@ -163,7 +185,9 @@ function deleteDirs (dirs, done) {
  */
 describe('FaviconWebpackPlugin', function () {
   beforeEach(function (done) {
-    deleteDirs([OUTPUT_DIR, CACHE_DIR], done);
+    deleteDirs([OUTPUT_DIR, CACHE_DIR])
+      .then(done)
+      .catch(done);
   });
 
   it('no caching', function (done) {
@@ -174,7 +198,7 @@ describe('FaviconWebpackPlugin', function () {
       null
     )
     .then(done)
-    .catch(done);
+    .catch(endErr(done));
   });
 
   it('no caching, with stats', function (done) {
@@ -189,7 +213,7 @@ describe('FaviconWebpackPlugin', function () {
       null
     )
     .then(done)
-    .catch(done);
+    .catch(endErr(done));
   });
 
   it('no caching, with html', function (done) {
@@ -200,7 +224,7 @@ describe('FaviconWebpackPlugin', function () {
       null
     )
     .then(done)
-    .catch(done);
+    .catch(endErr(done));
   });
 
   it('empty cache, cache miss', function (done) {
@@ -211,7 +235,7 @@ describe('FaviconWebpackPlugin', function () {
       path.resolve(__dirname, 'fixtures/expected/default-cache')
     )
     .then(done)
-    .catch(done);
+    .catch(endErr(done));
   });
 
   it('empty cache, cache miss, with stats', function (done) {
@@ -225,7 +249,7 @@ describe('FaviconWebpackPlugin', function () {
       path.resolve(__dirname, 'fixtures/expected/default-cache-with-stats')
     )
     .then(done)
-    .catch(done);
+    .catch(endErr(done));
   });
 
   it('empty cache, cache miss, with html', function (done) {
@@ -236,25 +260,41 @@ describe('FaviconWebpackPlugin', function () {
       path.resolve(__dirname, 'fixtures/expected/default-cache')
     )
     .then(done)
-    .catch(done);
+    .catch(endErr(done));
   });
 
-  it('cache hit, dist directory populated', function (done) {
+  it('hot cache hit, dist directory populated', function (done) {
     var webpackOptions = createWebpackOptions();
     runWebpack(webpackOptions)
       .then(function () {
-        test(
-            'cache hit, dist directory populated',
-            webpackOptions,
-            path.resolve(__dirname, 'fixtures/expected/default-dist'),
-            path.resolve(__dirname, 'fixtures/expected/default-cache')
-            )
-          .then(done)
-          .catch(done);
-      });
+        return test(
+          'hot cache hit, dist directory populated',
+          webpackOptions,
+          path.resolve(__dirname, 'fixtures/expected/default-dist'),
+          path.resolve(__dirname, 'fixtures/expected/default-cache')
+        );
+      })
+      .then(done)
+      .catch(endErr(done));
   });
 
-  it('cache hit, dist directory empty', function (done) {
+  it('cold cache hit, dist directory populated', function (done) {
+    var distContents = path.resolve(__dirname, 'fixtures/expected/default-dist');
+    var cacheContents = path.resolve(__dirname, 'fixtures/expected/default-cache');
+    copyDirs([cacheContents, distContents], [CACHE_DIR, OUTPUT_DIR])
+      .then(function () {
+        return test(
+          'cold cache hit, dist directory populated',
+          createWebpackOptions(),
+          distContents,
+          cacheContents
+        );
+      })
+      .then(done)
+      .catch(endErr(done));
+  });
+
+  it('hot cache hit, dist directory empty', function (done) {
     var webpackOptions = createWebpackOptions();
     runWebpack(webpackOptions)
       .then(function () {
@@ -262,14 +302,29 @@ describe('FaviconWebpackPlugin', function () {
       })
       .then(function () {
         return test(
-            'cache hit, dist directory empty',
-            webpackOptions,
-            path.resolve(__dirname, 'fixtures/expected/default-dist'),
-            path.resolve(__dirname, 'fixtures/expected/default-cache')
-        )
-        .then(done)
-        .catch(done);
-      });
+          'hot cache hit, dist directory empty',
+          webpackOptions,
+          path.resolve(__dirname, 'fixtures/expected/default-dist'),
+          path.resolve(__dirname, 'fixtures/expected/default-cache')
+        );
+      })
+      .then(done)
+      .catch(endErr(done));
+  });
+
+  it('cold cache hit, dist directory empty', function (done) {
+    var cacheContents = path.resolve(__dirname, 'fixtures/expected/default-cache');
+    copyDir(cacheContents, CACHE_DIR)
+      .then(function () {
+        return test(
+         'cold cache hit, dist directory empty',
+          createWebpackOptions(),
+          path.resolve(__dirname, 'fixtures/expected/default-dist'),
+          cacheContents
+        );
+      })
+      .then(done)
+      .catch(endErr(done));
   });
 
   it('cache hit, dist directory empty, with stats', function (done) {
@@ -281,17 +336,61 @@ describe('FaviconWebpackPlugin', function () {
       .then(function () {
         return deleteDir(OUTPUT_DIR);
       })
-    .then(function () {
-      return test(
+      .then(function () {
+        return test(
           'cache hit, dist directory empty, with stats',
           webpackOptions,
           path.resolve(__dirname, 'fixtures/expected/default-dist-with-stats'),
           path.resolve(__dirname, 'fixtures/expected/default-cache-with-stats')
-          )
-        .then(done)
-        .catch(done);
-    });
+        );
+      })
+      .then(done)
+      .catch(endErr(done));
   });
+
+  it('cache hit, dist directory empty, with hash prefix', function (done) {
+    var webpackOptions = createWebpackOptions(false, {
+      prefix: 'icons-[hash]/'
+    });
+    runWebpack(webpackOptions)
+      .then(function () {
+        return deleteDir(OUTPUT_DIR);
+      })
+      .then(function () {
+        return test(
+          'cache hit, dist directory empty, with hash prefix',
+          webpackOptions,
+          path.resolve(__dirname, 'fixtures/expected/default-dist-with-hash-prefix'),
+          path.resolve(__dirname, 'fixtures/expected/default-cache-with-hash-prefix')
+        );
+      })
+      .then(done)
+      .catch(endErr(done));
+  });
+
+  /*
+  it('cache hit, dist directory empty, with hash prefix and stats file', function (done) {
+    var webpackOptions = createWebpackOptions(false, {
+      prefix: 'icons-[hash]/',
+      emitStats: true,
+      statsFilename: 'iconstats-[hash].json'
+    });
+    runWebpack(webpackOptions)
+      .then(function () {
+        return deleteDir(OUTPUT_DIR);
+      })
+      .then(function () {
+        return test(
+          'cache hit, dist directory empty, with hash prefix and stats file',
+          webpackOptions,
+          path.resolve(__dirname, 'fixtures/expected/default-dist-with-hashes'),
+          path.resolve(__dirname, 'fixtures/expected/default-cache-with-hashes')
+        );
+      })
+      .then(done)
+      .catch(endErr(done));
+  });
+  */
 });
 
 // additional tests:
