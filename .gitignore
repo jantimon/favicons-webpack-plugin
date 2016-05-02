@@ -1,3 +1,4 @@
 /node_modules/
 /dist/
+/example/dist/
 npm-debug.log

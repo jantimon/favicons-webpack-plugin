@@ -38,12 +38,14 @@
     "babel-eslint": "^6.0.2",
     "denodeify": "^1.2.1",
     "dir-compare": "^1.0.1",
+    "express": "^4.13.4",
     "html-webpack-plugin": "^2.16.0",
     "memory-fs": "^0.3.0",
     "mkdirp": "^0.5.1",
     "rimraf": "^2.5.2",
     "semistandard": "^7.0.5",
-    "webpack": "^1.13.0"
+    "webpack": "^1.13.0",
+    "webpack-dev-middleware": "^1.6.1"
   },
   "dependencies": {
     "favicons": "^4.7.1",
