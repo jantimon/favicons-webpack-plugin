@@ -44,6 +44,7 @@
     "jasmine": "^2.4.1",
     "memory-fs": "^0.3.0",
     "mkdirp": "^0.5.1",
+    "node-dir": "^0.1.11",
     "rimraf": "^2.5.2",
     "semistandard": "^7.0.5",
     "webpack": "^1.13.0"

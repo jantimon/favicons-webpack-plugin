@@ -21,6 +21,7 @@ var makePromise = require('denodeify');
 var deleteDir = makePromise(require('rimraf'));
 var runWebpack = makePromise(require('webpack'));
 var copyDir = makePromise(require('ncp'));
+var readDirFiles = require('node-dir').readFiles;
 
 var ROOT_DIR = path.join(__dirname, '../');
 var OUTPUT_DIR = path.join(ROOT_DIR, 'dist');
@@ -57,7 +58,12 @@ var FAVICON_OPTIONS = {
 var COMPARE_OPTIONS = {
   compareSize: true,
   compareContents: true,
-  excludeFilter: '.compilationResult'
+  excludeFilter: '.compilationResult,*.json'
+};
+
+var READ_JSON_FILES_OPTIONS = {
+  match: /(\.json)$/,
+  recursive: false
 };
 
 var COMPARISON_STATES = {
@@ -67,11 +73,13 @@ var COMPARISON_STATES = {
   'distinct': '<>'
 };
 
+var CHECK_STATS_FILE = true;
+
 // extend jasmine timeouts for slow processing
 var timeout = (typeof v8debug === 'object') ? 600000 : 5000;
 jasmine.DEFAULT_TIMEOUT_INTERVAL = timeout;
 
-function test (description, webpackConfig, expectedDist, expectedCache) {
+function test (description, webpackConfig, expectedDist, expectedCache, checkStatsFile) {
   var recordDuration = startTiming(description);
   return runWebpack(webpackConfig)
     .then(recordDuration)
@@ -79,7 +87,12 @@ function test (description, webpackConfig, expectedDist, expectedCache) {
     .then(function () {
       return Promise.all([
         makeDirComparePromise(expectedDist, OUTPUT_DIR),
-        makeDirComparePromise(expectedCache, CACHE_DIR)
+        expectedCache
+          ? makeDirComparePromise(expectedCache, CACHE_DIR)
+          : makeCheckNoDirPromise(CACHE_DIR),
+        checkStatsFile
+          ? makeStatsFileComparePromise(expectedDist, OUTPUT_DIR)
+          : Promise.resolve()
       ]);
     })
     .catch(function (err) {
@@ -111,26 +124,73 @@ function checkForCompilationErrors (webpackStats) {
 }
 
 function makeDirComparePromise (expected, actual) {
-  if (expected) {
-    return dirCompare.compare(expected, actual, COMPARE_OPTIONS).then(function (compareResult) {
-      if (!compareResult.same) {
-        fail(detailDirectoryDifferences(expected, actual, compareResult));
+  return dirCompare.compare(expected, actual, COMPARE_OPTIONS).then(function (compareResult) {
+    if (!compareResult.same) {
+      fail(detailDirectoryDifferences(expected, actual, compareResult));
+    }
+  });
+}
+
+function makeCheckNoDirPromise (shouldNotExistDir) {
+  return new Promise(function (resolve, reject) {
+    fs.access(shouldNotExistDir, fs.F_OK, function (err) {
+      if (err) {
+        resolve();
+      } else {
+        shouldNotExistDir = shouldNotExistDir.slice(ROOT_DIR.length);
+        fail('Expected directory "' + shouldNotExistDir + '" not to exist');
+        reject();
       }
     });
-  } else {
-    // no directory should exist
-    return new Promise(function (resolve, reject) {
-      fs.access(actual, fs.F_OK, function (err) {
+  });
+}
+
+function makeStatsFileComparePromise (expectedDir, actualDir) {
+  var jsonContent = [];
+
+  var read = function (dir, contentArray, callback) {
+    readDirFiles(
+      dir,
+      READ_JSON_FILES_OPTIONS,
+      function (err, content, next) {
         if (err) {
-          resolve();
+          callback(err);
         } else {
-          actual = actual.slice(ROOT_DIR.length);
-          fail('Expected directory "' + actual + '" not to exist');
-          reject();
+          jsonContent.push(content);
+          next();
+        }
+      },
+      callback);
+  };
+
+  var isContentSame = function (expected, actual) {
+    // ignore different order of files
+    expected = expected.split('"').sort().join();
+    actual = actual.split('"').sort().join();
+    return expected === actual;
+  };
+
+  return new Promise(function (resolve, reject) {
+    read(expectedDir, jsonContent, function (err) {
+      if (err) return reject(err);
+      var msg;
+      read(actualDir, jsonContent, function (err) {
+        if (err) {
+          reject(err);
+        } else if (jsonContent.length !== 2) {
+          msg = 'Missing or unexpected json files';
+          fail(msg);
+          reject(msg);
+        } else if (!isContentSame(jsonContent[0], jsonContent[1])) {
+          msg = 'Expected stats file contents do not equal actual stats file';
+          fail(msg);
+          reject(msg);
+        } else {
+          resolve();
         }
       });
     });
-  }
+  });
 }
 
 function detailDirectoryDifferences (expected, actual, compareResult) {
@@ -194,7 +254,7 @@ describe('FaviconWebpackPlugin', function () {
     test(
       'no caching',
       createWebpackOptions(false, {persistentCache: false}),
-      path.resolve(__dirname, 'fixtures/expected/default-dist'),
+      path.resolve(__dirname, 'fixtures/expected/dist'),
       null
     )
     .then(done)
@@ -207,10 +267,11 @@ describe('FaviconWebpackPlugin', function () {
       createWebpackOptions(false, {
         persistentCache: false,
         emitStats: true,
-        statsFilename: 'stats.json'
+        statsFilename: 'stats-[hash].json'
       }),
-      path.resolve(__dirname, 'fixtures/expected/default-dist-with-stats'),
-      null
+      path.resolve(__dirname, 'fixtures/expected/dist-with-stats'),
+      null,
+      CHECK_STATS_FILE
     )
     .then(done)
     .catch(endErr(done));
@@ -220,7 +281,7 @@ describe('FaviconWebpackPlugin', function () {
     test(
       'no caching, with html',
       createWebpackOptions(true, {persistentCache: false}),
-      path.resolve(__dirname, 'fixtures/expected/default-dist-with-html'),
+      path.resolve(__dirname, 'fixtures/expected/dist-with-html'),
       null
     )
     .then(done)
@@ -231,8 +292,8 @@ describe('FaviconWebpackPlugin', function () {
     test(
       'empty cache, cache miss',
       createWebpackOptions(),
-      path.resolve(__dirname, 'fixtures/expected/default-dist'),
-      path.resolve(__dirname, 'fixtures/expected/default-cache')
+      path.resolve(__dirname, 'fixtures/expected/dist'),
+      path.resolve(__dirname, 'fixtures/expected/cache')
     )
     .then(done)
     .catch(endErr(done));
@@ -245,8 +306,9 @@ describe('FaviconWebpackPlugin', function () {
         emitStats: true,
         statsFilename: 'stats.json'
       }),
-      path.resolve(__dirname, 'fixtures/expected/default-dist-with-stats'),
-      path.resolve(__dirname, 'fixtures/expected/default-cache-with-stats')
+      path.resolve(__dirname, 'fixtures/expected/dist-with-stats'),
+      path.resolve(__dirname, 'fixtures/expected/cache-with-stats'),
+      CHECK_STATS_FILE
     )
     .then(done)
     .catch(endErr(done));
@@ -256,8 +318,8 @@ describe('FaviconWebpackPlugin', function () {
     test(
       'empty cache, cache miss, with html',
       createWebpackOptions(true),
-      path.resolve(__dirname, 'fixtures/expected/default-dist-with-html'),
-      path.resolve(__dirname, 'fixtures/expected/default-cache')
+      path.resolve(__dirname, 'fixtures/expected/dist-with-html'),
+      path.resolve(__dirname, 'fixtures/expected/cache')
     )
     .then(done)
     .catch(endErr(done));
@@ -270,8 +332,8 @@ describe('FaviconWebpackPlugin', function () {
         return test(
           'hot cache hit, dist directory populated',
           webpackOptions,
-          path.resolve(__dirname, 'fixtures/expected/default-dist'),
-          path.resolve(__dirname, 'fixtures/expected/default-cache')
+          path.resolve(__dirname, 'fixtures/expected/dist'),
+          path.resolve(__dirname, 'fixtures/expected/cache')
         );
       })
       .then(done)
@@ -279,8 +341,8 @@ describe('FaviconWebpackPlugin', function () {
   });
 
   it('cold cache hit, dist directory populated', function (done) {
-    var distContents = path.resolve(__dirname, 'fixtures/expected/default-dist');
-    var cacheContents = path.resolve(__dirname, 'fixtures/expected/default-cache');
+    var distContents = path.resolve(__dirname, 'fixtures/expected/dist');
+    var cacheContents = path.resolve(__dirname, 'fixtures/expected/cache');
     copyDirs([cacheContents, distContents], [CACHE_DIR, OUTPUT_DIR])
       .then(function () {
         return test(
@@ -304,8 +366,8 @@ describe('FaviconWebpackPlugin', function () {
         return test(
           'hot cache hit, dist directory empty',
           webpackOptions,
-          path.resolve(__dirname, 'fixtures/expected/default-dist'),
-          path.resolve(__dirname, 'fixtures/expected/default-cache')
+          path.resolve(__dirname, 'fixtures/expected/dist'),
+          path.resolve(__dirname, 'fixtures/expected/cache')
         );
       })
       .then(done)
@@ -313,13 +375,13 @@ describe('FaviconWebpackPlugin', function () {
   });
 
   it('cold cache hit, dist directory empty', function (done) {
-    var cacheContents = path.resolve(__dirname, 'fixtures/expected/default-cache');
+    var cacheContents = path.resolve(__dirname, 'fixtures/expected/cache');
     copyDir(cacheContents, CACHE_DIR)
       .then(function () {
         return test(
          'cold cache hit, dist directory empty',
           createWebpackOptions(),
-          path.resolve(__dirname, 'fixtures/expected/default-dist'),
+          path.resolve(__dirname, 'fixtures/expected/dist'),
           cacheContents
         );
       })
@@ -340,8 +402,9 @@ describe('FaviconWebpackPlugin', function () {
         return test(
           'cache hit, dist directory empty, with stats',
           webpackOptions,
-          path.resolve(__dirname, 'fixtures/expected/default-dist-with-stats'),
-          path.resolve(__dirname, 'fixtures/expected/default-cache-with-stats')
+          path.resolve(__dirname, 'fixtures/expected/dist-with-stats'),
+          path.resolve(__dirname, 'fixtures/expected/cache-with-stats'),
+          CHECK_STATS_FILE
         );
       })
       .then(done)
@@ -360,18 +423,17 @@ describe('FaviconWebpackPlugin', function () {
         return test(
           'cache hit, dist directory empty, with hash prefix',
           webpackOptions,
-          path.resolve(__dirname, 'fixtures/expected/default-dist-with-hash-prefix'),
-          path.resolve(__dirname, 'fixtures/expected/default-cache-with-hash-prefix')
+          path.resolve(__dirname, 'fixtures/expected/dist-with-hash-prefix'),
+          path.resolve(__dirname, 'fixtures/expected/cache-with-hash-prefix')
         );
       })
       .then(done)
       .catch(endErr(done));
   });
 
-  /*
-  it('cache hit, dist directory empty, with hash prefix and stats file', function (done) {
+  it('cache hit, dist directory empty, with hash stats file', function (done) {
     var webpackOptions = createWebpackOptions(false, {
-      prefix: 'icons-[hash]/',
+      prefix: 'icons/',
       emitStats: true,
       statsFilename: 'iconstats-[hash].json'
     });
@@ -381,19 +443,18 @@ describe('FaviconWebpackPlugin', function () {
       })
       .then(function () {
         return test(
-          'cache hit, dist directory empty, with hash prefix and stats file',
+          'cache hit, dist directory empty, with hash stats file',
           webpackOptions,
-          path.resolve(__dirname, 'fixtures/expected/default-dist-with-hashes'),
-          path.resolve(__dirname, 'fixtures/expected/default-cache-with-hashes')
+          path.resolve(__dirname, 'fixtures/expected/dist-with-hash-stats'),
+          path.resolve(__dirname, 'fixtures/expected/cache-with-hash-stats'),
+          CHECK_STATS_FILE
         );
       })
       .then(done)
       .catch(endErr(done));
   });
-  */
 });
 
 // additional tests:
 // missing logo file
-// [hash] in prefix and stats file
 // different logo option ouputs - adds/removes
