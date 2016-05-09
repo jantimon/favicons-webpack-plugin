@@ -11,7 +11,8 @@
     "lint": "semistandard",
     "prepublish": "npm run test",
     "posttest": "npm run lint",
-    "test": "ava"
+    "test": "ava",
+    "example": "webpack --config example/webpack.config.js"
   },
   "repository": {
     "type": "git",
@@ -48,6 +49,7 @@
     "webpack-dev-middleware": "^1.6.1"
   },
   "dependencies": {
+    "cheerio": "^0.20.0",
     "favicons": "^4.7.1",
     "loader-utils": "^0.2.14",
     "lodash": "^4.11.1",

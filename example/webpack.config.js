@@ -11,7 +11,21 @@ module.exports = {
     filename: 'bundle.js'
   },
   plugins: [
-    new FaviconsWebpackPlugin('./src/logo.png'),
+    new FaviconsWebpackPlugin({
+      logo: './src/logo.png',
+      icons: {
+        android: true,
+        appleIcon: true,
+        appleStartup: true,
+        coast: true,
+        favicons: true,
+        firefox: true,
+        opengraph: true,
+        twitter: true,
+        yandex: true,
+        windows: true
+      }
+    }),
     new HtmlWebpackPlugin()
   ]
 };
