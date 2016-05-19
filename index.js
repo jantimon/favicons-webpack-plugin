@@ -56,18 +56,13 @@ FaviconsWebpackPlugin.prototype.apply = function (compiler) {
   // Hook into the html-webpack-plugin processing
   // and add the html
   if (self.options.inject) {
-    var addFaviconsToHtml = function (htmlPluginData, callback) {
-      if (htmlPluginData.plugin.options.favicons !== false) {
-        htmlPluginData.html = htmlPluginData.html.replace(
-          /(<\/head>)/i, compilationResult.stats.html.join('') + '$&');
-      }
-      callback(null, htmlPluginData);
-    };
-
-    // webpack 4
-    if (compiler.hooks) {
-      compiler.hooks.compilation.tap('FaviconsWebpackPlugin', function (cmpp) {
-        cmpp.hooks.htmlWebpackPluginBeforeHtmlProcessing.tapAsync('favicons-webpack-plugin', addFaviconsToHtml);
+    compiler.plugin('compilation', function (compilation) {
+      compilation.plugin('html-webpack-plugin-before-html-processing', function (htmlPluginData, callback) {
+        if (htmlPluginData.plugin.options.favicons !== false) {
+          htmlPluginData.html = htmlPluginData.html.replace(
+            /(<\/head>)/i, compilationResult.stats.html.join('') + '$&');
+          callback(null, htmlPluginData);
+        }
       });
     } else {
       compiler.plugin('compilation', function (compilation) {
