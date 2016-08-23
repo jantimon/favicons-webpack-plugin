@@ -18,6 +18,10 @@ Basic Usage
 Add the plugin to your webpack config as follows:
 
 ```javascript
+let FaviconsWebpackPlugin = require('favicons-webpack-plugin')
+
+...
+
 plugins: [
   new FaviconsWebpackPlugin('my-logo.png')
 ]
