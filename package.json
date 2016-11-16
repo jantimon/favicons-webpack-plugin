@@ -34,8 +34,8 @@
   },
   "homepage": "https://github.com/jantimon/favicons-webpack-plugin",
   "devDependencies": {
-    "ava": "^0.14.0",
-    "babel-eslint": "^6.0.2",
+    "ava": "^0.16.0",
+    "babel-eslint": "^7.1.0",
     "denodeify": "^1.2.1",
     "dir-compare": "^1.0.1",
     "express": "^4.13.4",
@@ -43,12 +43,12 @@
     "memory-fs": "^0.3.0",
     "mkdirp": "^0.5.1",
     "rimraf": "^2.5.2",
-    "semistandard": "^7.0.5",
+    "semistandard": "^9.1.0",
     "webpack": "^1.13.0",
     "webpack-dev-middleware": "^1.6.1"
   },
   "dependencies": {
-    "favicons": "^4.7.1",
+    "favicons": "^4.8.3",
     "loader-utils": "^0.2.14",
     "lodash": "^4.11.1",
     "webpack": "^1.13.0"
