@@ -23,7 +23,7 @@ let FaviconsWebpackPlugin = require('favicons-webpack-plugin')
 ...
 
 plugins: [
-  new FaviconsWebpackPlugin('my-logo.png')
+  new FaviconsWebpackPlugin('./my-logo.png')
 ]
 ```
 
@@ -51,7 +51,7 @@ Advanced Usage
 plugins: [
   new FaviconsWebpackPlugin({
     // Your source logo
-    logo: 'my-logo.png',
+    logo: './my-logo.png',
     // The prefix for all image files (might be a folder or a name)
     prefix: 'icons-[hash]/',
     // Emit all stats of the generated icons
