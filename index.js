@@ -4,6 +4,7 @@ var assert = require('assert');
 var _ = require('lodash');
 var fs = require('fs');
 var path = require('path');
+var endOfLine = require('os').EOL;
 
 function FaviconsWebpackPlugin (options) {
   if (typeof options === 'string') {
@@ -57,7 +58,7 @@ FaviconsWebpackPlugin.prototype.apply = function (compiler) {
       compilation.plugin('html-webpack-plugin-before-html-processing', function (htmlPluginData, callback) {
         if (htmlPluginData.plugin.options.favicons !== false) {
           htmlPluginData.html = htmlPluginData.html.replace(
-            /(<\/head>)/i, compilationResult.stats.html.join('') + '$&');
+            /(<\/head>)/i, compilationResult.stats.html.join(endOfLine) + endOfLine + '$&');
           callback(null, htmlPluginData);
         }
       });
