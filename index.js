@@ -58,8 +58,8 @@ FaviconsWebpackPlugin.prototype.apply = function (compiler) {
         if (htmlPluginData.plugin.options.favicons !== false) {
           htmlPluginData.html = htmlPluginData.html.replace(
             /(<\/head>)/i, compilationResult.stats.html.join('') + '$&');
-          callback(null, htmlPluginData);
         }
+        callback(null, htmlPluginData);
       });
     });
   }
