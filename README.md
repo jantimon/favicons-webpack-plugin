@@ -32,7 +32,7 @@ It can optionally also generate a [JSON file with all information about the icon
 
 If you are using with [html-webpack-plugin](https://github.com/ampedandwired/html-webpack-plugin) it will also inject the necessary html for you:
 
-https://github.com/jantimon/favicons-webpack-plugin/blob/master/test/fixtures/expected/default-with-html/index.html
+https://github.com/jantimon/favicons-webpack-plugin/blob/master/test/fixtures/expected/generate-html/index.html
 
 ```html
   <link rel="apple-touch-icon" sizes="57x57" href="icons-366a3768de05f9e78c392fa62b8fbb80/apple-touch-icon-57x57.png">
