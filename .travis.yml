@@ -5,7 +5,7 @@ node_js:
   - "6"
 env:
   - WEBPACK=webpack
-  - WEBPACK=webpack@beta
+  - WEBPACK=webpack@2
 install:
   - npm install --ignore-scripts
   - npm rm webpack
