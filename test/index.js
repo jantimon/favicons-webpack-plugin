@@ -98,7 +98,10 @@ test('should not recompile if there is a cache file', async t => {
     new FaviconsWebpackPlugin({
       logo: LOGO_PATH,
       emitStats: false,
-      persistentCache: true
+      persistentCache: true,
+      icons: {
+        android: { offset: 15 }
+      }
     }),
     new HtmlWebpackPlugin()
   ]);
@@ -119,4 +122,3 @@ test('should not recompile if there is a cache file', async t => {
   const diffFiles = compareResult.diffSet.filter((diff) => diff.state !== 'equal');
   t.is(diffFiles[0], undefined);
 });
-
