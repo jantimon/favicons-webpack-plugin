@@ -4,6 +4,7 @@ var assert = require('assert');
 var _ = require('lodash');
 var fs = require('fs');
 var path = require('path');
+var minimatch = require('minimatch');
 
 function FaviconsWebpackPlugin (options) {
   if (typeof options === 'string') {
@@ -55,10 +56,16 @@ FaviconsWebpackPlugin.prototype.apply = function (compiler) {
   if (self.options.inject) {
     compiler.plugin('compilation', function (compilation) {
       compilation.plugin('html-webpack-plugin-before-html-processing', function (htmlPluginData, callback) {
-        if (htmlPluginData.plugin.options.favicons !== false) {
+        var files = !_.isBoolean(self.options.inject) && _.castArray(self.options.inject);
+        var shouldInject = !files || _.some(files, function (file) {
+          return minimatch(htmlPluginData.outputName, file);
+        });
+
+        if (shouldInject && htmlPluginData.plugin.options.favicons !== false) {
           htmlPluginData.html = htmlPluginData.html.replace(
             /(<\/head>)/i, compilationResult.stats.html.join('') + '$&');
         }
+
         callback(null, htmlPluginData);
       });
     });

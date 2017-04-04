@@ -61,7 +61,8 @@ plugins: [
     // Generate a cache file with control hashes and
     // don't rebuild the favicons until those hashes change
     persistentCache: true,
-    // Inject the html into the html-webpack-plugin
+    // Inject the html into the html-webpack-plugin. Accepts glob patterns
+    // to match against. Assets will only be injected on matching files.
     inject: true,
     // favicon background color (see https://github.com/haydenbleasel/favicons#usage)
     background: '#fff',

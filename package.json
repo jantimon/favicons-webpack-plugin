@@ -51,6 +51,7 @@
     "favicons": "^4.8.3",
     "loader-utils": "^0.2.14",
     "lodash": "^4.11.1",
+    "minimatch": "^3.0.3",
     "webpack": "^1.13.0"
   }
 }
