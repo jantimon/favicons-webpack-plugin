@@ -63,6 +63,8 @@ plugins: [
     persistentCache: true,
     // Inject the html into the html-webpack-plugin
     inject: true,
+    // Inject the html into the html-webpack-plugin at the start of the head
+    injectAtStart: false
     // favicon background color (see https://github.com/haydenbleasel/favicons#usage)
     background: '#fff',
     // favicon app title (see https://github.com/haydenbleasel/favicons#usage)
