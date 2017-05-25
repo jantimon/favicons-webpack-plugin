@@ -23,6 +23,7 @@ function FaviconsWebpackPlugin (options) {
     android: true,
     appleIcon: true,
     appleStartup: true,
+    appleStatusBarStyle: 'black-translucent',
     coast: false,
     favicons: true,
     firefox: true,
