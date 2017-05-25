@@ -85,6 +85,12 @@ plugins: [
 ]
 ```
 
+# Events
+
+| name | listener signature | 
+| ---- | ------------------ | 
+| `done` | `function(manifest) {}` |
+
 # Changelog
 
 Take a look at the  [CHANGELOG.md](https://github.com/jantimon/favicons-webpack-plugin/tree/master/CHANGELOG.md).

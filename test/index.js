@@ -120,3 +120,10 @@ test('should not recompile if there is a cache file', async t => {
   t.is(diffFiles[0], undefined);
 });
 
+test('should emit the done event with the stats', async t => {
+  let doneEventCalledWithManifest = false;
+  const faviconsWebpackPlugin = new FaviconsWebpackPlugin({logo: LOGO_PATH});
+  faviconsWebpackPlugin.on('done', (manifest) => doneEventCalledWithManifest = !!manifest);
+  const stats = await webpack(baseWebpackConfig(faviconsWebpackPlugin));
+  t.is(doneEventCalledWithManifest, true);
+});

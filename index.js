@@ -4,8 +4,13 @@ var assert = require('assert');
 var _ = require('lodash');
 var fs = require('fs');
 var path = require('path');
+var util = require('util');
+var EventEmitter = require('events');
 
 function FaviconsWebpackPlugin (options) {
+
+  EventEmitter.call(this);
+
   if (typeof options === 'string') {
     options = {logo: options};
   }
@@ -32,6 +37,8 @@ function FaviconsWebpackPlugin (options) {
     windows: false
   }, this.options.icons);
 }
+
+util.inherits(FaviconsWebpackPlugin, EventEmitter);
 
 FaviconsWebpackPlugin.prototype.apply = function (compiler) {
   var self = this;
@@ -71,6 +78,8 @@ FaviconsWebpackPlugin.prototype.apply = function (compiler) {
       callback();
     });
   }
+
+  compiler.plugin('done', () => this.emit('done', compilationResult && compilationResult.stats));
 };
 
 /**
