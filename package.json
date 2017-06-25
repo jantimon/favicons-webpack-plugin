@@ -50,7 +50,9 @@
   "dependencies": {
     "favicons": "^4.8.3",
     "loader-utils": "^0.2.14",
-    "lodash": "^4.11.1",
-    "webpack": "^1.13.0"
+    "lodash": "^4.11.1"
+  },
+  "peerDependencies": {
+    "webpack": "^1.13.0 || ^2.0.0 || ^3.0.0"
   }
 }
