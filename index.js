@@ -57,7 +57,7 @@ FaviconsWebpackPlugin.prototype.apply = function (compiler) {
       compilation.plugin('html-webpack-plugin-before-html-processing', function (htmlPluginData, callback) {
         if (htmlPluginData.plugin.options.favicons !== false) {
           htmlPluginData.html = htmlPluginData.html.replace(
-            /(<\/head>)/i, compilationResult.stats.html.join('') + '$&');
+            /<\/head>/i, compilationResult.stats.html.join('\n') + '$&');
         }
         callback(null, htmlPluginData);
       });
