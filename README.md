@@ -80,7 +80,10 @@ plugins: [
       twitter: false,
       yandex: false,
       windows: false
-    }
+    },
+
+    // Additional properties to add to manifest.json
+    extraManifest: {}
   })
 ]
 ```
