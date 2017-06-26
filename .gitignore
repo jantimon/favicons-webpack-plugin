@@ -2,3 +2,4 @@
 /dist/
 /example/dist/
 npm-debug.log
+yarn.lock
