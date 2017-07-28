@@ -44,7 +44,7 @@
     "mkdirp": "^0.5.1",
     "rimraf": "^2.5.2",
     "semistandard": "^9.1.0",
-    "webpack": "^1.13.0",
+    "webpack": "^2.2.1",
     "webpack-dev-middleware": "^1.6.1"
   },
   "dependencies": {
