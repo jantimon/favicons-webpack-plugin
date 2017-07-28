@@ -47,13 +47,13 @@ test('should take a string as argument', async t => {
 });
 
 test('should take an object with just the logo as argument', async t => {
-  var plugin = new FaviconsWebpackPlugin({ logo: LOGO_PATH });
+  var plugin = new FaviconsWebpackPlugin({logo: LOGO_PATH});
   t.is(plugin.options.logo, LOGO_PATH);
 });
 
 test('should generate the expected default result', async t => {
   const stats = await webpack(baseWebpackConfig(new FaviconsWebpackPlugin({
-    logo: LOGO_PATH
+    logo: LOGO_PATH,
   })));
   const outputPath = stats.compilation.compiler.outputPath;
   const expected = path.resolve(__dirname, 'fixtures/expected/default');
@@ -67,7 +67,7 @@ test('should generate a configured JSON file', async t => {
     logo: LOGO_PATH,
     emitStats: true,
     persistentCache: false,
-    statsFilename: 'iconstats.json'
+    statsFilename: 'iconstats.json',
   })));
   const outputPath = stats.compilation.compiler.outputPath;
   const expected = path.resolve(__dirname, 'fixtures/expected/generate-json');
@@ -76,15 +76,34 @@ test('should generate a configured JSON file', async t => {
   t.is(diffFiles[0], undefined);
 });
 
+test('should allow to use the created data', async t => {
+  var eventFired = false;
+  const examplePlugin = {
+    apply: function (compiler) {
+      compiler.plugin('compilation', function (compilation) {
+        compilation.plugin('favicons-webpack-plugin-after-make', function (object, callback) {
+          eventFired = true;
+          callback();
+        });
+      });
+    }
+  };
+  const stats = await webpack(baseWebpackConfig([
+    new FaviconsWebpackPlugin({logo: LOGO_PATH}),
+    examplePlugin,
+  ]));
+  t.is(eventFired, true);
+});
+
 test('should work together with the html-webpack-plugin', async t => {
   const stats = await webpack(baseWebpackConfig([
     new FaviconsWebpackPlugin({
       logo: LOGO_PATH,
       emitStats: true,
       statsFilename: 'iconstats.json',
-      persistentCache: false
+      persistentCache: false,
     }),
-    new HtmlWebpackPlugin()
+    new HtmlWebpackPlugin(),
   ]));
   const outputPath = stats.compilation.compiler.outputPath;
   const expected = path.resolve(__dirname, 'fixtures/expected/generate-html');
@@ -98,9 +117,9 @@ test('should not recompile if there is a cache file', async t => {
     new FaviconsWebpackPlugin({
       logo: LOGO_PATH,
       emitStats: false,
-      persistentCache: true
+      persistentCache: true,
     }),
-    new HtmlWebpackPlugin()
+    new HtmlWebpackPlugin(),
   ]);
 
   // Bring cache file in place
@@ -118,12 +137,4 @@ test('should not recompile if there is a cache file', async t => {
   const compareResult = await dircompare.compare(outputPath, expected, compareOptions);
   const diffFiles = compareResult.diffSet.filter((diff) => diff.state !== 'equal');
   t.is(diffFiles[0], undefined);
-});
-
-test('should emit the done event with the stats', async t => {
-  let doneEventCalledWithManifest = false;
-  const faviconsWebpackPlugin = new FaviconsWebpackPlugin({logo: LOGO_PATH});
-  faviconsWebpackPlugin.on('done', (manifest) => doneEventCalledWithManifest = !!manifest);
-  const stats = await webpack(baseWebpackConfig(faviconsWebpackPlugin));
-  t.is(doneEventCalledWithManifest, true);
 });

@@ -85,11 +85,47 @@ plugins: [
 ]
 ```
 
-# Events
+Events
+------
 
-| name | listener signature | 
-| ---- | ------------------ | 
-| `done` | `function(manifest) {}` |
+To allow other [plugins](https://github.com/webpack/docs/wiki/plugins) to use 
+the resulting html, this plugin executes the following events:
+
+Async:
+
+  * `favicons-webpack-plugin-after-make`
+
+Usage:
+
+```javascript
+// MyPlugin.js
+
+function MyPlugin(options) {
+  // Configure your plugin with options...
+}
+
+MyPlugin.prototype.apply = function(compiler) {
+  // ...
+  compiler.plugin('compilation', function(compilation) {
+    console.log('The compiler is starting a new compilation...');
+
+    compilation.plugin('favicons-webpack-plugin-after-make', function(pluginData, callback) {
+      console.log('Resulting favicon html: pluginData.html');
+      callback();
+    });
+  });
+
+};
+
+module.exports = MyPlugin;
+```
+Then in `webpack.config.js`
+
+```javascript
+plugins: [
+  new MyPlugin({options: ''})
+]
+```
 
 # Changelog
 

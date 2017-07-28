@@ -4,13 +4,8 @@ var assert = require('assert');
 var _ = require('lodash');
 var fs = require('fs');
 var path = require('path');
-var util = require('util');
-var EventEmitter = require('events');
 
-function FaviconsWebpackPlugin (options) {
-
-  EventEmitter.call(this);
-
+function FaviconsWebpackPlugin(options) {
   if (typeof options === 'string') {
     options = {logo: options};
   }
@@ -22,7 +17,7 @@ function FaviconsWebpackPlugin (options) {
     statsFilename: 'iconstats-[hash].json',
     persistentCache: true,
     inject: true,
-    background: '#fff'
+    background: '#fff',
   }, options);
   this.options.icons = _.extend({
     android: true,
@@ -34,11 +29,9 @@ function FaviconsWebpackPlugin (options) {
     opengraph: false,
     twitter: false,
     yandex: false,
-    windows: false
+    windows: false,
   }, this.options.icons);
 }
-
-util.inherits(FaviconsWebpackPlugin, EventEmitter);
 
 FaviconsWebpackPlugin.prototype.apply = function (compiler) {
   var self = this;
@@ -52,7 +45,14 @@ FaviconsWebpackPlugin.prototype.apply = function (compiler) {
     childCompiler.compileTemplate(self.options, compiler.context, compilation)
       .then(function (result) {
         compilationResult = result;
-        callback();
+
+        // Make it possible for other plugins to use this data when finished
+        compilation.applyPluginsAsync(
+          'favicons-webpack-plugin-after-make', {
+            html: compilationResult.stats.html.join('\n  '),
+            outputName: compilationResult.outputName,
+            plugin: self,
+          }, callback);
       })
       .catch(callback);
   });
@@ -78,14 +78,12 @@ FaviconsWebpackPlugin.prototype.apply = function (compiler) {
       callback();
     });
   }
-
-  compiler.plugin('done', () => this.emit('done', compilationResult && compilationResult.stats));
 };
 
 /**
  * Tries to guess the name from the package.json
  */
-function guessAppName (compilerWorkingDirectory) {
+function guessAppName(compilerWorkingDirectory) {
   var packageJson = path.resolve(compilerWorkingDirectory, 'package.json');
   if (!fs.existsSync(packageJson)) {
     packageJson = path.resolve(compilerWorkingDirectory, '../package.json');
