@@ -67,6 +67,8 @@ plugins: [
     background: '#fff',
     // favicon app title (see https://github.com/haydenbleasel/favicons#usage)
     title: 'Webpack App',
+    // Generate a favicon.ico in the root dir
+    generateRoot: false,
 
     // which icons should be generated (see https://github.com/haydenbleasel/favicons#usage)
     icons: {
