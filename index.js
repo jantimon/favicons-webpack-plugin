@@ -17,7 +17,8 @@ function FaviconsWebpackPlugin (options) {
     statsFilename: 'iconstats-[hash].json',
     persistentCache: true,
     inject: true,
-    background: '#fff'
+    background: '#fff',
+    filename: 'index.html'
   }, options);
   this.options.icons = _.extend({
     android: true,
@@ -55,7 +56,7 @@ FaviconsWebpackPlugin.prototype.apply = function (compiler) {
   if (self.options.inject) {
     compiler.plugin('compilation', function (compilation) {
       compilation.plugin('html-webpack-plugin-before-html-processing', function (htmlPluginData, callback) {
-        if (htmlPluginData.plugin.options.favicons !== false) {
+        if (htmlPluginData.plugin.options.favicons !== false && htmlPluginData.plugin.options.filename === self.options.filename) {
           htmlPluginData.html = htmlPluginData.html.replace(
             /(<\/head>)/i, compilationResult.stats.html.join('') + '$&');
         }

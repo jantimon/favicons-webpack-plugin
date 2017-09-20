@@ -67,7 +67,8 @@ plugins: [
     background: '#fff',
     // favicon app title (see https://github.com/haydenbleasel/favicons#usage)
     title: 'Webpack App',
-
+    // just replace header of specific *.html file. (in case project generate multiple html files)
+    filename: 'index.html',
     // which icons should be generated (see https://github.com/haydenbleasel/favicons#usage)
     icons: {
       android: true,
