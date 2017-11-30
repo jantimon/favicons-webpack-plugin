@@ -67,6 +67,12 @@ plugins: [
     background: '#fff',
     // favicon app title (see https://github.com/haydenbleasel/favicons#usage)
     title: 'Webpack App',
+    // customize output via favicons config (see https://github.com/haydenbleasel/favicons#usage)
+    config: {
+      appleIcon: {
+        "meta[name='apple-mobile-web-app-capable']": "<meta name='apple-mobile-web-app-capable' content='no'>"
+      }
+    },
 
     // which icons should be generated (see https://github.com/haydenbleasel/favicons#usage)
     icons: {
