@@ -18,7 +18,7 @@ function FaviconsWebpackPlugin (options) {
     persistentCache: true,
     inject: true,
     background: '#fff',
-    theme_color: '#fff',
+    theme_color: '#fff'
   }, options);
   this.options.icons = _.extend({
     android: true,
