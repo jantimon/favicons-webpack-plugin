@@ -8,8 +8,6 @@
     "lib/"
   ],
   "scripts": {
-    "prepublish": "npm run test",
-    "posttest": "npm run lint",
     "test": "ava"
   },
   "repository": {
