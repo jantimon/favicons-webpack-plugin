@@ -20,8 +20,13 @@
     "webpack",
     "plugin",
     "html-webpack-plugin",
+    "webapp",
+    "pwa",
+    "manifest",
     "favicon",
-    "icon"
+    "icon",
+    "png",
+    "svg"
   ],
   "author": "Jan Nicklas <j.nicklas@me.com> (https://github.com/jantimon)",
   "contributors": [
