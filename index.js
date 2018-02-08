@@ -13,8 +13,6 @@ function WebappWebpackPlugin (options) {
   assert(options.logo, 'An input file is required');
   this.options = _.extend({
     prefix: 'icons-[hash]/',
-    emitStats: false,
-    statsFilename: 'iconstats-[hash].json',
     inject: true,
     background: '#fff'
   }, options);
@@ -59,7 +57,7 @@ WebappWebpackPlugin.prototype.apply = function (compiler) {
       compilation.plugin('html-webpack-plugin-before-html-processing', function (htmlPluginData, callback) {
         if (htmlPluginData.plugin.options.favicons !== false) {
           htmlPluginData.html = htmlPluginData.html.replace(
-            /(<\/head>)/i, compilationResult.stats.html.join('') + '$&');
+            /(<\/head>)/i, compilationResult.join('\n') + '$&');
         }
         callback(null, htmlPluginData);
       });
@@ -68,17 +66,6 @@ WebappWebpackPlugin.prototype.apply = function (compiler) {
         compilation.plugin('html-webpack-plugin-before-html-processing', addFaviconsToHtml);
       });
     }
-  }
-
-  // Remove the stats from the output if they are not required (webpack 4 compliant + back compat)
-  if (!self.options.emitStats) {
-    (compiler.hooks
-      ? compiler.hooks.emit.tapAsync.bind(compiler.hooks.emit, 'FaviconsWebpackPluginEmit')
-      : compiler.plugin.bind(compiler, 'emit')
-    )((compilation, callback) => {
-      delete compilation.assets[compilationResult.outputName];
-      callback();
-    });
   }
 };
 
