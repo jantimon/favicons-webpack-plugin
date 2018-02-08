@@ -1,9 +1,18 @@
 language: node_js
 node_js:
-  - "4"
-  - "5"
-  - "6"
-install:
-  - npm install --ignore-scripts
+- "4"
+- "5"
+- "6"
+- "7"
+- "8"
+- "node"
+
+os:
+- linux
+- osx
+
+git:
+  depth: 1
+
 script:
-  - npm test
+- npm test
