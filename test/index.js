@@ -10,7 +10,6 @@ import packageJson from '../package.json';
 const webpack = denodeify(require('webpack'));
 const readFile = denodeify(require('fs').readFile);
 const writeFile = denodeify(require('fs').writeFile);
-const mkdirp = denodeify(require('mkdirp'));
 
 const compareOptions = {compareSize: true};
 let outputId = 0;
@@ -65,7 +64,6 @@ test('should generate a configured JSON file', async t => {
   const stats = await webpack(baseWebpackConfig(new FaviconsWebpackPlugin({
     logo: LOGO_PATH,
     emitStats: true,
-    persistentCache: false,
     statsFilename: 'iconstats.json'
   })));
   const outputPath = stats.compilation.compiler.outputPath;
@@ -81,7 +79,6 @@ test('should work together with the html-webpack-plugin', async t => {
       logo: LOGO_PATH,
       emitStats: true,
       statsFilename: 'iconstats.json',
-      persistentCache: false
     }),
     new HtmlWebpackPlugin()
   ]));
@@ -91,31 +88,3 @@ test('should work together with the html-webpack-plugin', async t => {
   const diffFiles = compareResult.diffSet.filter((diff) => diff.state !== 'equal');
   t.is(diffFiles[0], undefined);
 });
-
-test('should not recompile if there is a cache file', async t => {
-  const options = baseWebpackConfig([
-    new FaviconsWebpackPlugin({
-      logo: LOGO_PATH,
-      emitStats: false,
-      persistentCache: true
-    }),
-    new HtmlWebpackPlugin()
-  ]);
-
-  // Bring cache file in place
-  const cacheFile = 'icons-366a3768de05f9e78c392fa62b8fbb80/.cache';
-  const cacheFileExpected = path.resolve(__dirname, 'fixtures/expected/from-cache/', cacheFile);
-  const cacheFileDist = path.resolve(__dirname, options.output.path, cacheFile);
-  await mkdirp(path.dirname(cacheFileDist));
-  const cache = JSON.parse(await readFile(cacheFileExpected));
-  cache.version = packageJson.version;
-  await writeFile(cacheFileDist, JSON.stringify(cache));
-
-  const stats = await webpack(options);
-  const outputPath = stats.compilation.compiler.outputPath;
-  const expected = path.resolve(__dirname, 'fixtures/expected/from-cache');
-  const compareResult = await dircompare.compare(outputPath, expected, compareOptions);
-  const diffFiles = compareResult.diffSet.filter((diff) => diff.state !== 'equal');
-  t.is(diffFiles[0], undefined);
-});
-

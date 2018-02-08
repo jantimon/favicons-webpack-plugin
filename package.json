@@ -39,8 +39,6 @@
     "dir-compare": "^1.0.1",
     "express": "^4.13.4",
     "html-webpack-plugin": "^2.16.0",
-    "memory-fs": "^0.3.0",
-    "mkdirp": "^0.5.1",
     "rimraf": "^2.5.2",
     "webpack": "^1.13.0",
     "webpack-dev-middleware": "^1.6.1"
