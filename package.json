@@ -8,7 +8,6 @@
     "lib/"
   ],
   "scripts": {
-    "lint": "semistandard",
     "prepublish": "npm run test",
     "posttest": "npm run lint",
     "test": "ava"
@@ -25,17 +24,17 @@
     "icon"
   ],
   "author": "Jan Nicklas <j.nicklas@me.com> (https://github.com/jantimon)",
+  "contributors": [
+    "Bruno Dutra <brunocodutra@gmail.com> (https://github.com/brunocodutra)",
+    "Jan Nicklas <j.nicklas@me.com> (https://github.com/jantimon)"
+  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/jantimon/favicons-webpack-plugin/issues"
   },
-  "semistandard": {
-    "parser": "babel-eslint"
-  },
   "homepage": "https://github.com/jantimon/favicons-webpack-plugin",
   "devDependencies": {
     "ava": "^0.16.0",
-    "babel-eslint": "^7.1.0",
     "denodeify": "^1.2.1",
     "dir-compare": "^1.0.1",
     "express": "^4.13.4",
@@ -43,7 +42,6 @@
     "memory-fs": "^0.3.0",
     "mkdirp": "^0.5.1",
     "rimraf": "^2.5.2",
-    "semistandard": "^9.1.0",
     "webpack": "^1.13.0",
     "webpack-dev-middleware": "^1.6.1"
   },

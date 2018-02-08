@@ -1,4 +1,3 @@
-/* eslint-env es6 */
 import test from 'ava';
 import path from 'path';
 import rimraf from 'rimraf';

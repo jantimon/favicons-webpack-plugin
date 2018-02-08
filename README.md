@@ -23,7 +23,7 @@ let FaviconsWebpackPlugin = require('favicons-webpack-plugin')
 ...
 
 plugins: [
-  new FaviconsWebpackPlugin('my-logo.png')
+  new WebappWebpackPlugin('my-logo.png')
 ]
 ```
 
@@ -49,7 +49,7 @@ Advanced Usage
 
 ```javascript
 plugins: [
-  new FaviconsWebpackPlugin({
+  new WebappWebpackPlugin({
     // Your source logo
     logo: 'my-logo.png',
     // The prefix for all image files (might be a folder or a name)
@@ -58,9 +58,6 @@ plugins: [
     emitStats: false,
     // The name of the json containing all favicon information
     statsFilename: 'iconstats-[hash].json',
-    // Generate a cache file with control hashes and
-    // don't rebuild the favicons until those hashes change
-    persistentCache: true,
     // Inject the html into the html-webpack-plugin
     inject: true,
     // favicon background color (see https://github.com/haydenbleasel/favicons#usage)
@@ -93,7 +90,6 @@ Take a look at the  [CHANGELOG.md](https://github.com/jantimon/favicons-webpack-
 # Contribution
 
 You're free to contribute to this project by submitting [issues](https://github.com/jantimon/favicons-webpack-plugin/issues) and/or [pull requests](https://github.com/jantimon/favicons-webpack-plugin/pulls). This project is test-driven, so keep in mind that every change and new feature should be covered by tests.
-This project uses the [semistandard code style](https://github.com/Flet/semistandard).
 
 # License
 

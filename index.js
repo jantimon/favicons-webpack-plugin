@@ -5,11 +5,11 @@ var _ = require('lodash');
 var fs = require('fs');
 var path = require('path');
 
-function FaviconsWebpackPlugin (options) {
+function WebappWebpackPlugin (options) {
   if (typeof options === 'string') {
     options = {logo: options};
   }
-  assert(typeof options === 'object', 'FaviconsWebpackPlugin options are required');
+  assert(typeof options === 'object', 'WebappWebpackPlugin options are required');
   assert(options.logo, 'An input file is required');
   this.options = _.extend({
     prefix: 'icons-[hash]/',
@@ -33,7 +33,7 @@ function FaviconsWebpackPlugin (options) {
   }, this.options.icons);
 }
 
-FaviconsWebpackPlugin.prototype.apply = function (compiler) {
+WebappWebpackPlugin.prototype.apply = function (compiler) {
   var self = this;
   if (!self.options.title) {
     self.options.title = guessAppName(compiler.context);
@@ -97,4 +97,4 @@ function guessAppName (compilerWorkingDirectory) {
   return JSON.parse(fs.readFileSync(packageJson)).name;
 }
 
-module.exports = FaviconsWebpackPlugin;
+module.exports = WebappWebpackPlugin;

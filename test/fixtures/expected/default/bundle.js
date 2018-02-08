@@ -1,5 +1,5 @@
 /******/ (function(modules) { // webpackBootstrap
-/******/ 	// The module cache
+/******/ 	// The module faviconPersitenceCache
 /******/ 	var installedModules = {};
 
 /******/ 	// The require function
