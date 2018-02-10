@@ -1,5 +1,5 @@
 {
-  "version": "1.0",
+  "version": "1.0.0",
   "name": "favicons-webpack-plugin",
   "description": "Let webpack generate all your favicons and icons for you",
   "icons": {

@@ -12,7 +12,7 @@ function FaviconsWebpackPlugin (options) {
   assert(typeof options === 'object', 'FaviconsWebpackPlugin options are required');
   assert(options.logo, 'An input file is required');
   this.options = options;
-  this.options.prefix = this.options.prefix || 'icons-[hash]/';
+  this.options.prefix = this.options.prefix || 'assets-[hash]/';
   this.options.favicons = this.options.favicons || {};
   this.options.inject = (this.options.inject !== undefined) ? this.options.inject : true;
 }
