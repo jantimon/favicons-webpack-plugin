@@ -12,7 +12,7 @@ const webpack = denodeify(require('webpack'));
 const compareOptions = {compareSize: true};
 
 const FIXTURES = path.resolve(__dirname, 'fixtures');
-const LOGO = path.resolve(FIXTURES, 'logo.png');
+const LOGO = path.resolve(FIXTURES, 'logo.svg');
 const DIST = path.resolve(__dirname, 'dist');
 
 rimraf.sync(DIST);
