@@ -1,39 +1,43 @@
 'use strict';
 var childCompiler = require('./lib/compiler.js');
 var assert = require('assert');
-var _ = require('lodash');
 var fs = require('fs');
 var path = require('path');
+var parseAuthor = require('parse-author');
 
-function WebappWebpackPlugin (options) {
+function FaviconsWebpackPlugin (options) {
   if (typeof options === 'string') {
     options = {logo: options};
   }
-  assert(typeof options === 'object', 'WebappWebpackPlugin options are required');
+  assert(typeof options === 'object', 'FaviconsWebpackPlugin options are required');
   assert(options.logo, 'An input file is required');
-  this.options = _.extend({
-    prefix: 'icons-[hash]/',
-    inject: true,
-    background: '#fff'
-  }, options);
-  this.options.icons = _.extend({
-    android: true,
-    appleIcon: true,
-    appleStartup: true,
-    coast: false,
-    favicons: true,
-    firefox: true,
-    opengraph: false,
-    twitter: false,
-    yandex: false,
-    windows: false
-  }, this.options.icons);
+  this.options = options;
+  this.options.prefix = this.options.prefix || 'icons-[hash]/';
+  this.options.favicons = this.options.favicons || {};
+  this.options.inject = (this.options.inject !== undefined) ? this.options.inject : true;
 }
 
-WebappWebpackPlugin.prototype.apply = function (compiler) {
+FaviconsWebpackPlugin.prototype.apply = function (compiler) {
   var self = this;
-  if (!self.options.title) {
-    self.options.title = guessAppName(compiler.context);
+
+  if (!self.options.favicons.appName) {
+    self.options.favicons.appName = guessAppName(compiler.context);
+  }
+
+  if (!self.options.favicons.appDescription) {
+    self.options.favicons.appDescription = guessDescription(compiler.context);
+  }
+
+  if (!self.options.favicons.version) {
+    self.options.favicons.version = guessVersion(compiler.context);
+  }
+
+  if (!self.options.favicons.developerName) {
+    self.options.favicons.developerName = guessDeveloperName(compiler.context);
+  }
+
+  if (!self.options.favicons.developerURL) {
+    self.options.favicons.developerURL = guessDeveloperURL(compiler.context);
   }
 
   // Generate the favicons (webpack 4 compliant + back compat)
@@ -70,17 +74,58 @@ WebappWebpackPlugin.prototype.apply = function (compiler) {
 };
 
 /**
+ * Reads file if it exists
+ */
+function readJSON (file) {
+  return fs.existsSync(file) ? JSON.parse(fs.readFileSync(file)) : undefined;
+}
+
+/**
+ * Tries to find the package.json and caches its contents
+ */
+var _pkg = undefined;
+function readPackageJson (compilerWorkingDirectory) {
+  _pkg = _pkg
+    || readJSON(path.resolve(compilerWorkingDirectory, 'package.json'))
+    || readJSON(path.resolve(compilerWorkingDirectory, '../package.json'))
+    || {};
+
+  return _pkg;
+}
+
+/**
  * Tries to guess the name from the package.json
  */
 function guessAppName (compilerWorkingDirectory) {
-  var packageJson = path.resolve(compilerWorkingDirectory, 'package.json');
-  if (!fs.existsSync(packageJson)) {
-    packageJson = path.resolve(compilerWorkingDirectory, '../package.json');
-    if (!fs.existsSync(packageJson)) {
-      return 'Webpack App';
-    }
-  }
-  return JSON.parse(fs.readFileSync(packageJson)).name;
+  return readPackageJson(compilerWorkingDirectory).name;
 }
 
-module.exports = WebappWebpackPlugin;
+/**
+ * Tries to guess the description from the package.json
+ */
+function guessDescription (compilerWorkingDirectory) {
+  return readPackageJson(compilerWorkingDirectory).description;
+}
+
+/**
+ * Tries to guess the version from the package.json
+ */
+function guessVersion (compilerWorkingDirectory) {
+  return readPackageJson(compilerWorkingDirectory).version;
+}
+
+/**
+ * Tries to guess the author name from the package.json
+ */
+function guessDeveloperName (compilerWorkingDirectory) {
+  return parseAuthor(readPackageJson(compilerWorkingDirectory).author || "").name;
+}
+
+/**
+ * Tries to guess the author URL from the package.json
+ */
+function guessDeveloperURL (compilerWorkingDirectory) {
+  return parseAuthor(readPackageJson(compilerWorkingDirectory).author || "").url;
+}
+
+module.exports = FaviconsWebpackPlugin;

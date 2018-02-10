@@ -1,7 +1,7 @@
 {
   "name": "favicons-webpack-plugin",
   "short_name": "favicons-webpack-plugin",
-  "description": null,
+  "description": "Let webpack generate all your favicons and icons for you",
   "dir": "auto",
   "lang": "en-US",
   "display": "standalone",
