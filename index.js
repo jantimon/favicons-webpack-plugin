@@ -54,13 +54,24 @@ FaviconsWebpackPlugin.prototype.apply = function (compiler) {
   // and add the html
   if (self.options.inject) {
     compiler.plugin('compilation', function (compilation) {
-      compilation.plugin('html-webpack-plugin-before-html-processing', function (htmlPluginData, callback) {
+      function addFaviconsToHtml (htmlPluginData, callback) {
         if (htmlPluginData.plugin.options.favicons !== false) {
           htmlPluginData.html = htmlPluginData.html.replace(
             /(<\/head>)/i, compilationResult.stats.html.join('') + '$&');
         }
         callback(null, htmlPluginData);
-      });
+      }
+      if (compiler.hooks) {
+        // webpack 4
+        compiler.hooks.compilation.tap('HtmlWebpackPluginHooks', function () {
+          compilation.hooks.htmlWebpackPluginBeforeHtmlProcessing.tapAsync(
+            'favicons-webpack-plugin-add-change',
+            addFaviconsToHtml
+          );
+        });
+      } else {
+        compilation.plugin('html-webpack-plugin-before-html-processing', addFaviconsToHtml);
+      }
     });
   }
 
