@@ -16,8 +16,10 @@ git:
 
 before_install:
   # package-lock.json was introduced in npm@5
-- '[[ $(node -v) =~ ^v9.*$ ]] || npm install -g npm@latest'
-- npm install -g greenkeeper-lockfile@1
+- '[[ $(node -v) =~ ^v9.*$ ]] || travis_retry npm install -g npm@latest'
+
+install:
+- travis_retry npm install
 
 script:
 - (cd example && node build.js)
