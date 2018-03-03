@@ -38,7 +38,7 @@ FaviconsWebpackPlugin.prototype.apply = function (compiler) {
     this.options.favicons.developerURL = guessDeveloperURL(compiler.context);
   }
 
-  // Generate the favicons
+  // Generate favicons
   let compilationResult;
   compiler.plugin('make', (compilation, callback) => {
     childCompiler.compileTemplate(this.options, compiler.context, compilation)
@@ -49,22 +49,29 @@ FaviconsWebpackPlugin.prototype.apply = function (compiler) {
       .catch(callback);
   });
 
+  const htmlWebpackPluginBeforeHtmlProcessing = (plugin) => {
+    if (compiler.hooks) /* Webpack >= 4.0 */ {
+      compiler.hooks.compilation.tap('HtmlWebpackPluginHooks', (compilation) => {
+        if (compilation.hooks.htmlWebpackPluginBeforeHtmlProcessing) {
+          compilation.hooks.htmlWebpackPluginBeforeHtmlProcessing.tapAsync('WebappWebpackPluginInjection', plugin);
+        }
+      });
+    } else {
+      compiler.plugin('compilation', (compilation) => {
+        compilation.plugin('html-webpack-plugin-before-html-processing', plugin);
+      });
+    }
+  };
+
   // Hook into the html-webpack-plugin processing
   // and add the html
   if (this.options.inject) {
-    compiler.plugin('compilation', (compilation) => {
-      compilation.plugin('html-webpack-plugin-before-html-processing', (htmlPluginData, callback) => {
-        if (htmlPluginData.plugin.options.favicons !== false) {
-          htmlPluginData.html = htmlPluginData.html.replace(
-            /(<\/head>)/i, compilationResult.join('\n') + '$&');
-        }
-        callback(null, htmlPluginData);
-      });
-    } else {
-      compiler.plugin('compilation', function (compilation) {
-        compilation.plugin('html-webpack-plugin-before-html-processing', addFaviconsToHtml);
-      });
-    }
+    htmlWebpackPluginBeforeHtmlProcessing((htmlPluginData, callback) => {
+      if (htmlPluginData.plugin.options.favicons !== false) {
+        htmlPluginData.html = htmlPluginData.html.replace(/(<\/head>)/i, compilationResult.join('\n') + '$&');
+      }
+      callback(null, htmlPluginData);
+    });
   }
 };
 

@@ -75,11 +75,11 @@ test('should generate a configured JSON file', async t => {
 });
 
 test('should work together with the html-webpack-plugin', async t => {
-  const stats = await webpack(baseWebpackConfig([
+  const stats = await webpack(baseWebpackConfig(
+    new HtmlWebpackPlugin(),
     new FaviconsWebpackPlugin({
-      logo: LOGO_PATH,
+      logo: LOGO,
     }),
-    new HtmlWebpackPlugin()
   ));
   const outputPath = stats.compilation.compiler.outputPath;
   const expected = path.resolve(FIXTURES, 'expected/generate-html');
