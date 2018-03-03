@@ -1,9 +1,7 @@
 'use strict';
-const childCompiler = require('./lib/compiler.js');
 const assert = require('assert');
-const fs = require('fs');
-const path = require('path');
-const parseAuthor = require('parse-author');
+const childCompiler = require('./lib/compiler.js');
+const oracle = require('./lib/oracle.js');
 
 function FaviconsWebpackPlugin (options) {
   if (typeof options === 'string') {
@@ -19,23 +17,23 @@ function FaviconsWebpackPlugin (options) {
 
 FaviconsWebpackPlugin.prototype.apply = function (compiler) {
   if (!this.options.favicons.appName) {
-    this.options.favicons.appName = guessAppName(compiler.context);
+    this.options.favicons.appName = oracle.guessAppName(compiler.context);
   }
 
   if (!this.options.favicons.appDescription) {
-    this.options.favicons.appDescription = guessDescription(compiler.context);
+    this.options.favicons.appDescription = oracle.guessDescription(compiler.context);
   }
 
   if (!this.options.favicons.version) {
-    this.options.favicons.version = guessVersion(compiler.context);
+    this.options.favicons.version = oracle.guessVersion(compiler.context);
   }
 
   if (!this.options.favicons.developerName) {
-    this.options.favicons.developerName = guessDeveloperName(compiler.context);
+    this.options.favicons.developerName = oracle.guessDeveloperName(compiler.context);
   }
 
   if (!this.options.favicons.developerURL) {
-    this.options.favicons.developerURL = guessDeveloperURL(compiler.context);
+    this.options.favicons.developerURL = oracle.guessDeveloperURL(compiler.context);
   }
 
   // Generate favicons
@@ -74,60 +72,5 @@ FaviconsWebpackPlugin.prototype.apply = function (compiler) {
     });
   }
 };
-
-/**
- * Reads file if it exists
- */
-function readJSON (file) {
-  return fs.existsSync(file) ? JSON.parse(fs.readFileSync(file)) : undefined;
-}
-
-/**
- * Tries to find the package.json and caches its contents
- */
-let _pkg;
-function readPackageJson (compilerWorkingDirectory) {
-  _pkg = _pkg
-    || readJSON(path.resolve(compilerWorkingDirectory, 'package.json'))
-    || readJSON(path.resolve(compilerWorkingDirectory, '../package.json'))
-    || {};
-
-  return _pkg;
-}
-
-/**
- * Tries to guess the name from the package.json
- */
-function guessAppName (compilerWorkingDirectory) {
-  return readPackageJson(compilerWorkingDirectory).name;
-}
-
-/**
- * Tries to guess the description from the package.json
- */
-function guessDescription (compilerWorkingDirectory) {
-  return readPackageJson(compilerWorkingDirectory).description;
-}
-
-/**
- * Tries to guess the version from the package.json
- */
-function guessVersion (compilerWorkingDirectory) {
-  return readPackageJson(compilerWorkingDirectory).version;
-}
-
-/**
- * Tries to guess the author name from the package.json
- */
-function guessDeveloperName (compilerWorkingDirectory) {
-  return parseAuthor(readPackageJson(compilerWorkingDirectory).author || "").name;
-}
-
-/**
- * Tries to guess the author URL from the package.json
- */
-function guessDeveloperURL (compilerWorkingDirectory) {
-  return parseAuthor(readPackageJson(compilerWorkingDirectory).author || "").url;
-}
 
 module.exports = FaviconsWebpackPlugin;
