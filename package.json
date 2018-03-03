@@ -45,6 +45,7 @@
     "webpack": "^3.10.0"
   },
   "dependencies": {
+    "camelcase": "^4.1.0",
     "favicons": "^4.8.6",
     "loader-utils": "^1.1.0",
     "parse-author": "^2.0.0"

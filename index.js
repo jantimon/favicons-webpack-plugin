@@ -2,6 +2,7 @@
 const assert = require('assert');
 const childCompiler = require('./lib/compiler.js');
 const oracle = require('./lib/oracle.js');
+const util = require('./lib/util.js');
 
 function FaviconsWebpackPlugin (options) {
   if (typeof options === 'string') {
@@ -38,7 +39,7 @@ FaviconsWebpackPlugin.prototype.apply = function (compiler) {
 
   // Generate favicons
   let compilationResult;
-  compiler.plugin('make', (compilation, callback) => {
+  util.tapAsync(compiler, 'make', 'WebappWebpackPlugin', (compilation, callback) => {
     childCompiler.compileTemplate(this.options, compiler.context, compilation)
       .then((result) => {
         compilationResult = result;
@@ -47,28 +48,16 @@ FaviconsWebpackPlugin.prototype.apply = function (compiler) {
       .catch(callback);
   });
 
-  const htmlWebpackPluginBeforeHtmlProcessing = (plugin) => {
-    if (compiler.hooks) /* Webpack >= 4.0 */ {
-      compiler.hooks.compilation.tap('HtmlWebpackPluginHooks', (compilation) => {
-        if (compilation.hooks.htmlWebpackPluginBeforeHtmlProcessing) {
-          compilation.hooks.htmlWebpackPluginBeforeHtmlProcessing.tapAsync('WebappWebpackPluginInjection', plugin);
-        }
-      });
-    } else {
-      compiler.plugin('compilation', (compilation) => {
-        compilation.plugin('html-webpack-plugin-before-html-processing', plugin);
-      });
-    }
-  };
-
   // Hook into the html-webpack-plugin processing
   // and add the html
   if (this.options.inject) {
-    htmlWebpackPluginBeforeHtmlProcessing((htmlPluginData, callback) => {
-      if (htmlPluginData.plugin.options.favicons !== false) {
-        htmlPluginData.html = htmlPluginData.html.replace(/(<\/head>)/i, compilationResult.join('\n') + '$&');
-      }
-      callback(null, htmlPluginData);
+    util.tap(compiler, 'compilation', 'HtmlWebpackPluginHooks', (compilation) => {
+      util.tapAsync(compilation, 'html-webpack-plugin-before-html-processing', 'WebappWebpackPluginInjection', (htmlPluginData, callback) => {
+        if (htmlPluginData.plugin.options.favicons !== false) {
+          htmlPluginData.html = htmlPluginData.html.replace(/(<\/head>)/i, compilationResult.join('\n') + '$&');
+        }
+        callback(null, htmlPluginData);
+      });
     });
   }
 };
