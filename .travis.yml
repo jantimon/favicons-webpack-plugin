@@ -15,8 +15,8 @@ git:
   depth: 1
 
 before_install:
-  # package-lock.json was introduced in npm@5
-- '[[ $(node -v) =~ ^v9.*$ ]] || travis_retry npm install -g npm@latest'
+# package-lock.json was introduced in npm@5
+- travis_retry npm install -g npm@latest
 
 install:
 - travis_retry npm install
