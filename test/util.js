@@ -1,9 +1,9 @@
-const os = require('os');
-const path = require('path');
-const fs = require('fs-extra');
-const webpack = require('webpack');
-const denodeify = require('denodeify');
-const dircompare = require('dir-compare');
+import os from 'os';
+import path from 'path';
+import fs from 'fs-extra';
+import webpack from 'webpack';
+import denodeify from 'denodeify';
+import dircompare from 'dir-compare';
 
 const fixtures = path.resolve(__dirname, 'fixtures');
 module.exports.expected = path.resolve(fixtures, 'expected');
