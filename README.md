@@ -2,7 +2,7 @@ Favicons Webpack Plugin
 ========================================
 [![npm version](https://badge.fury.io/js/favicons-webpack-plugin.svg)](http://badge.fury.io/js/favicons-webpack-plugin) [![Dependency Status](https://david-dm.org/jantimon/favicons-webpack-plugin.svg)](https://david-dm.org/jantimon/favicons-webpack-plugin) [![Build status](https://travis-ci.org/jantimon/favicons-webpack-plugin.svg)](https://travis-ci.org/jantimon/favicons-webpack-plugin) [![js-semistandard-style](https://img.shields.io/badge/code%20style-semistandard-brightgreen.svg?style=flat-square)](https://github.com/Flet/semistandard)
 
-Leverages on [favicons](https://github.com/haydenbleasel/favicons) to automatically generate your progressive web app for you.
+Leverages on [favicons](https://github.com/haydenbleasel/favicons) to automatically generate your favicons for you.
 
 ## Installation
 
@@ -72,7 +72,7 @@ In combination with [html-webpack-plugin](https://github.com/jantimon/html-webpa
 <link rel="shortcut icon" href="assets/favicon.ico">
 ```
 
-> https://github.com/brunocodutra/webapp-webpack-plugin/blob/master/test/fixtures/expected/generate-html/index.html
+> https://github.com/jantimon/favicons-webpack-plugin/blob/master/test/fixtures/expected/html
 
 ## Advanced Usage
 
