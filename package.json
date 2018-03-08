@@ -45,7 +45,8 @@
     "dir-compare": "^1.4.0",
     "fs-extra": "^5.0.0",
     "html-webpack-plugin": "^3.0.4",
-    "webpack": "^4.1.0"
+    "webpack": "^4.1.0",
+    "webpack-merge": "^4.1.2"
   },
   "dependencies": {
     "camelcase": "^4.1.0",
