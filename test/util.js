@@ -13,10 +13,11 @@ module.exports.logo = path.resolve(fixtures, 'logo.svg');
 
 module.exports.mkdir = () => fs.mkdtemp(path.join(os.tmpdir(), 'WWP'));
 
-module.exports.generate = (config) => {
+module.exports.compiler = (config) => {
   config = merge(
     {
       entry: path.resolve(fixtures, 'entry.js'),
+      plugins: []
     },
     config,
   );
@@ -27,8 +28,10 @@ module.exports.generate = (config) => {
       plugin.options.chunks = [];
     });
 
-  const compiler = webpack(config);
+  return webpack(config);
+}
 
+module.exports.run = (compiler) => {
   tapAsync(compiler, 'emit', 'Test', ({assets}, callback) => {
     Object.keys(assets)
       .filter(asset => asset.match(/.js$/))
@@ -46,6 +49,8 @@ module.exports.generate = (config) => {
     );
   });
 };
+
+module.exports.generate = (config) => module.exports.run(module.exports.compiler(config));
 
 module.exports.compare = async (a, b) => {
   const diff = await dircompare.compare(a, b, {
