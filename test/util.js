@@ -11,13 +11,12 @@ const fixtures = path.resolve(__dirname, 'fixtures');
 module.exports.expected = path.resolve(fixtures, 'expected');
 module.exports.logo = path.resolve(fixtures, 'logo.svg');
 
-module.exports.generate = async (config) => {
+module.exports.mkdir = () => fs.mkdtemp(path.join(os.tmpdir(), 'WWP'));
+
+module.exports.generate = (config) => {
   config = merge(
     {
       entry: path.resolve(fixtures, 'entry.js'),
-      output: {
-        path: await fs.mkdtemp(path.join(os.tmpdir(), 'WWP')),
-      },
     },
     config,
   );
@@ -40,7 +39,7 @@ module.exports.generate = async (config) => {
     callback();
   });
 
-  return await new Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     compiler.run((err, stats) => (err || stats.hasErrors())
       ? reject(err || stats.toJson().errors)
       : resolve(stats)
