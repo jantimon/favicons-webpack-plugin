@@ -1,7 +1,7 @@
 'use strict';
+const path = require('path');
 const assert = require('assert');
 const childCompiler = require('./lib/compiler.js');
-const oracle = require('./lib/oracle.js');
 const util = require('./lib/util.js');
 
 function FaviconsWebpackPlugin (options) {
@@ -18,23 +18,23 @@ function FaviconsWebpackPlugin (options) {
 
 FaviconsWebpackPlugin.prototype.apply = function (compiler) {
   if (!this.options.favicons.appName) {
-    this.options.favicons.appName = oracle.guessAppName(compiler.context);
+    this.options.favicons.appName = this.guessAppName(compiler.context);
   }
 
   if (!this.options.favicons.appDescription) {
-    this.options.favicons.appDescription = oracle.guessDescription(compiler.context);
+    this.options.favicons.appDescription = this.guessDescription(compiler.context);
   }
 
   if (!this.options.favicons.version) {
-    this.options.favicons.version = oracle.guessVersion(compiler.context);
+    this.options.favicons.version = this.guessVersion(compiler.context);
   }
 
   if (!this.options.favicons.developerName) {
-    this.options.favicons.developerName = oracle.guessDeveloperName(compiler.context);
+    this.options.favicons.developerName = this.guessDeveloperName(compiler.context);
   }
 
   if (!this.options.favicons.developerURL) {
-    this.options.favicons.developerURL = oracle.guessDeveloperURL(compiler.context);
+    this.options.favicons.developerURL = this.guessDeveloperURL(compiler.context);
   }
 
   // Generate favicons
@@ -61,5 +61,52 @@ FaviconsWebpackPlugin.prototype.apply = function (compiler) {
     });
   }
 };
+
+/**
+ * Tries to find the package.json and caches its contents
+ */
+FaviconsWebpackPlugin.prototype.findPackageJson = function (context) {
+  this.pkg = this.pkg
+    || util.readJSON(path.resolve(context, 'package.json'))
+    || util.readJSON(path.resolve(context, '../package.json'))
+    || {};
+
+  return this.pkg;
+}
+
+/**
+ * Tries to guess the name from the package.json
+ */
+FaviconsWebpackPlugin.prototype.guessAppName = function (context) {
+  return this.findPackageJson(context).name;
+}
+
+/**
+ * Tries to guess the description from the package.json
+ */
+FaviconsWebpackPlugin.prototype.guessDescription = function (context) {
+  return this.findPackageJson(context).description;
+}
+
+/**
+ * Tries to guess the version from the package.json
+ */
+FaviconsWebpackPlugin.prototype.guessVersion = function (context) {
+  return this.findPackageJson(context).version;
+}
+
+/**
+ * Tries to guess the author name from the package.json
+ */
+FaviconsWebpackPlugin.prototype.guessDeveloperName = function (context) {
+  return util.getAuthor(this.findPackageJson(context)).name;
+}
+
+/**
+ * Tries to guess the author URL from the package.json
+ */
+FaviconsWebpackPlugin.prototype.guessDeveloperURL = function (context) {
+  return util.getAuthor(this.findPackageJson(context)).url;
+}
 
 module.exports = FaviconsWebpackPlugin;
