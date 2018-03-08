@@ -1,13 +1,19 @@
 import test from 'ava';
 import FaviconsWebpackPlugin from '..';
 
-import {logo} from './util';
+import {logo, mkdir} from './util';
 
-test('should throw error when called without arguments', t => {
+test('should throw error when instantiated without a logo', t => {
   try {
     new FaviconsWebpackPlugin();
   } catch (err) {
     t.is(err.message, 'FaviconsWebpackPlugin options are required');
+  }
+
+  try {
+    new WebappWebpackPlugin({});
+  } catch (err) {
+    t.is(err.message, 'An input file is required');
   }
 });
 
