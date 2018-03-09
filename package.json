@@ -8,8 +8,7 @@
     "lib/"
   ],
   "scripts": {
-    "test": "ava --require @babel/register test/**.test.js",
-    "example": "node example/build.js"
+    "test": "ava --require @babel/register test/**.test.js"
   },
   "repository": {
     "type": "git",

@@ -22,5 +22,4 @@ install:
 - travis_retry npm install
 
 script:
-- (cd example && node build.js)
 - npm test
