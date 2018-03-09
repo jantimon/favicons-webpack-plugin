@@ -5,7 +5,7 @@ import webpack from 'webpack';
 import merge from 'webpack-merge';
 import dircompare from 'dir-compare';
 
-import {tapAsync} from '../lib/util';
+import {tap} from '../lib/util';
 
 const fixtures = path.resolve(__dirname, 'fixtures');
 module.exports.expected = path.resolve(fixtures, 'expected');
@@ -32,7 +32,7 @@ module.exports.compiler = (config) => {
 }
 
 module.exports.run = (compiler) => {
-  tapAsync(compiler, 'emit', 'Test', ({assets}, callback) => {
+  tap(compiler, 'emit', 'Test', ({assets}, callback) => {
     Object.keys(assets)
       .filter(asset => asset.match(/.js$/))
       .forEach(asset => {

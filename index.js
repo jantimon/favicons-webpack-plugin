@@ -37,29 +37,24 @@ FaviconsWebpackPlugin.prototype.apply = function (compiler) {
     this.options.favicons.developerURL = this.guessDeveloperURL(compiler.context);
   }
 
-  // Generate favicons
-  let compilationResult;
-  util.tapAsync(compiler, 'make', 'WebappWebpackPlugin', (compilation, callback) => {
-    childCompiler.compileTemplate(this.options, compiler.context, compilation)
-      .then((result) => {
-        compilationResult = result;
-        callback();
-      })
-      .catch(callback);
+  util.tap(compiler, 'make', 'FaviconsWebpackPlugin', async (compilation, callback) => {
+    try {
+      // Generate favicons
+      const result = await childCompiler.compileTemplate(this.options, compiler.context, compilation);
+      if (this.options.inject) {
+        // Hook into the html-webpack-plugin processing and add the html
+        util.tap(compilation, 'html-webpack-plugin-before-html-processing', 'FaviconsWebpackPlugin', (htmlPluginData, callback) => {
+          if (htmlPluginData.plugin.options.favicons !== false) {
+            htmlPluginData.html = htmlPluginData.html.replace(/(<\/head>)/i, result.sort().join('') + '$&');
+          }
+          callback(null, htmlPluginData);
+        });
+      }
+      callback();
+    } catch (err) {
+      callback(err);
+    }
   });
-
-  // Hook into the html-webpack-plugin processing
-  // and add the html
-  if (this.options.inject) {
-    util.tap(compiler, 'compilation', 'HtmlWebpackPluginHooks', (compilation) => {
-      util.tapAsync(compilation, 'html-webpack-plugin-before-html-processing', 'WebappWebpackPluginInjection', (htmlPluginData, callback) => {
-        if (htmlPluginData.plugin.options.favicons !== false) {
-          htmlPluginData.html = htmlPluginData.html.replace(/(<\/head>)/i, compilationResult.sort().join('') + '$&');
-        }
-        callback(null, htmlPluginData);
-      });
-    });
-  }
 };
 
 /**
