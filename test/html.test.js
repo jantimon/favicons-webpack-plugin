@@ -20,6 +20,12 @@ test('should work together with the html-webpack-plugin', async t => {
     ],
   });
 
+  stats.compilation.children
+    .filter(child => child.name === 'webapp-webpack-plugin')
+    .forEach(child => {
+      t.deepEqual(child.assets, {});
+    });
+
   const diff = await compare(dist, path.resolve(expected, 'html'));
   t.deepEqual(diff, []);
 });

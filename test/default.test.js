@@ -16,6 +16,11 @@ test('should generate the expected default result', async t => {
     plugins: [new FaviconsWebpackPlugin({logo})]
   });
 
+  stats.compilation.children
+    .filter(child => child.name === 'webapp-webpack-plugin')
+    .forEach(child => {
+      t.deepEqual(child.assets, {});
+    });
 
   const diff = await compare(dist, path.resolve(expected, 'default'));
   t.deepEqual(diff, []);
