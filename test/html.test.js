@@ -1,10 +1,10 @@
-import test from 'ava';
-import path from 'path';
-import fs from 'fs-extra';
-import HtmlWebpackPlugin from 'html-webpack-plugin';
-import FaviconsWebpackPlugin from '../src';
+const test = require('ava');
+const path = require('path');
+const fs = require('fs-extra');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const FaviconsWebpackPlugin = require('../src');
 
-import {logo, mkdir, generate, compare, expected} from './util';
+const {logo, mkdir, generate, compare, expected} = require('./util');
 
 test('should work together with the html-webpack-plugin', async t => {
   t.context.root = await mkdir();

@@ -1,9 +1,9 @@
-import test from 'ava';
-import path from 'path';
-import fs from 'fs-extra';
-import FaviconsWebpackPlugin from '../src';
+const test = require('ava');
+const path = require('path');
+const fs = require('fs-extra');
+const FaviconsWebpackPlugin = require('../src');
 
-import {logo, generate, mkdir, compare, expected} from './util';
+const {logo, generate, mkdir, compare, expected} = require('./util');
 
 test('should generate the expected default result', async t => {
   t.context.root = await mkdir();

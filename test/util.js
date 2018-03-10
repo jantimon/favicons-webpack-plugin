@@ -1,11 +1,11 @@
-import os from 'os';
-import path from 'path';
-import fs from 'fs-extra';
-import webpack from 'webpack';
-import merge from 'webpack-merge';
-import dircompare from 'dir-compare';
+const os = require('os');
+const path = require('path');
+const fs = require('fs-extra');
+const webpack = require('webpack');
+const merge = require('webpack-merge');
+const dircompare = require('dir-compare');
 
-import {tap} from '../src/util';
+const {tap} = require('../src/util');
 
 const fixtures = path.resolve(__dirname, 'fixtures');
 module.exports.expected = path.resolve(fixtures, 'expected');

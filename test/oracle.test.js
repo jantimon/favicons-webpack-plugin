@@ -1,10 +1,10 @@
-import test from 'ava';
-import path from 'path';
-import fs from 'fs-extra';
-import parseAuthor from 'parse-author';
-import FaviconsWebpackPlugin from '../src/';
+const test = require('ava');
+const path = require('path');
+const fs = require('fs-extra');
+const parseAuthor = require('parse-author');
+const FaviconsWebpackPlugin = require('../src');
 
-import {logo, mkdir, compiler} from './util';
+const {logo, mkdir, compiler} = require('./util');
 
 test.beforeEach(async t => t.context.root = await mkdir());
 

@@ -1,7 +1,7 @@
-import test from 'ava';
-import FaviconsWebpackPlugin from '../src';
+const test = require('ava');
+const FaviconsWebpackPlugin = require('../src');
 
-import {logo, mkdir} from './util';
+const {logo, mkdir} = require('./util');
 
 test('should throw error when instantiated without a logo', t => {
   try {
