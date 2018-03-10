@@ -7,7 +7,7 @@ test('should throw error when instantiated without a logo', t => {
   try {
     new FaviconsWebpackPlugin();
   } catch (err) {
-    t.is(err.message, 'FaviconsWebpackPlugin options are required');
+    t.is(err.message, 'An input file is required');
   }
 
   try {

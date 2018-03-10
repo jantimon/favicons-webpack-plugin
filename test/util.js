@@ -39,7 +39,7 @@ module.exports.run = (compiler) => {
         delete assets[asset];
       });
 
-    callback();
+    return callback();
   });
 
   return new Promise((resolve, reject) => {
