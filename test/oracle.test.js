@@ -8,11 +8,11 @@ const {logo, mkdir, compiler} = require('./util');
 
 test.beforeEach(async t => t.context.root = await mkdir());
 
-test('should infer missing information from the nearest package.json', async t => {
+test('should infer missing information from the nearest parent package.json', async t => {
   const pkg = {
-    "name": "mock",
+    "name": "app",
     "version": "1.2.3",
-    "description": "A mock package.json",
+    "description": "Some App",
     "author": {
       "name" : "Jane Doe",
       "email" : "jane@doe.com",
@@ -78,27 +78,38 @@ test('should handle missing package.json gracefully', async t => {
   t.is(plugin.options.favicons.developerURL, undefined);
 });
 
-test('should not attempt to parse package.json if no information is missing', async t => {
-  await fs.writeFile(path.join(t.context.root, 'package.json'), 'invalid json');
-
-  const favicons = {
-    appName: 'app',
-    version: '0.1.2',
-    appDescription: 'an awesome app',
-    developerName: 'Max Mustermann',
-    developerURL: 'https://m.m.com',
+test('should not reach for the package.json if no metadata is missing', async t => {
+  const pkg = {
+    "name": "app",
+    "version": "1.2.3",
+    "description": "Some App",
+    "author": {
+      "name" : "Jane Doe",
+      "email" : "jane@doe.com",
+      "url" : "https://jane.doe.com"
+    }
   };
 
-  const plugin = new FaviconsWebpackPlugin({logo, favicons});
+  await fs.writeJSON(path.join(t.context.root, 'package.json'), pkg, {spaces: 2});
+
+  const meta = {
+    appName: 'pwa',
+    version: '0.1.2',
+    appDescription: 'Progressive Web App',
+    developerName: 'John Doe',
+    developerURL: 'https://john.doe.com',
+  };
+
+  const plugin = new FaviconsWebpackPlugin({logo, favicons: Object.assign({}, meta)});
   plugin.apply(compiler({
     context: t.context.root,
   }));
 
-  t.is(plugin.options.favicons.appName, favicons.appName);
-  t.is(plugin.options.favicons.version, favicons.version);
-  t.is(plugin.options.favicons.appDescription, favicons.appDescription);
-  t.is(plugin.options.favicons.developerName, favicons.developerName);
-  t.is(plugin.options.favicons.developerURL, favicons.developerURL);
+  t.is(plugin.options.favicons.appName, meta.appName);
+  t.is(plugin.options.favicons.version, meta.version);
+  t.is(plugin.options.favicons.appDescription, meta.appDescription);
+  t.is(plugin.options.favicons.developerName, meta.developerName);
+  t.is(plugin.options.favicons.developerURL, meta.developerURL);
 });
 
 test.afterEach(t => fs.remove(t.context.root));
