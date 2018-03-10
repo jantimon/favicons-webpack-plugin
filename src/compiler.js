@@ -16,7 +16,7 @@ module.exports.compileTemplate = function compileTemplate (options, context, com
   // This allows us to use loaders during the compilation
   const childCompiler = compilation.createChildCompiler('favicons-webpack-plugin', outputOptions);
   childCompiler.context = context;
-  new SingleEntryPlugin(context, '!!' + require.resolve('./favicons.js') + '?' +
+  new SingleEntryPlugin(context, '!!' + require.resolve('./favicons') + '?' +
     JSON.stringify({
       outputFilePrefix: options.prefix,
       faviconsOptions: options.favicons,

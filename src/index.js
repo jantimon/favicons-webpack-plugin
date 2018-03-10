@@ -1,8 +1,8 @@
 'use strict';
 const path = require('path');
 const assert = require('assert');
-const childCompiler = require('./lib/compiler.js');
-const util = require('./lib/util.js');
+const childCompiler = require('./compiler');
+const util = require('./util');
 
 function FaviconsWebpackPlugin (options) {
   if (typeof options === 'string') {

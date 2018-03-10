@@ -5,7 +5,7 @@ import webpack from 'webpack';
 import merge from 'webpack-merge';
 import dircompare from 'dir-compare';
 
-import {tap} from '../lib/util';
+import {tap} from '../src/util';
 
 const fixtures = path.resolve(__dirname, 'fixtures');
 module.exports.expected = path.resolve(fixtures, 'expected');
