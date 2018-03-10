@@ -20,18 +20,35 @@ test('should infer missing information from the nearest package.json', async t =
     }
   };
 
+  const context = path.join(t.context.root, 'a', 'b', 'c', 'd');
+
+  await fs.ensureDir(context);
   await fs.writeJSON(path.join(t.context.root, 'package.json'), pkg, {spaces: 2});
 
-  const plugin = new FaviconsWebpackPlugin(logo);
-  plugin.apply(compiler({
-    context: t.context.root,
-  }));
+  {
+    const plugin = new FaviconsWebpackPlugin(logo);
+    plugin.apply(compiler({context}));
 
-  t.is(plugin.options.favicons.appName, pkg.name);
-  t.is(plugin.options.favicons.version, pkg.version);
-  t.is(plugin.options.favicons.appDescription, pkg.description);
-  t.is(plugin.options.favicons.developerName, pkg.author.name);
-  t.is(plugin.options.favicons.developerURL, pkg.author.url);
+    t.is(plugin.options.favicons.appName, pkg.name);
+    t.is(plugin.options.favicons.version, pkg.version);
+    t.is(plugin.options.favicons.appDescription, pkg.description);
+    t.is(plugin.options.favicons.developerName, pkg.author.name);
+    t.is(plugin.options.favicons.developerURL, pkg.author.url);
+  }
+
+  await fs.writeJSON(path.join(context, 'package.json'), {}, {spaces: 2});
+
+  {
+    const plugin = new FaviconsWebpackPlugin(logo);
+    plugin.apply(compiler({context}));
+
+    t.is(plugin.options.favicons.appName, undefined);
+    t.is(plugin.options.favicons.version, undefined);
+    t.is(plugin.options.favicons.appDescription, undefined);
+    t.is(plugin.options.favicons.developerName, undefined);
+    t.is(plugin.options.favicons.developerURL, undefined);
+  }
+
 });
 
 test('should parse author string from package.json', async t => {

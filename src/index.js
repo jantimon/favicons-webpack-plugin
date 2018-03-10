@@ -1,8 +1,9 @@
 'use strict';
 const path = require('path');
 const assert = require('assert');
+const finder = require('find-package-json');
 const child = require('./compiler');
-const {tap, readJSON, getAuthor} = require('./util');
+const {tap, getAuthor} = require('./util');
 
 module.exports = class FaviconsWebpackPlugin {
   constructor(args) {
@@ -57,10 +58,7 @@ module.exports = class FaviconsWebpackPlugin {
    * Tries to find the package.json and caches its contents
    */
   findPackageJson(context) {
-    return this.pkg = this.pkg // cache contents
-      || readJSON(path.resolve(context, 'package.json'))
-      || readJSON(path.resolve(context, '../package.json'))
-      || {};
+    return this.pkg = this.pkg || finder(context).next().value || {};
   }
 
   /**

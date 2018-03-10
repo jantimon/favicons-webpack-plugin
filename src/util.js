@@ -1,5 +1,3 @@
-'use strict';
-const fs = require('fs');
 const parseAuthor = require('parse-author');
 const camelCase = require('camelcase');
 
@@ -23,11 +21,6 @@ module.exports.tap = (tappable, hook, name, plugin) => (
   ? tappable.hooks[camelCase(hook)] && tappable.hooks[camelCase(hook)].tapAsync(name, plugin)
   : tappable.plugin(hook, plugin)
 );
-
-/**
- * Reads json file if it exists
- */
-module.exports.readJSON = (file) => fs.existsSync(file) ? JSON.parse(fs.readFileSync(file)) : null;
 
 /**
  * Normalize author to {name, email, url}
