@@ -1,6 +1,6 @@
 const favicons = require('favicons');
 const {parseQuery, interpolateName} = require('loader-utils');
-const {getPublicPath} = require('./util');
+const {getPublicPath} = require('./compat');
 
 module.exports = function (content) {
   if (!this.emitFile) throw new Error('emitFile is required');

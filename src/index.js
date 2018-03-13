@@ -3,7 +3,7 @@ const path = require('path');
 const assert = require('assert');
 const child = require('./compiler');
 const Oracle = require('./oracle');
-const {tap} = require('./util');
+const {tap} = require('./compat');
 
 module.exports = class FaviconsWebpackPlugin {
   constructor(args) {

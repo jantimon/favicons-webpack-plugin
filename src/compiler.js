@@ -1,7 +1,7 @@
 'use strict';
 const path = require('path');
 const SingleEntryPlugin = require('webpack/lib/SingleEntryPlugin');
-const {getAssetPath} = require('./util');
+const {getAssetPath} = require('./compat');
 
 module.exports.run = ({prefix, favicons, logo}, context, compilation) => {
   // The entry file is just an empty helper

@@ -5,7 +5,7 @@ const webpack = require('webpack');
 const merge = require('webpack-merge');
 const dircompare = require('dir-compare');
 
-const {tap} = require('../src/util');
+const {tap} = require('../src/compat');
 
 const fixtures = path.resolve(__dirname, 'fixtures');
 module.exports.expected = path.resolve(fixtures, 'expected');
