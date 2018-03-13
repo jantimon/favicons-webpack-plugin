@@ -1,9 +1,14 @@
-const finder = require('find-package-json');
+const path = require('path');
+const findRoot = require('find-root');
 const parseAuthor = require('parse-author');
 
 module.exports = class Oracle {
   constructor(context) {
-    this.pkg = finder(context).next().value || {};
+    try {
+      this.pkg = require(path.join(findRoot(context), 'package.json'));
+    } catch(_) {
+      this.pkg = {};
+    }
   }
 
   /**

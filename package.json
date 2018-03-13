@@ -54,7 +54,7 @@
   "dependencies": {
     "camelcase": "^4.1.0",
     "favicons": "^4.8.6",
-    "find-package-json": "^1.0.0",
+    "find-root": "^1.1.0",
     "loader-utils": "^1.1.0",
     "parse-author": "^2.0.0"
   },
