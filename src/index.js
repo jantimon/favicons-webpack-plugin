@@ -1,9 +1,9 @@
 'use strict';
 const path = require('path');
 const assert = require('assert');
-const finder = require('find-package-json');
 const child = require('./compiler');
-const {tap, getAuthor} = require('./util');
+const Oracle = require('./oracle');
+const {tap} = require('./util');
 
 module.exports = class FaviconsWebpackPlugin {
   constructor(args) {
@@ -18,12 +18,14 @@ module.exports = class FaviconsWebpackPlugin {
   }
 
   apply(compiler) {
+    const oracle = new Oracle(compiler.context)
+
     const {
-      appName = this.guessAppName(compiler.context),
-      appDescription = this.guessDescription(compiler.context),
-      version = this.guessVersion(compiler.context),
-      developerName = this.guessDeveloperName(compiler.context),
-      developerURL = this.guessDeveloperURL(compiler.context),
+      appName = oracle.guessAppName(),
+      appDescription = oracle.guessDescription(),
+      version = oracle.guessVersion(),
+      developerName = oracle.guessDeveloperName(),
+      developerURL = oracle.guessDeveloperURL(),
     } = this.options.favicons;
 
     Object.assign(this.options.favicons, {
@@ -52,47 +54,5 @@ module.exports = class FaviconsWebpackPlugin {
         return callback(err);
       }
     });
-  }
-
-  /**
-   * Tries to find the package.json and caches its contents
-   */
-  findPackageJson(context) {
-    return this.pkg = this.pkg || finder(context).next().value || {};
-  }
-
-  /**
-   * Tries to guess the name from the package.json
-   */
-  guessAppName(context) {
-    return this.findPackageJson(context).name;
-  }
-
-  /**
-   * Tries to guess the description from the package.json
-   */
-  guessDescription(context) {
-    return this.findPackageJson(context).description;
-  }
-
-  /**
-   * Tries to guess the version from the package.json
-   */
-  guessVersion(context) {
-    return this.findPackageJson(context).version;
-  }
-
-  /**
-   * Tries to guess the author name from the package.json
-   */
-  guessDeveloperName(context) {
-    return getAuthor(this.findPackageJson(context)).name;
-  }
-
-  /**
-   * Tries to guess the author URL from the package.json
-   */
-  guessDeveloperURL(context) {
-    return getAuthor(this.findPackageJson(context)).url;
   }
 }

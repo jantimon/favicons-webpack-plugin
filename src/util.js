@@ -1,4 +1,3 @@
-const parseAuthor = require('parse-author');
 const camelCase = require('camelcase');
 
 /* istanbul ignore next */
@@ -20,19 +19,4 @@ module.exports.tap = (tappable, hook, name, plugin) => (
     tappable.hooks /* Webpack >= 4.0 */
   ? tappable.hooks[camelCase(hook)] && tappable.hooks[camelCase(hook)].tapAsync(name, plugin)
   : tappable.plugin(hook, plugin)
-);
-
-/**
- * Normalize author to {name, email, url}
- */
-module.exports.getAuthor = (pkg) => (
-    typeof pkg.author === 'string'
-  ? parseAuthor(pkg.author)
-  : typeof pkg.author === 'object' && pkg.author
-  ? {
-      name: pkg.author.name,
-      email: pkg.author.email,
-      url: pkg.author.url,
-    }
-  : {}
 );
