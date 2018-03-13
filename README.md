@@ -21,15 +21,32 @@ let FaviconsWebpackPlugin = require('favicons-webpack-plugin')
 ...
 
 plugins: [
-  new FaviconsWebpackPlugin('my-logo.png') // svg works too!
+  new FaviconsWebpackPlugin('/path/to/logo.png') // svg works too!
 ]
 ```
 
 The default configuration will automatically generate webapp manifest files along with
-[44 different icon formats](https://github.com/jantimon/favicons-webpack-plugin/tree/master/test/fixtures/expected/default/assets)
-as appropriate for iOS devices, Android devices, Windows Phone and various desktop browsers out of your single `my-logo.png`.
+[44 different icon formats](https://github.com/jantimon/favicons-webpack-plugin/tree/master/test/fixtures/expected/default)
+as appropriate for iOS devices, Android devices, Windows Phone and various desktop browsers out of your single `logo.png`.
 
 > **Tip:** You might want to [fine tune](#advanced-usage) what vendors to support.
+
+### A Note on Path Resolution
+
+Under the hood, Webpack resolves the path to logo according to the following
+rules:
+
+* If `/path/to/logo` is absolute, there is nothing to resolve and the path
+specified is used as is.
+
+* If `./path/to/logo` is relative, it's resolved with respect to Webpack's
+[`context`](https://webpack.js.org/configuration/entry-context/#context),
+which defaults to `process.cwd()`.
+
+* If `path/to/logo` is neither explicitly relative nor absolute,
+Webpack attempts to resolve it according to
+[`resolve.modules`](https://webpack.js.org/configuration/resolve/#resolve-modules),
+which defaults to `modules: ["node_modules"]`.
 
 ### HTML Injection
 
@@ -82,7 +99,7 @@ In combination with [html-webpack-plugin](https://github.com/jantimon/html-webpa
 plugins: [
   new FaviconsWebpackPlugin({
     // Your source logo (required)
-    logo: 'my-logo.png',
+    logo: '/path/to/logo.png',
     // The prefix for all image files (might be a folder or a name)
     prefix: 'assets-[hash]/',
     // Inject html links/metadata (requires html-webpack-plugin)
@@ -114,7 +131,7 @@ const FaviconsWebpackPlugin = require('favicons-webpack-plugin')
 
 plugins: [
   new FaviconsWebpackPlugin({
-    logo: 'my-logo.png', // svg works too!
+    logo: '/path/to/logo.png', // svg works too!
     favicons: {
       appName: 'my-app',
       appDescription: 'My awesome App',
