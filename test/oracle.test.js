@@ -78,7 +78,7 @@ test('should handle missing package.json gracefully', async t => {
   t.is(plugin.options.favicons.developerURL, undefined);
 });
 
-test('should not reach for the package.json if no metadata is missing', async t => {
+test('should not reach for the package.json if metadata defined', async t => {
   const pkg = {
     "name": "app",
     "version": "1.2.3",
@@ -92,24 +92,24 @@ test('should not reach for the package.json if no metadata is missing', async t 
 
   await fs.writeJSON(path.join(t.context.root, 'package.json'), pkg, {spaces: 2});
 
-  const meta = {
-    appName: 'pwa',
-    version: '0.1.2',
-    appDescription: 'Progressive Web App',
-    developerName: 'John Doe',
-    developerURL: 'https://john.doe.com',
+  const favicons = {
+    appName: null,
+    version: null,
+    appDescription: null,
+    developerName: null,
+    developerURL: null,
   };
 
-  const plugin = new FaviconsWebpackPlugin({logo, favicons: Object.assign({}, meta)});
+  const plugin = new FaviconsWebpackPlugin({logo, favicons});
   plugin.apply(compiler({
     context: t.context.root,
   }));
 
-  t.is(plugin.options.favicons.appName, meta.appName);
-  t.is(plugin.options.favicons.version, meta.version);
-  t.is(plugin.options.favicons.appDescription, meta.appDescription);
-  t.is(plugin.options.favicons.developerName, meta.developerName);
-  t.is(plugin.options.favicons.developerURL, meta.developerURL);
+  t.is(plugin.options.favicons.appName, null);
+  t.is(plugin.options.favicons.version, null);
+  t.is(plugin.options.favicons.appDescription, null);
+  t.is(plugin.options.favicons.developerName, null);
+  t.is(plugin.options.favicons.developerURL, null);
 });
 
 test.afterEach(t => fs.remove(t.context.root));

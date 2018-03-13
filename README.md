@@ -29,7 +29,9 @@ The default configuration will automatically generate webapp manifest files alon
 [44 different icon formats](https://github.com/jantimon/favicons-webpack-plugin/tree/master/test/fixtures/expected/default/assets)
 as appropriate for iOS devices, Android devices, Windows Phone and various desktop browsers out of your single `my-logo.png`.
 
-### Pro Tip
+> **Tip:** You might want to [fine tune](#advanced-usage) what vendors to support.
+
+### HTML Injection
 
 In combination with [html-webpack-plugin](https://github.com/jantimon/html-webpack-plugin) it will also inject the necessary html for you:
 
@@ -79,14 +81,14 @@ In combination with [html-webpack-plugin](https://github.com/jantimon/html-webpa
 ```javascript
 plugins: [
   new FaviconsWebpackPlugin({
-    // Your source logo
+    // Your source logo (required)
     logo: 'my-logo.png',
     // The prefix for all image files (might be a folder or a name)
-    prefix: 'icons-[hash]/',
-    // Inject the html into the html-webpack-plugin
+    prefix: 'assets-[hash]/',
+    // Inject html links/metadata (requires html-webpack-plugin)
     inject: true,
 
-    // Favicons configuration options (see https://github.com/haydenbleasel/favicons#usage)
+    // Favicons configuration options (see below)
     favicons: {
       ...
     }
@@ -94,7 +96,18 @@ plugins: [
 ]
 ```
 
-For example:
+To fine tune what icons/metadata is generated, refer to
+[favicons' documentation](https://github.com/haydenbleasel/favicons#usage).
+
+The options specified under `favicons:` are handed over as is to [favicons],
+except that if `appName`, `appDescription`, `version`, `developerName` or
+`developerURL` are left `undefined`, they will be automatically inferred
+respectively from `name`, `description`, `version`, `author.name` and
+`author.url` as defined in the nearest `package.json` if available.
+To disable automatically retrieving metadata from `package.json`, simply set
+to `null` the properties you want to omit.
+
+### Example:
 
 ```javascript
 const FaviconsWebpackPlugin = require('favicons-webpack-plugin')
@@ -102,10 +115,17 @@ const FaviconsWebpackPlugin = require('favicons-webpack-plugin')
 plugins: [
   new FaviconsWebpackPlugin({
     logo: 'my-logo.png', // svg works too!
-    favicons {
+    favicons: {
       appName: 'my-app',
+      appDescription: 'My awesome App',
+      developerName: 'Me',
+      developerURL: null, // prevent retrieving from the nearest package.json
       background: '#ddd',
-      theme_color: '#333'
+      theme_color: '#333',
+      icons: {
+        coast: false,
+        yandex: false
+      }
     }
   })
 ]
@@ -122,8 +142,11 @@ Take a look at the [CHANGELOG.md](https://github.com/jantimon/favicons-webpack-p
 
 You're free to contribute to this project by submitting [issues](https://github.com/jantimon/favicons-webpack-plugin/issues) and/or [pull requests](https://github.com/jantimon/favicons-webpack-plugin/pulls). This project is test-driven, so keep in mind that every change and new feature should be covered by tests.
 
-Please keep in mind that every change and new feature should be covered by tests.
+Please keep in mind that every change and new feature should be covered by
+tests.
 
 ## License
 
 This project is licensed under [MIT](https://github.com/jantimon/favicons-webpack-plugin/blob/master/LICENSE).
+
+[favicons]: https://github.com/haydenbleasel/favicons
