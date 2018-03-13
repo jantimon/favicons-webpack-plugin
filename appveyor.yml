@@ -1,11 +1,16 @@
 environment:
   nodejs_version: "Current"
 
+  matrix:
+  - TARGET: "webpack@3 html-webpack-plugin@2"
+  - TARGET: "webpack@4 html-webpack-plugin@3"
+
 install:
 - ps: Install-Product node $env:nodejs_version
 
 - appveyor-retry npm install -g npm@latest
 - appveyor-retry npm install
+- appveyor-retry npm install %TARGET%
 
 test_script:
 - npm test
