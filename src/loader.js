@@ -21,9 +21,10 @@ module.exports = function (content) {
       return callback(err);
     }
 
-    [...images, ...files].forEach((asset) => this.emitFile(path + asset.name, asset.contents));
+    [...images, ...files].forEach(({name, contents}) => this.emitFile(path + name, contents));
+
     const result = html.map((entry) => entry.replace(/(href=['"])/g, '$1' + publicPath + path));
-    return callback(null, 'module.exports = ' + JSON.stringify(result));
+    return callback(null, 'module.exports = ' + JSON.stringify(result.sort().join('')));
   });
 };
 

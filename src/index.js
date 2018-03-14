@@ -44,7 +44,7 @@ module.exports = class FaviconsWebpackPlugin {
           // Hook into the html-webpack-plugin processing and add the html
           tap(compilation, 'html-webpack-plugin-before-html-processing', 'FaviconsWebpackPlugin', (htmlPluginData, callback) => {
             if (htmlPluginData.plugin.options.favicons !== false) {
-              htmlPluginData.html = htmlPluginData.html.replace(/(<\/head>)/i, result.sort().join('') + '$&');
+              htmlPluginData.html = htmlPluginData.html.replace(/(<\/head>)/i, result + '$&');
             }
             return callback(null, htmlPluginData);
           });

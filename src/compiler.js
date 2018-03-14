@@ -3,7 +3,7 @@ const path = require('path');
 const SingleEntryPlugin = require('webpack/lib/SingleEntryPlugin');
 const {getAssetPath} = require('./compat');
 
-module.exports.run = ({prefix, favicons, logo}, context, compilation) => {
+module.exports.run = ({prefix, favicons: options, logo}, context, compilation) => {
   // The entry file is just an empty helper
   const filename = '[hash]';
   const publicPath = compilation.outputOptions.publicPath;
@@ -15,7 +15,7 @@ module.exports.run = ({prefix, favicons, logo}, context, compilation) => {
   compiler.context = context;
 
   const loader = require.resolve('./loader');
-  const query = JSON.stringify({prefix, options: favicons});
+  const query = JSON.stringify({prefix, options});
 
   new SingleEntryPlugin(context, `!!${loader}?${query}!${logo}`).apply(compiler);
 
@@ -33,12 +33,13 @@ module.exports.run = ({prefix, favicons, logo}, context, compilation) => {
 
       // Replace [hash] placeholders in filename
       const output = getAssetPath(compilation, filename, {hash, chunk});
-      const stats = eval(assets[output].source());
+      const result = eval(assets[output].source());
       delete compilation.assets[output];
-      for (const key in assets)
+      for (const key in assets) {
         delete assets[key];
+      }
 
-      return resolve(stats);
+      return resolve(result);
     });
   });
 };
