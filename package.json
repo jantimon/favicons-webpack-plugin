@@ -39,7 +39,7 @@
   "homepage": "https://github.com/jantimon/favicons-webpack-plugin",
   "devDependencies": {
     "@babel/cli": "7.0.0-beta.41",
-    "@babel/plugin-transform-strict-mode": "7.0.0-beta.40",
+    "@babel/plugin-transform-strict-mode": "7.0.0-beta.41",
     "@babel/preset-env": "7.0.0-beta.40",
     "@babel/register": "7.0.0-beta.41",
     "ava": "1.0.0-beta.3",
