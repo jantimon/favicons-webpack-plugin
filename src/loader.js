@@ -17,7 +17,7 @@ module.exports = function (content) {
   const path = interpolateName(this, prefix, {context, regExp, content});
 
   // Generate icons
-  favicons(content, Object.assign({url: '', path: ''}, options), (err, {images = [], files = [], html = []} = {}) => {
+  favicons(content, options, (err, {images = [], files = [], html = []} = {}) => {
     if (err) {
       return callback(err);
     }
