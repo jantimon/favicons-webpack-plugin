@@ -26,13 +26,8 @@ module.exports.run = ({prefix, favicons: options, logo, cache: cacheDirectory}, 
   // Compile and return a promise
   return new Promise((resolve, reject) => {
     compiler.runAsChild((err, [chunk] = [], {hash, errors = [], assets = {}} = {}) => {
-      if (err) {
-        return reject(err);
-      }
-
-      if (errors.length) {
-        const details = errors.map(({error, message}) => message + (error ? ':\n' + error : '')).join('\n');
-        return reject(new Error('Child compilation failed:\n' + details));
+      if (err || errors.length) {
+        return reject(err || errors[0].error);
       }
 
       // Replace [hash] placeholders in filename

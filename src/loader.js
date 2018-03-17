@@ -19,7 +19,7 @@ module.exports = function (content) {
   // Generate icons
   favicons(content, options, (err, {images = [], files = [], html = []} = {}) => {
     if (err) {
-      return callback(err);
+      return callback(new Error(err));
     }
 
     const assets = [...images, ...files].map(({name, contents}) => ({name: path + name, contents}));
