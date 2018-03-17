@@ -56,6 +56,7 @@
     "favicons": "^4.8.6",
     "find-root": "^1.1.0",
     "loader-utils": "^1.1.0",
+    "msgpack-lite": "^0.1.26",
     "parse-author": "^2.0.0"
   },
   "peerDependencies": {

@@ -1,5 +1,6 @@
 'use strict';
 const path = require('path');
+const msgpack = require('msgpack-lite');
 const SingleEntryPlugin = require('webpack/lib/SingleEntryPlugin');
 const {getAssetPath} = require('./compat');
 
@@ -33,13 +34,17 @@ module.exports.run = ({prefix, favicons: options, logo}, context, compilation) =
 
       // Replace [hash] placeholders in filename
       const output = getAssetPath(compilation, filename, {hash, chunk});
-      const result = eval(assets[output].source());
+      const result = msgpack.decode(Buffer.from(eval(assets[output].source()), 'base64'));
+
       delete compilation.assets[output];
-      for (const key in assets) {
-        delete assets[key];
+      for (const {name, contents} of result.assets) {
+        compilation.assets[name] = {
+          source: () => contents,
+          size: () => contents.length,
+        };
       }
 
-      return resolve(result);
+      return resolve(result.html);
     });
   });
 };

@@ -1,4 +1,5 @@
 const favicons = require('favicons');
+const msgpack = require('msgpack-lite');
 const {parseQuery, interpolateName} = require('loader-utils');
 const {getPublicPath} = require('./compat');
 
@@ -21,10 +22,10 @@ module.exports = function (content) {
       return callback(err);
     }
 
-    [...images, ...files].forEach(({name, contents}) => this.emitFile(path + name, contents));
+    const assets = [...images, ...files].map(({name, contents}) => ({name: path + name, contents}));
+    html = html.map((entry) => entry.replace(/(href=['"])/g, '$1' + publicPath + path)).sort().join('');
 
-    const result = html.map((entry) => entry.replace(/(href=['"])/g, '$1' + publicPath + path));
-    return callback(null, 'module.exports = ' + JSON.stringify(result.sort().join('')));
+    return callback(null, 'module.exports = ' + JSON.stringify(msgpack.encode({html, assets}).toString('base64')));
   });
 };
 
