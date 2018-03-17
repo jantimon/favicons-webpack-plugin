@@ -20,3 +20,6 @@ module.exports.tap = (tappable, hook, name, plugin) => (
   ? tappable.hooks[camelCase(hook)] && tappable.hooks[camelCase(hook)].tapAsync(name, plugin)
   : tappable.plugin(hook, plugin)
 );
+
+/* istanbul ignore next */
+module.exports.getContext = (loader) => (loader.options && loader.options.context) || loader.rootContext;
