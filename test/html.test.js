@@ -6,10 +6,11 @@ const FaviconsWebpackPlugin = require('../src');
 
 const {logo, mkdir, generate, compare, expected} = require('./util');
 
+test.beforeEach(async t => t.context.root = await mkdir());
+
 test('should work together with the html-webpack-plugin', async t => {
-  t.context.root = await mkdir();
   const dist = path.join(t.context.root, 'dist');
-  const stats = await generate({
+  await generate({
     context: t.context.root,
     output: {
       path: dist,
@@ -20,8 +21,7 @@ test('should work together with the html-webpack-plugin', async t => {
     ],
   });
 
-  const diff = await compare(dist, path.resolve(expected, 'html'));
-  t.deepEqual(diff, []);
+  t.deepEqual(await compare(dist, path.resolve(expected, 'html')), []);
 });
 
 test.afterEach(t => fs.remove(t.context.root));

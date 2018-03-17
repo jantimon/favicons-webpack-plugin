@@ -3,21 +3,22 @@ const path = require('path');
 const fs = require('fs-extra');
 const FaviconsWebpackPlugin = require('../src');
 
-const {logo, generate, mkdir, compare, expected} = require('./util');
+const {logo, mkdir, generate} = require('./util');
 
 test.beforeEach(async t => t.context.root = await mkdir());
 
-test('should generate the expected default result', async t => {
+test('should allow configuring cache directory', async t => {
   const dist = path.join(t.context.root, 'dist');
+  const cache = path.join(t.context.root, 'cache');
   await generate({
     context: t.context.root,
     output: {
       path: dist,
     },
-    plugins: [new FaviconsWebpackPlugin({logo})]
+    plugins: [new FaviconsWebpackPlugin({logo, cache})],
   });
 
-  t.deepEqual(await compare(dist, path.resolve(expected, 'default')), []);
+  t.deepEqual(fs.readdirSync(t.context.root).sort(), ['cache', 'dist']);
 });
 
 test.afterEach(t => fs.remove(t.context.root));
