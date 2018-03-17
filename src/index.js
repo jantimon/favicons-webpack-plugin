@@ -11,6 +11,7 @@ module.exports = class FaviconsWebpackPlugin {
     assert(typeof options === 'object' && typeof options.logo === 'string', 'An input file is required');
 
     this.options = Object.assign({
+      cache: '.wwp-cache',
       prefix: 'assets-[hash]/',
       favicons: {},
       inject: true,
@@ -18,7 +19,11 @@ module.exports = class FaviconsWebpackPlugin {
   }
 
   apply(compiler) {
-    const oracle = new Oracle(compiler.context)
+    const oracle = new Oracle(compiler.context);
+
+    if (this.options.cache) {
+      this.options.cache = path.resolve(compiler.context, this.options.cache);
+    }
 
     {
       const {
