@@ -15,10 +15,11 @@ module.exports.run = ({prefix, favicons: options, logo}, context, compilation) =
   const compiler = compilation.createChildCompiler('favicons-webpack-plugin', {filename, publicPath});
   compiler.context = context;
 
-  const loader = require.resolve('./loader');
-  const query = JSON.stringify({prefix, options});
+  const cacheDirectory = path.resolve(context, '.wwp-cache');
+  const cache = `${require.resolve('cache-loader')}?${JSON.stringify({cacheDirectory})}`;
+  const loader = `${require.resolve('./loader')}?${JSON.stringify({prefix, options})}`;
 
-  new SingleEntryPlugin(context, `!!${loader}?${query}!${logo}`).apply(compiler);
+  new SingleEntryPlugin(context, `!!${cache}!${loader}!${logo}`).apply(compiler);
 
   // Compile and return a promise
   return new Promise((resolve, reject) => {

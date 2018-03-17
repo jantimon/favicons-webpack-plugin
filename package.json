@@ -52,6 +52,7 @@
     "webpack-merge": "4.1.2"
   },
   "dependencies": {
+    "cache-loader": "^1.2.2",
     "camelcase": "^4.1.0",
     "favicons": "^4.8.6",
     "find-root": "^1.1.0",
