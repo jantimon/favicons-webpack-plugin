@@ -12,7 +12,7 @@ module.exports = function (content) {
   const callback = this.async();
   const context = getContext(this);
   const publicPath = getPublicPath(this._compilation);
-  const path = interpolateName(this, prefix, {context, content});
+  const path = prefix && interpolateName(this, prefix, {context, content});
 
   // Generate icons
   favicons(content, options, (err, result) => {
