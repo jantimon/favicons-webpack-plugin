@@ -20,8 +20,15 @@ module.exports = function (content) {
       return callback(new Error(err));
     }
 
-    const assets = [...result.images, ...result.files].map(({name, contents}) => ({name: path + name, contents}));
-    const html = result.html.map((entry) => entry.replace(/(href=['"])/g, '$1' + publicPath + path)).sort().join('');
+    const refs = /(href=|content=|src=)(['"])([\w-]+[.](png|json|ico|xml))\2/g;
+    const html = result.html.map((entry) => entry.replace(refs, '$1$2' + publicPath + path + '$3$2')).sort().join('');
+    const images = result.images.map(({name, contents}) => ({name: path + name, contents}));
+    const files = result.files.map(({name, contents}) => ({
+      name: path + name,
+      contents: contents.replace(refs, '$1$2' + publicPath + path + '$3$2'),
+    }));
+
+    const assets = [...images, ...files];
 
     return callback(null, 'module.exports = ' + JSON.stringify(msgpack.encode({html, assets}).toString('base64')));
   });
