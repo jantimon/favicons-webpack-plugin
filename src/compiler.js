@@ -21,7 +21,7 @@ module.exports.run = ({prefix, favicons: options, logo, cache: cacheDirectory}, 
     : ''
   ;
 
-  new SingleEntryPlugin(context, `!${cache}${loader}!${logo}`).apply(compiler);
+  new SingleEntryPlugin(context, `!${cache}${loader}!${logo}`, path.basename(logo)).apply(compiler);
 
   // Compile and return a promise
   return new Promise((resolve, reject) => {
