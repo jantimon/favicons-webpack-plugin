@@ -1,3 +1,11 @@
+# 0.0.8
+
++ Add support for Webpack 4
+
+# 0.0.7
+
++ Inject generated HTML to end of head
+
 # 0.0.6
 
 + Add support for `devtool: 'eval'`
