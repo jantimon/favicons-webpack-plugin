@@ -53,15 +53,32 @@ FaviconsWebpackPlugin.prototype.apply = function (compiler) {
   // Hook into the html-webpack-plugin processing
   // and add the html
   if (self.options.inject) {
-    compiler.plugin('compilation', function (compilation) {
-      compilation.plugin('html-webpack-plugin-before-html-processing', function (htmlPluginData, callback) {
-        if (htmlPluginData.plugin.options.favicons !== false) {
-          htmlPluginData.html = htmlPluginData.html.replace(
-            /(<\/head>)/i, compilationResult.stats.html.join('') + '$&');
-        }
-        callback(null, htmlPluginData);
+    var addFaviconsToHtml = function (htmlPluginData, callback) {
+      if (htmlPluginData.plugin.options.favicons !== false) {
+        htmlPluginData.html = htmlPluginData.html.replace(
+          /(<\/head>)/i, compilationResult.stats.html.join('') + '$&');
+      }
+      callback(null, htmlPluginData);
+    };
+
+    // webpack 4
+    if (compiler.hooks) {
+      var tapped = 0;
+      compiler.hooks.compilation.tap('FaviconsWebpackPlugin', function (cmpp) {
+        compiler.hooks.compilation.tap('HtmlWebpackPluginHooks', function () {
+          if (!tapped++) {
+            cmpp.hooks.htmlWebpackPluginBeforeHtmlProcessing.tapAsync(
+              'favicons-webpack-plugin',
+              addFaviconsToHtml
+            );
+          }
+        });
       });
-    });
+    } else {
+      compiler.plugin('compilation', function (compilation) {
+        compilation.plugin('html-webpack-plugin-before-html-processing', addFaviconsToHtml);
+      });
+    }
   }
 
   // Remove the stats from the output if they are not required
