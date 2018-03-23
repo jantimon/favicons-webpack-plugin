@@ -9,7 +9,8 @@
   "scripts": {
     "build": "babel src/ -d dist/",
     "test": "ava --require @babel/register test/**.test.js",
-    "coverage": "nyc npm test"
+    "coverage": "nyc npm test",
+    "prepare": "npm run build"
   },
   "repository": {
     "type": "git",
