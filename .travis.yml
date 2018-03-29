@@ -20,4 +20,4 @@ install:
 - travis_retry npm install
 
 script:
-- npm test
+- travis_retry npm test
