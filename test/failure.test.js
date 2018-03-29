@@ -58,7 +58,7 @@ test('should fail gracefully if logo is not a valid image file', async t => {
       plugins: [new FaviconsWebpackPlugin({logo})]
     });
   } catch (err) {
-    t.is(err.message, 'unsupported file type');
+    t.is(err.message, 'Index out of range');
   }
 });
 
