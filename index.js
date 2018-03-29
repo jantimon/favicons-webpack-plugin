@@ -95,7 +95,7 @@ FaviconsWebpackPlugin.prototype.apply = function (compiler) {
   // Remove the stats from the output if they are not required
   if (!self.options.emitStats) {
     if (compiler.hooks) {
-      compiler.hooks.emit.tapAsync("FaviconsWebpackPluginEmit", (compilation, callback) => {
+      compiler.hooks.emit.tapAsync('FaviconsWebpackPluginEmit', (compilation, callback) => {
         delete compilation.assets[compilationResult.outputName];
         callback();
       });
