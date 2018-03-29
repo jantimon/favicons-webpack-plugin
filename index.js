@@ -41,14 +41,25 @@ FaviconsWebpackPlugin.prototype.apply = function (compiler) {
 
   // Generate the favicons
   var compilationResult;
-  compiler.plugin('make', function (compilation, callback) {
-    childCompiler.compileTemplate(self.options, compiler.context, compilation)
-      .then(function (result) {
-        compilationResult = result;
-        callback();
-      })
-      .catch(callback);
-  });
+  if (compiler.hooks) {
+    compiler.hooks.make.tapAsync('FaviconsWebpackPluginMake', (compilation, callback) => {
+      childCompiler.compileTemplate(self.options, compiler.context, compilation)
+        .then(function (result) {
+          compilationResult = result;
+          callback();
+        })
+        .catch(callback);
+    });
+  } else {
+    compiler.plugin('make', function (compilation, callback) {
+      childCompiler.compileTemplate(self.options, compiler.context, compilation)
+        .then(function (result) {
+          compilationResult = result;
+          callback();
+        })
+        .catch(callback);
+    });
+  }
 
   // Hook into the html-webpack-plugin processing
   // and add the html
@@ -83,10 +94,17 @@ FaviconsWebpackPlugin.prototype.apply = function (compiler) {
 
   // Remove the stats from the output if they are not required
   if (!self.options.emitStats) {
-    compiler.plugin('emit', function (compilation, callback) {
-      delete compilation.assets[compilationResult.outputName];
-      callback();
-    });
+    if (compiler.hooks) {
+      compiler.hooks.emit.tapAsync("FaviconsWebpackPluginEmit", (compilation, callback) => {
+        delete compilation.assets[compilationResult.outputName];
+        callback();
+      });
+    } else {
+      compiler.plugin('emit', function (compilation, callback) {
+        delete compilation.assets[compilationResult.outputName];
+        callback();
+      });
+    }
   }
 };
 
