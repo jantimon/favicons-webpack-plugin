@@ -1,7 +1,7 @@
 const test = require('ava');
 const path = require('path');
 const fs = require('fs-extra');
-const FaviconsWebpackPlugin = require('../src');
+const FaviconsWebpackPlugin = require('../');
 
 const {logo, generate, mkdir, compare, expected} = require('./util');
 

@@ -4,13 +4,11 @@
   "description": "Let webpack generate all your favicons and icons for you",
   "main": "dist/index.js",
   "files": [
-    "dist/"
+    "src/"
   ],
   "scripts": {
-    "build": "babel src/ -d dist/",
-    "test": "ava --require @babel/register test/**.test.js",
-    "coverage": "nyc npm test",
-    "prepare": "npm run build"
+    "test": "ava test/**.test.js",
+    "coverage": "nyc npm test"
   },
   "repository": {
     "type": "git",
@@ -39,11 +37,6 @@
   },
   "homepage": "https://github.com/jantimon/favicons-webpack-plugin",
   "devDependencies": {
-    "@babel/cli": "7.0.0-beta.42",
-    "@babel/core": "7.0.0-beta.42",
-    "@babel/plugin-transform-strict-mode": "7.0.0-beta.42",
-    "@babel/preset-env": "7.0.0-beta.42",
-    "@babel/register": "7.0.0-beta.42",
     "ava": "1.0.0-beta.3",
     "dir-compare": "1.4.0",
     "fs-extra": "5.0.0",

@@ -1,5 +1,5 @@
 const test = require('ava');
-const FaviconsWebpackPlugin = require('../src');
+const FaviconsWebpackPlugin = require('../');
 
 const {logo, mkdir} = require('./util');
 

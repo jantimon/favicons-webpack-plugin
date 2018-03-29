@@ -19,7 +19,7 @@ module.exports.compiler = (config) => {
       entry: path.resolve(fixtures, 'entry.js'),
       plugins: []
     },
-    config,
+    config
   );
 
   config.plugins
@@ -52,12 +52,7 @@ module.exports.run = (compiler) => {
 
 module.exports.generate = (config) => module.exports.run(module.exports.compiler(config));
 
-module.exports.compare = async (a, b) => {
-  const diff = await dircompare.compare(a, b, {
-    compareContent: true,
-  });
-
-  return diff.diffSet.filter(({state}) => state !== 'equal').map(({name1, name2}) => (
-    `${path.join(a, name1 + '')} ≠ ${path.join(b, name2 + '')}`)
-  );
-};
+module.exports.compare = (a, b) => dircompare.compare(a, b, {compareContent: true}).then(diff =>
+  diff.diffSet.filter(({state}) => state !== 'equal')
+    .map(({path1, name1, path2, name2}) => `${path.join(path1 || '', name1 + '')} ≠ ${path.join(path2 || '', name2 + '')}`)
+);
