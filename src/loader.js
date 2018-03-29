@@ -20,12 +20,12 @@ module.exports = function (content) {
       return callback(new Error(err));
     }
 
-    const refs = /(href=|content=|src=)(['"])([\w-]+[.](png|json|ico|xml))\2/g;
-    const html = result.html.map((entry) => entry.replace(refs, '$1$2' + publicPath + path + '$3$2')).sort().join('');
+    const refs = /(("?)(href|content|src|logo|\d{2,4})\2(=|: ?))(['"])([\w-]+[.](png|json|ico|xml))\5/g;
+    const html = result.html.map((entry) => entry.replace(refs, '$1$5' + publicPath + path + '$6$5')).sort().join('');
     const images = result.images.map(({name, contents}) => ({name: path + name, contents}));
     const files = result.files.map(({name, contents}) => ({
       name: path + name,
-      contents: contents.replace(refs, '$1$2' + publicPath + path + '$3$2'),
+      contents: contents.replace(refs, '$1$5' + publicPath + path + '$6$5'),
     }));
 
     const assets = [...images, ...files];
