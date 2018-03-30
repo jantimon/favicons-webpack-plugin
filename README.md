@@ -96,14 +96,14 @@ plugins: [
 
 # Changelog
 
-Take a look at the  [CHANGELOG.md](https://github.com/jantimon/favicons-webpack-plugin/tree/master/CHANGELOG.md).
+Take a look at the  [CHANGELOG.md](https://github.com/romanlex/favicons-webpack-plugin/tree/master/CHANGELOG.md).
 
 
 # Contribution
 
-You're free to contribute to this project by submitting [issues](https://github.com/jantimon/favicons-webpack-plugin/issues) and/or [pull requests](https://github.com/jantimon/favicons-webpack-plugin/pulls). This project is test-driven, so keep in mind that every change and new feature should be covered by tests.
+You're free to contribute to this project by submitting [issues](https://github.com/romanlex/favicons-webpack-plugin/issues) and/or [pull requests](https://github.com/romanlex/favicons-webpack-plugin/pulls). This project is test-driven, so keep in mind that every change and new feature should be covered by tests.
 This project uses the [semistandard code style](https://github.com/Flet/semistandard).
 
 # License
 
-This project is licensed under [MIT](https://github.com/jantimon/favicons-webpack-plugin/blob/master/LICENSE).
+This project is licensed under [MIT](https://github.com/romanlex/favicons-webpack-plugin/blob/master/LICENSE).
