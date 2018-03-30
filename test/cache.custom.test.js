@@ -10,6 +10,7 @@ test.beforeEach(async t => t.context.root = await mkdir());
 test('should allow configuring cache directory', async t => {
   const dist = path.join(t.context.root, 'dist');
   const cache = path.join(t.context.root, 'cache');
+
   await generate({
     context: t.context.root,
     output: {
@@ -18,7 +19,9 @@ test('should allow configuring cache directory', async t => {
     plugins: [new FaviconsWebpackPlugin({logo, cache})],
   });
 
-  t.deepEqual(fs.readdirSync(t.context.root).sort(), ['cache', 'dist']);
+  t.pass(fs.existsSync(cache));
+  t.pass(fs.lstatSync(cache).isDirectory());
+  t.pass(fs.readdirSync(cache).length);
 });
 
 test.afterEach(t => fs.remove(t.context.root));

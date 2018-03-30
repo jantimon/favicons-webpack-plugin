@@ -9,6 +9,7 @@ test.beforeEach(async t => t.context.root = await mkdir());
 
 test('should allow disabling caching', async t => {
   const dist = path.join(t.context.root, 'dist');
+
   await generate({
     context: t.context.root,
     output: {
