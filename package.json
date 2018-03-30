@@ -1,7 +1,7 @@
 {
-  "name": "favicons-webpack-plugin",
-  "version": "0.0.8",
-  "description": "Let webpack generate all your favicons and icons for you",
+  "name": "app-manifest-webpack-plugin",
+  "version": "0.1.0",
+  "description": "Let webpack generate manifest files, all your favicons and icons for you",
   "main": "index.js",
   "files": [
     "index.js",
@@ -15,24 +15,26 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/jantimon/favicons-webpack-plugin.git"
+    "url": "https://github.com/romanlex/app-manifest-webpack-plugin.git"
   },
   "keywords": [
     "webpack",
     "plugin",
     "html-webpack-plugin",
+    "manifest"
+    ,
     "favicon",
     "icon"
   ],
   "author": "Jan Nicklas <j.nicklas@me.com> (https://github.com/jantimon)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/jantimon/favicons-webpack-plugin/issues"
+    "url": "https://github.com/romanlex/app-manifest-webpack-plugin/issues"
   },
   "semistandard": {
     "parser": "babel-eslint"
   },
-  "homepage": "https://github.com/jantimon/favicons-webpack-plugin",
+  "homepage": "https://github.com/romanlex/app-manifest-webpack-plugin",
   "devDependencies": {
     "ava": "^0.16.0",
     "babel-eslint": "^7.1.0",

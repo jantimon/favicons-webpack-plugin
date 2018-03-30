@@ -1,5 +1,5 @@
 'use strict';
-var FaviconsWebpackPlugin = require('..');
+var AppManifestWebpackPlugin = require('..');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var path = require('path');
 
@@ -12,7 +12,7 @@ module.exports = {
     filename: 'bundle.js'
   },
   plugins: [
-    new FaviconsWebpackPlugin('./src/logo.png'),
+    new AppManifestWebpackPlugin('./src/logo.png'),
     new HtmlWebpackPlugin()
   ]
 };

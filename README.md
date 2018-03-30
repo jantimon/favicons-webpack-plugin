@@ -1,8 +1,8 @@
-Favicons Webpack Plugin
+App Manifest Webpack Plugin (FORKED favicons-webpack-plugin)
 ========================================
-[![npm version](https://badge.fury.io/js/favicons-webpack-plugin.svg)](http://badge.fury.io/js/favicons-webpack-plugin) [![Dependency Status](https://david-dm.org/jantimon/favicons-webpack-plugin.svg)](https://david-dm.org/jantimon/favicons-webpack-plugin) [![Build status](https://travis-ci.org/jantimon/favicons-webpack-plugin.svg)](https://travis-ci.org/jantimon/favicons-webpack-plugin) [![js-semistandard-style](https://img.shields.io/badge/code%20style-semistandard-brightgreen.svg?style=flat-square)](https://github.com/Flet/semistandard)
 
 Allows to use the [favicons](https://github.com/haydenbleasel/favicons) generator with webpack
+Forked [jantimon/favicons-webpack-plugin](https://github.com/jantimon/favicons-webpack-plugin)
 
 Installation
 ------------
@@ -10,7 +10,7 @@ You must be running webpack on node 0.12.x or higher
 
 Install the plugin with npm:
 ```shell
-$ npm install --save-dev favicons-webpack-plugin
+$ npm install --save-dev app-manifest-webpack-plugin
 ```
 
 Basic Usage
@@ -18,12 +18,12 @@ Basic Usage
 Add the plugin to your webpack config as follows:
 
 ```javascript
-let FaviconsWebpackPlugin = require('favicons-webpack-plugin')
+let AppManifestWebpackPlugin = require('app-manifest-webpack-plugin')
 
 ...
 
 plugins: [
-  new FaviconsWebpackPlugin('my-logo.png')
+  new AppManifestWebpackPlugin('my-logo.png')
 ]
 ```
 
@@ -43,16 +43,15 @@ https://github.com/jantimon/favicons-webpack-plugin/blob/master/test/fixtures/ex
   <link rel="apple-touch-startup-image" media="(device-width: 768px) and (device-height: 1024px) and (orientation: portrait) and (-webkit-device-pixel-ratio: 2)" href="icons-366a3768de05f9e78c392fa62b8fbb80/apple-touch-startup-image-1536x2008.png">
 ```
 
-
 Advanced Usage
 -----------
 
 ```javascript
 plugins: [
-  new FaviconsWebpackPlugin({
+  new AppManifestWebpackPlugin({
     // Your source logo
     logo: 'my-logo.png',
-    // The prefix for all image files (might be a folder or a name)
+    // The prefix for all image files (might be a folder or a name). May be empty
     prefix: 'icons-[hash]/',
     // Emit all stats of the generated icons
     emitStats: false,
@@ -63,23 +62,28 @@ plugins: [
     persistentCache: true,
     // Inject the html into the html-webpack-plugin
     inject: true,
-    // favicon background color (see https://github.com/haydenbleasel/favicons#usage)
-    background: '#fff',
-    // favicon app title (see https://github.com/haydenbleasel/favicons#usage)
-    title: 'Webpack App',
-
-    // which icons should be generated (see https://github.com/haydenbleasel/favicons#usage)
-    icons: {
-      android: true,
-      appleIcon: true,
-      appleStartup: true,
-      coast: false,
-      favicons: true,
-      firefox: true,
-      opengraph: false,
-      twitter: false,
-      yandex: false,
-      windows: false
+    // favicons configuration object. Support all keys of favicons (see https://github.com/haydenbleasel/favicons)
+    config: {
+      appName: 'Webpack App', // Your application's name. `string`
+      appDescription: null, // Your application's description. `string`
+      developerName: null, // Your (or your developer's) name. `string`
+      developerURL: null, // Your (or your developer's) URL. `string`
+      display: 'standalone', // Android display: "browser" or "standalone". `string`
+      start_url: '/', // Android start application's URL. `string`
+      orientation: 'portrait',
+      background: '#fff',
+      icons: {
+        android: true,
+        appleIcon: true,
+        appleStartup: true,
+        coast: false,
+        favicons: true,
+        firefox: true,
+        opengraph: false,
+        twitter: true,
+        yandex: true,
+        windows: true,
+      },
     }
   })
 ]

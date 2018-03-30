@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "name": "favicons-webpack-plugin",
+  "name": "app-manifest-webpack-plugin",
   "description": null,
   "icons": {
     "60": "firefox_app_60x60.png",

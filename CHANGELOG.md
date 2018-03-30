@@ -1,3 +1,10 @@
+# 0.1.0
+
++ Change api
++ Add full-based favicons config
++ Fix filenames with empty `prefix`
++ Renamed to ```app-manifest-webpack-plugin```
+
 # 0.0.8
 
 + Add support for Webpack 4

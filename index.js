@@ -5,11 +5,11 @@ var _ = require('lodash');
 var fs = require('fs');
 var path = require('path');
 
-function FaviconsWebpackPlugin (options) {
+function AppManifestWebpackPlugin (options) {
   if (typeof options === 'string') {
     options = {logo: options};
   }
-  assert(typeof options === 'object', 'FaviconsWebpackPlugin options are required');
+  assert(typeof options === 'object', 'AppManifestWebpackPlugin options are required');
   assert(options.logo, 'An input file is required');
   this.options = _.extend({
     prefix: 'icons-[hash]/',
@@ -17,26 +17,35 @@ function FaviconsWebpackPlugin (options) {
     statsFilename: 'iconstats-[hash].json',
     persistentCache: true,
     inject: true,
-    background: '#fff'
   }, options);
-  this.options.icons = _.extend({
-    android: true,
-    appleIcon: true,
-    appleStartup: true,
-    coast: false,
-    favicons: true,
-    firefox: true,
-    opengraph: false,
-    twitter: false,
-    yandex: false,
-    windows: false
-  }, this.options.icons);
+  this.options.config = _.extend({
+    appName: 'Webpack App', // Your application's name. `string`
+    appDescription: null, // Your application's description. `string`
+    developerName: null, // Your (or your developer's) name. `string`
+    developerURL: null, // Your (or your developer's) URL. `string`
+    display: 'standalone', // Android display: "browser" or "standalone". `string`
+    start_url: '/', // Android start application's URL. `string`
+    orientation: 'portrait',
+    background: '#fff',
+    icons: {
+      android: true,
+      appleIcon: true,
+      appleStartup: true,
+      coast: false,
+      favicons: true,
+      firefox: true,
+      opengraph: false,
+      twitter: true,
+      yandex: true,
+      windows: true,
+    },
+  }, this.options.config);
 }
 
-FaviconsWebpackPlugin.prototype.apply = function (compiler) {
+AppManifestWebpackPlugin.prototype.apply = function (compiler) {
   var self = this;
-  if (!self.options.title) {
-    self.options.title = guessAppName(compiler.context);
+  if (!self.options.config.appName) {
+    self.options.config.appName = guessAppName(compiler.context);
   }
 
   // Generate the favicons
@@ -68,7 +77,7 @@ FaviconsWebpackPlugin.prototype.apply = function (compiler) {
         compiler.hooks.compilation.tap('HtmlWebpackPluginHooks', function () {
           if (!tapped++) {
             cmpp.hooks.htmlWebpackPluginBeforeHtmlProcessing.tapAsync(
-              'favicons-webpack-plugin',
+              'app-manifest-webpack-plugin',
               addFaviconsToHtml
             );
           }
@@ -104,4 +113,4 @@ function guessAppName (compilerWorkingDirectory) {
   return JSON.parse(fs.readFileSync(packageJson)).name;
 }
 
-module.exports = FaviconsWebpackPlugin;
+module.exports = AppManifestWebpackPlugin;
