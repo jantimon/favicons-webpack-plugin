@@ -7,7 +7,7 @@
     "src/"
   ],
   "scripts": {
-    "test": "ava test/**.test.js",
+    "test": "ava test/**/*.test.js",
     "coverage": "nyc npm test"
   },
   "repository": {
