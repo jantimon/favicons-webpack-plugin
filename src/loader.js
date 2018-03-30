@@ -5,7 +5,7 @@ const {parseQuery, interpolateName} = require('loader-utils');
 const {getContext} = require('./compat');
 
 const trailingSlash = (path) => (path.substr(-1) !== '/') ? path + '/' : path;
-const getPublicPath = ({outputOptions: {publicPath = ''}}) => publicPath && trailingSlash(publicPath);
+const getPublicPath = ({outputOptions: {publicPath = '/'}}) => publicPath && trailingSlash(publicPath);
 
 module.exports = function (content) {
   /* istanbul ignore next */

@@ -3,9 +3,9 @@
   "name": null,
   "description": null,
   "icons": {
-    "60": "assets-d7623eb944cd4f7d2cd59efc84d5b410/firefox_app_60x60.png",
-    "128": "assets-d7623eb944cd4f7d2cd59efc84d5b410/firefox_app_128x128.png",
-    "512": "assets-d7623eb944cd4f7d2cd59efc84d5b410/firefox_app_512x512.png"
+    "60": "/assets-d7623eb944cd4f7d2cd59efc84d5b410/firefox_app_60x60.png",
+    "128": "/assets-d7623eb944cd4f7d2cd59efc84d5b410/firefox_app_128x128.png",
+    "512": "/assets-d7623eb944cd4f7d2cd59efc84d5b410/firefox_app_512x512.png"
   },
   "developer": {
     "name": null,
