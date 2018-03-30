@@ -9,12 +9,12 @@ test.beforeEach(async t => t.context.root = await mkdir());
 
 test('should allow configuring the output prefix', async t => {
   const dist = path.join(t.context.root, 'dist');
-  const stats=  await generate({
+  await generate({
     context: t.context.root,
     output: {
       path: dist,
     },
-    plugins: [new FaviconsWebpackPlugin({logo, prefix: 'path/name-'})],
+    plugins: [new FaviconsWebpackPlugin({logo, prefix: 'custom/prefix'})],
   });
 
   t.deepEqual(await compare(dist, path.resolve(expected, 'prefixed')), []);

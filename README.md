@@ -103,7 +103,7 @@ plugins: [
     // Path to store cached data or false/null to disable caching altogether
     // Note: disabling caching may increase build times considerably
     cache: '.wwp-cache',
-    // Prefix for generated assets, might be a folder or just a name prefix
+    // Prefix path for generated assets
     prefix: 'assets-[hash]/',
     // Inject html links/metadata (requires html-webpack-plugin)
     inject: true,

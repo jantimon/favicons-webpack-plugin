@@ -1,7 +1,11 @@
+const url = require('url');
 const favicons = require('favicons');
 const msgpack = require('msgpack-lite');
 const {parseQuery, interpolateName} = require('loader-utils');
-const {getPublicPath, getContext} = require('./compat');
+const {getContext} = require('./compat');
+
+const trailingSlash = (path) => (path.substr(-1) !== '/') ? path + '/' : path;
+const getPublicPath = ({outputOptions: {publicPath = ''}}) => publicPath && trailingSlash(publicPath);
 
 module.exports = function (content) {
   /* istanbul ignore next */
@@ -12,23 +16,16 @@ module.exports = function (content) {
   const callback = this.async();
   const context = getContext(this);
   const publicPath = getPublicPath(this._compilation);
-  const path = prefix && interpolateName(this, prefix, {context, content});
+  const path = prefix && trailingSlash(interpolateName(this, prefix, {context, content}));
 
   // Generate icons
-  favicons(content, options, (err, result) => {
+  favicons(content, Object.assign(options, {path: url.resolve(publicPath, path)}), (err, result) => {
     if (err) {
       return callback(new Error(err));
     }
 
-    const refs = /(("?)(href|content|src|logo|\d{2,4})\2(=|: ?))(['"])([\w-]+[.](png|json|ico|xml))\5/g;
-    const html = result.html.map((entry) => entry.replace(refs, '$1$5' + publicPath + path + '$6$5')).sort().join('');
-    const images = result.images.map(({name, contents}) => ({name: path + name, contents}));
-    const files = result.files.map(({name, contents}) => ({
-      name: path + name,
-      contents: contents.replace(refs, '$1$5' + publicPath + path + '$6$5'),
-    }));
-
-    const assets = [...images, ...files];
+    const html = result.html.join('');
+    const assets = [...result.images, ...result.files].map(({name, contents}) => ({name: path + name, contents}));
 
     return callback(null, 'module.exports = ' + JSON.stringify(msgpack.encode({html, assets}).toString('base64')));
   });
