@@ -13,6 +13,11 @@ Install the plugin with npm:
 $ npm install --save-dev app-manifest-webpack-plugin
 ```
 
+Install the plugin with yarn:
+```shell
+$ yarn add -D app-manifest-webpack-plugin
+```
+
 Basic Usage
 -----------
 Add the plugin to your webpack config as follows:
