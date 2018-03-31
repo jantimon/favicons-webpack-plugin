@@ -6,8 +6,10 @@ App Manifest Webpack Plugin (Fork of favicons-webpack-plugin)
 [![Maintainability](https://api.codeclimate.com/v1/badges/ea3844bff7db00d519de/maintainability)](https://codeclimate.com/github/romanlex/app-manifest-webpack-plugin/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/ea3844bff7db00d519de/test_coverage)](https://codeclimate.com/github/romanlex/app-manifest-webpack-plugin/test_coverage)
 
-Allows to use the [favicons](https://github.com/haydenbleasel/favicons) generator with webpack
 Forked [jantimon/favicons-webpack-plugin](https://github.com/jantimon/favicons-webpack-plugin)
+
+Allows to use the [favicons](https://github.com/haydenbleasel/favicons) generator with webpack
+This plugin generated app icons and manifest(`manifest.json`, `browserconfig.xml`, `yandex-browser-manifest.json`) files
 
 Installation
 ------------
