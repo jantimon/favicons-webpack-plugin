@@ -2,6 +2,7 @@ App Manifest Webpack Plugin
 ========================================
 
 [![NPM version](https://badge.fury.io/js/app-manifest-webpack-plugin.svg)](https://www.npmjs.com/package/app-manifest-webpack-plugin)
+[![Dependency Status](https://david-dm.org/romanlex/app-manifest-webpack-plugin.svg)](https://david-dm.org/romanlex/app-manifest-webpack-plugin)
 [![build status](https://travis-ci.org/gilbarbara/app-manifest-webpack-plugin.svg)](https://travis-ci.org/romanlex/app-manifest-webpack-plugin)
 [![Maintainability](https://api.codeclimate.com/v1/badges/ea3844bff7db00d519de/maintainability)](https://codeclimate.com/github/romanlex/app-manifest-webpack-plugin/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/ea3844bff7db00d519de/test_coverage)](https://codeclimate.com/github/romanlex/app-manifest-webpack-plugin/test_coverage)
