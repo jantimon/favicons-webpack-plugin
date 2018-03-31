@@ -1,4 +1,4 @@
-App Manifest Webpack Plugin (Fork of favicons-webpack-plugin)
+App Manifest Webpack Plugin
 ========================================
 
 [![NPM version](https://badge.fury.io/js/app-manifest-webpack-plugin.svg)](https://www.npmjs.com/package/app-manifest-webpack-plugin)
