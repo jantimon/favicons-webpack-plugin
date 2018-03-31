@@ -6,27 +6,36 @@ App Manifest Webpack Plugin (Fork of favicons-webpack-plugin)
 [![Maintainability](https://api.codeclimate.com/v1/badges/ea3844bff7db00d519de/maintainability)](https://codeclimate.com/github/romanlex/app-manifest-webpack-plugin/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/ea3844bff7db00d519de/test_coverage)](https://codeclimate.com/github/romanlex/app-manifest-webpack-plugin/test_coverage)
 
-Forked [jantimon/favicons-webpack-plugin](https://github.com/jantimon/favicons-webpack-plugin)
+This is fork of [jantimon/favicons-webpack-plugin](https://github.com/jantimon/favicons-webpack-plugin).
 
-Allows to use the [favicons](https://github.com/haydenbleasel/favicons) generator with webpack
-This plugin generated app icons and manifest(`manifest.json`, `browserconfig.xml`, `yandex-browser-manifest.json`) files
+Allows to use the [favicons](https://github.com/haydenbleasel/favicons) generator with webpack.
+
+This plugin also generates manifest files:
+
++ `manifest.json`
++ `browserconfig.xml`
++ `yandex-browser-manifest.json`
 
 Installation
 ------------
+
 You must be running `webpack (version ^2.x)` on `node (version ^6.14.1)`
 
 Install:
+
 ```bash
 npm install --save-dev app-manifest-webpack-plugin
 ```
 
 Install with yarn:
+
 ```bash
 yarn add -D app-manifest-webpack-plugin
 ```
 
 Basic Usage
 -----------
+
 Add the plugin to your webpack config as follows:
 
 ```javascript
