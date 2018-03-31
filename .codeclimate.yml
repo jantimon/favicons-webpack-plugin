@@ -1,0 +1,17 @@
+---
+version: "2"
+checks:
+  method-complexity:
+    config:
+      threshold: 10
+  method-lines:
+    config:
+      threshold: 50
+plugins:
+  eslint:
+    enabled: true
+    channel: "eslint-4"
+exclude_patterns:
+  - example/**/*
+  - node_modules/**/*
+  - test/**/*

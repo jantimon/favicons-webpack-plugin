@@ -33,7 +33,9 @@ const AppManifestWebpackPlugin = require('app-manifest-webpack-plugin')
 ...
 
 plugins: [
-  new AppManifestWebpackPlugin('my-logo.png')
+  new AppManifestWebpackPlugin({
+    logo: 'my-logo.png',
+  })
 ]
 ```
 

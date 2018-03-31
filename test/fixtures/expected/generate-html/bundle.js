@@ -44,7 +44,7 @@
 /* 0 */
 /***/ (function(module, exports) {
 
-	eval("console.log('hello world');\n\n\n//////////////////\n// WEBPACK FOOTER\n// ./fixtures/entry.js\n// module id = 0\n// module chunks = 0\n//# sourceURL=webpack:///./fixtures/entry.js?");
+	eval("console.log('hello world');\n\n\n//////////////////\n// WEBPACK FOOTER\n// ./test/fixtures/entry.js\n// module id = 0\n// module chunks = 0\n//# sourceURL=webpack:///./test/fixtures/entry.js?");
 
 /***/ })
 /******/ ]);

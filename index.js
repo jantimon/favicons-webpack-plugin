@@ -17,7 +17,7 @@ function AppManifestWebpackPlugin(options) {
       persistentCache: true,
       inject: true,
     },
-    options,
+    ...options,
   }
 
   this.options.config = {

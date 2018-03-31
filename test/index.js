@@ -12,9 +12,10 @@ const readFile = denodeify(require('fs').readFile)
 const writeFile = denodeify(require('fs').writeFile)
 const mkdirp = denodeify(require('mkdirp'))
 
-const compareOptions = { compareSize: true }
-let outputId = 0
 const LOGO_PATH = path.resolve(__dirname, 'fixtures/logo.png')
+const compareOptions = { compareSize: true }
+
+let outputIndex = 1
 
 rimraf.sync(path.resolve(__dirname, '../dist'))
 
@@ -23,7 +24,7 @@ function baseWebpackConfig(plugin) {
     devtool: 'eval',
     entry: path.resolve(__dirname, 'fixtures/entry.js'),
     output: {
-      path: path.resolve(__dirname, '../dist', 'test-' + outputId++),
+      path: path.resolve(__dirname, '../dist', `test-${outputIndex++}`),
     },
     plugins: [].concat(plugin),
   }
@@ -41,12 +42,12 @@ test('should throw error when called without arguments', async t => {
 })
 
 test('should take a string as argument', async t => {
-  var plugin = new AppManifestWebpackPlugin(LOGO_PATH)
+  const plugin = new AppManifestWebpackPlugin(LOGO_PATH)
   t.is(plugin.options.logo, LOGO_PATH)
 })
 
 test('should take an object with just the logo as argument', async t => {
-  var plugin = new AppManifestWebpackPlugin({ logo: LOGO_PATH })
+  const plugin = new AppManifestWebpackPlugin({ logo: LOGO_PATH })
   t.is(plugin.options.logo, LOGO_PATH)
 })
 
@@ -55,6 +56,7 @@ test('should generate the expected default result', async t => {
     baseWebpackConfig(
       new AppManifestWebpackPlugin({
         logo: LOGO_PATH,
+        persistentCache: false,
       }),
     ),
   )
