@@ -56,7 +56,6 @@ test('should generate the expected default result', async t => {
     baseWebpackConfig(
       new AppManifestWebpackPlugin({
         logo: LOGO_PATH,
-        persistentCache: false,
       }),
     ),
   )

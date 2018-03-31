@@ -1,3 +1,7 @@
+# 0.1.3
+
++ Fix caching, update tests
+
 # 0.1.2
 
 + Cleanup code, refactoring

@@ -11,7 +11,7 @@ Forked [jantimon/favicons-webpack-plugin](https://github.com/jantimon/favicons-w
 
 Installation
 ------------
-You must be running `webpack (version ^2.x)` on `node (version ^6.x)`
+You must be running `webpack (version ^2.x)` on `node (version ^6.14.1)`
 
 Install:
 ```bash
