@@ -48,28 +48,38 @@ function AppManifestWebpackPlugin(options) {
 }
 
 AppManifestWebpackPlugin.prototype.apply = function(compiler) {
-  const self = this
-  if (!self.options.config.appName) {
-    self.options.config.appName = guessAppName(compiler.context)
+  if (!this.options.config.appName) {
+    this.options.config.appName = guessAppName(compiler.context)
   }
 
   // Generate the favicons
   let compilationResult
 
-  compiler.plugin('make', function(compilation, callback) {
+  /**
+   * Make handler
+   * @param {object} compilation
+   * @param {function} callback
+   */
+  const makeHandler = (compilation, callback) => {
     childCompiler
-      .compileTemplate(self.options, compiler.context, compilation)
-      .then(function(result) {
+      .compileTemplate(this.options, compiler.context, compilation)
+      .then(result => {
         compilationResult = result
         callback()
       })
       .catch(callback)
-  })
+  }
+
+  if (compiler.hooks) {
+    compiler.hooks.make.tapAsync('AppManifestWebpackPluginMake', makeHandler)
+  } else {
+    compiler.plugin('make', makeHandler)
+  }
 
   // Hook into the html-webpack-plugin processing
   // and add the html
-  if (self.options.inject) {
-    const addFaviconsToHtml = function(htmlPluginData, callback) {
+  if (this.options.inject) {
+    const addFaviconsToHtml = (htmlPluginData, callback) => {
       if (htmlPluginData.plugin.options.favicons !== false) {
         htmlPluginData.html = htmlPluginData.html.replace(
           /(<\/head>)/i,
@@ -83,7 +93,7 @@ AppManifestWebpackPlugin.prototype.apply = function(compiler) {
     if (compiler.hooks) {
       let tapped = 0
 
-      compiler.hooks.compilation.tap('FaviconsWebpackPlugin', function(cmpp) {
+      compiler.hooks.compilation.tap('AppManifestWebpackPlugin', cmpp => {
         compiler.hooks.compilation.tap('HtmlWebpackPluginHooks', function() {
           if (!tapped++) {
             cmpp.hooks.htmlWebpackPluginBeforeHtmlProcessing.tapAsync(
@@ -94,18 +104,30 @@ AppManifestWebpackPlugin.prototype.apply = function(compiler) {
         })
       })
     } else {
-      compiler.plugin('compilation', function(compilation) {
+      compiler.plugin('compilation', compilation => {
         compilation.plugin('html-webpack-plugin-before-html-processing', addFaviconsToHtml)
       })
     }
   }
 
+  /**
+   * Emit handler
+   *
+   * @param {object} compilation
+   * @param {function} callback
+   */
+  const emitHandler = (compilation, callback) => {
+    delete compilation.assets[compilationResult.outputName]
+    callback()
+  }
+
   // Remove the stats from the output if they are not required
-  if (!self.options.emitStats) {
-    compiler.plugin('emit', function(compilation, callback) {
-      delete compilation.assets[compilationResult.outputName]
-      callback()
-    })
+  if (!this.options.emitStats) {
+    if (compiler.hooks) {
+      compiler.hooks.emit.tapAsync('AppManifestWebpackPluginEmit', emitHandler)
+    } else {
+      compiler.plugin('emit', emitHandler)
+    }
   }
 }
 

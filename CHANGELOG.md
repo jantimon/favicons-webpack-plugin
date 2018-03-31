@@ -1,3 +1,8 @@
+# 0.1.2
+
++ Cleanup code, refactoring
++ webpack 4 support with backwards compatibility
+
 # 0.1.1
 
 + Drop old version node
