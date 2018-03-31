@@ -1,6 +1,7 @@
 const test = require('ava');
 const path = require('path');
 const fs = require('fs-extra');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 const FaviconsWebpackPlugin = require('../');
 
 const { logo, generate, mkdir, compare, expected } = require('./util');
@@ -16,7 +17,7 @@ test('should correctly handle an empty prefix', async t => {
     },
     plugins: [
       new HtmlWebpackPlugin(),
-      new FaviconsWebpackPlugin({ logo, prefix: '' }),
+      new FaviconsWebpackPlugin({logo, prefix: ''}),
     ],
   });
 

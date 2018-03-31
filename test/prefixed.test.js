@@ -1,6 +1,7 @@
 const test = require('ava');
 const path = require('path');
 const fs = require('fs-extra');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 const FaviconsWebpackPlugin = require('../');
 
 const {logo, generate, mkdir, compare, expected} = require('./util');
@@ -14,7 +15,10 @@ test('should allow configuring the output prefix', async t => {
     output: {
       path: dist,
     },
-    plugins: [new FaviconsWebpackPlugin({logo, prefix: 'custom/prefix/[hash:8]'})],
+    plugins: [
+      new HtmlWebpackPlugin(),
+      new FaviconsWebpackPlugin({logo, prefix: 'custom/prefix/[hash:8]'}),
+    ],
   });
 
   t.deepEqual(await compare(dist, path.resolve(expected, 'prefixed')), []);
