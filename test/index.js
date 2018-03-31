@@ -103,6 +103,28 @@ test('should work together with the html-webpack-plugin', async t => {
   t.is(diffFiles[0], undefined)
 })
 
+test('should work together with the html-webpack-plugin and subfolders', async t => {
+  const stats = await webpack(
+    baseWebpackConfig([
+      new AppManifestWebpackPlugin({
+        logo: LOGO_PATH,
+        emitStats: true,
+        statsFilename: 'iconstats.json',
+        persistentCache: false,
+        config: {
+          path: '/static/assets/',
+        },
+      }),
+      new HtmlWebpackPlugin(),
+    ]),
+  )
+  const outputPath = stats.compilation.compiler.outputPath
+  const expected = path.resolve(__dirname, 'fixtures/expected/generate-html-with-subfolder')
+  const compareResult = await dircompare.compare(outputPath, expected, compareOptions)
+  const diffFiles = compareResult.diffSet.filter(diff => diff.state !== 'equal')
+  t.is(diffFiles[0], undefined)
+})
+
 test('should not recompile if there is a cache file', async t => {
   const options = baseWebpackConfig([
     new AppManifestWebpackPlugin({
@@ -114,7 +136,7 @@ test('should not recompile if there is a cache file', async t => {
   ])
 
   // Bring cache file in place
-  const cacheFile = 'icons-366a3768de05f9e78c392fa62b8fbb80/.cache'
+  const cacheFile = '.cache'
   const cacheFileExpected = path.resolve(__dirname, 'fixtures/expected/from-cache/', cacheFile)
   const cacheFileDist = path.resolve(__dirname, options.output.path, cacheFile)
   await mkdirp(path.dirname(cacheFileDist))

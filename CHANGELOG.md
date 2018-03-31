@@ -1,3 +1,9 @@
+# 0.1.4
+
++ Remove prefix from parameters. See config.path of `favicons` package
++ Add new testcase
++ Bugfixes
+
 # 0.1.3
 
 + Fix caching, update tests

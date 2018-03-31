@@ -62,8 +62,6 @@ plugins: [
   new AppManifestWebpackPlugin({
     // Your source logo
     logo: 'my-logo.png',
-    // The prefix for all image files (might be a folder or a name). May be empty
-    prefix: 'icons-[hash]/',
     // Emit all stats of the generated icons
     emitStats: false,
     // The name of the json containing all favicon information
@@ -79,22 +77,31 @@ plugins: [
       appDescription: null, // Your application's description. `string`
       developerName: null, // Your (or your developer's) name. `string`
       developerURL: null, // Your (or your developer's) URL. `string`
+      background: '#fff', // Background colour for flattened icons. `string`
+      theme_color: '#fff', // Theme color for browser chrome. `string`
+      path: '/', // Path for overriding default icons path. `string`
       display: 'standalone', // Android display: "browser" or "standalone". `string`
-      start_url: '/', // Android start application's URL. `string`
-      orientation: 'portrait',
-      background: '#fff',
-      theme_color: '#333',
+      orientation: 'portrait', // Android orientation: "portrait" or "landscape". `string`
+      start_url: '/?homescreen=1', // Android start application's URL. `string`
+      version: '1.0', // Your application's version number. `number`
+      logging: false, // Print logs to console? `boolean`
       icons: {
-        android: true,
-        appleIcon: true,
-        appleStartup: true,
-        coast: false,
-        favicons: true,
-        firefox: true,
-        opengraph: false,
-        twitter: true,
-        yandex: true,
-        windows: true,
+        // Platform Options:
+        // - offset - offset in percentage
+        // - shadow - drop shadow for Android icons, available online only
+        // - background:
+        //   * false - use default
+        //   * true - force use default, e.g. set background for Android icons
+        //   * color - set background for the specified icons
+        //
+        android: true, // Create Android homescreen icon. `boolean` or `{ offset, background, shadow }`
+        appleIcon: true, // Create Apple touch icons. `boolean` or `{ offset, background }`
+        appleStartup: true, // Create Apple startup images. `boolean` or `{ offset, background }`
+        coast: { offset: 25 }, // Create Opera Coast icon with offset 25%. `boolean` or `{ offset, background }`
+        favicons: true, // Create regular favicons. `boolean`
+        firefox: true, // Create Firefox OS icons. `boolean` or `{ offset, background }`
+        windows: true, // Create Windows 8 tile icons. `boolean` or `{ background }`
+        yandex: true, // Create Yandex browser icon. `boolean` or `{ background }`
       },
     }
   })
