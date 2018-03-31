@@ -1,0 +1,14 @@
+{
+  "extends": [
+    "semistandard",
+    "plugin:prettier/recommended"
+  ],
+  "env": {
+    "browser": false,
+    "es6": true,
+    "node": true
+  },
+  "rules": {
+    "prettier/prettier": "error"
+  }
+}

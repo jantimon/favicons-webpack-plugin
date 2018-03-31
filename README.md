@@ -1,21 +1,26 @@
-App Manifest Webpack Plugin (FORKED favicons-webpack-plugin)
+App Manifest Webpack Plugin (Fork of favicons-webpack-plugin)
 ========================================
+
+[![NPM version](https://badge.fury.io/js/app-manifest-webpack-plugin.svg)](https://www.npmjs.com/package/app-manifest-webpack-plugin)
+[![build status](https://travis-ci.org/gilbarbara/app-manifest-webpack-plugin.svg)](https://travis-ci.org/romanlex/app-manifest-webpack-plugin)
+[![Maintainability](https://api.codeclimate.com/v1/badges/ea3844bff7db00d519de/maintainability)](https://codeclimate.com/github/romanlex/app-manifest-webpack-plugin/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/ea3844bff7db00d519de/test_coverage)](https://codeclimate.com/github/romanlex/app-manifest-webpack-plugin/test_coverage)
 
 Allows to use the [favicons](https://github.com/haydenbleasel/favicons) generator with webpack
 Forked [jantimon/favicons-webpack-plugin](https://github.com/jantimon/favicons-webpack-plugin)
 
 Installation
 ------------
-You must be running webpack on node 0.12.x or higher
+You must be running `webpack (version ^2.x)` on `node (version ^6.x)`
 
-Install the plugin with npm:
-```shell
-$ npm install --save-dev app-manifest-webpack-plugin
+Install:
+```bash
+npm install --save-dev app-manifest-webpack-plugin
 ```
 
-Install the plugin with yarn:
-```shell
-$ yarn add -D app-manifest-webpack-plugin
+Install with yarn:
+```bash
+yarn add -D app-manifest-webpack-plugin
 ```
 
 Basic Usage
@@ -23,7 +28,7 @@ Basic Usage
 Add the plugin to your webpack config as follows:
 
 ```javascript
-let AppManifestWebpackPlugin = require('app-manifest-webpack-plugin')
+const AppManifestWebpackPlugin = require('app-manifest-webpack-plugin')
 
 ...
 
@@ -32,12 +37,11 @@ plugins: [
 ]
 ```
 
-This basic configuration will generate [37 different icons](https://github.com/jantimon/favicons-webpack-plugin/tree/master/test/fixtures/expected/default/icons-366a3768de05f9e78c392fa62b8fbb80) for iOS devices, Android devices and the Desktop browser out of your `my-logo.png` file.
+This basic configuration will generate 37 different icons for iOS devices, Android devices and the Desktop browser out of your `my-logo.png` file.
+
 It can optionally also generate a [JSON file with all information about the icons](https://github.com/jantimon/favicons-webpack-plugin/blob/master/test/fixtures/expected/generate-html/iconstats.json) for you.
 
 If you are using with [html-webpack-plugin](https://github.com/ampedandwired/html-webpack-plugin) it will also inject the necessary html for you:
-
-https://github.com/jantimon/favicons-webpack-plugin/blob/master/test/fixtures/expected/default-with-html/index.html
 
 ```html
   <link rel="apple-touch-icon" sizes="57x57" href="icons-366a3768de05f9e78c392fa62b8fbb80/apple-touch-icon-57x57.png">
@@ -77,6 +81,7 @@ plugins: [
       start_url: '/', // Android start application's URL. `string`
       orientation: 'portrait',
       background: '#fff',
+      theme_color: '#333',
       icons: {
         android: true,
         appleIcon: true,

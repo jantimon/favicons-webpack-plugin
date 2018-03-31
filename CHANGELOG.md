@@ -1,3 +1,9 @@
+# 0.1.1
+
++ Drop old version node
++ Add eslint, prettier
++ Cleanup and refactoring
+
 # 0.1.0
 
 + Change api
