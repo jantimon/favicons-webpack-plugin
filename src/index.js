@@ -12,7 +12,7 @@ module.exports = class FaviconsWebpackPlugin {
 
     this.options = Object.assign({
       cache: '.wwp-cache',
-      prefix: 'assets-[hash]/',
+      prefix: 'assets/',
       favicons: {},
       inject: true,
     }, options);
