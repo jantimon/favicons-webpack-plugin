@@ -33,9 +33,9 @@
   "homepage": "https://github.com/romanlex/app-manifest-webpack-plugin",
   "devDependencies": {
     "ava": "^0.25.0",
-    "babel-eslint": "^7.1.0",
+    "babel-eslint": "^8.2.2",
     "denodeify": "^1.2.1",
-    "dir-compare": "^1.0.1",
+    "dir-compare": "^1.4.0",
     "eslint": "^4.19.1",
     "eslint-config-prettier": "^2.9.0",
     "eslint-config-semistandard": "^12.0.1",
@@ -45,19 +45,19 @@
     "eslint-plugin-prettier": "^2.6.0",
     "eslint-plugin-promise": "^3.7.0",
     "eslint-plugin-standard": "^3.0.1",
-    "express": "^4.13.4",
-    "html-webpack-plugin": "^2.16.0",
-    "memory-fs": "^0.3.0",
+    "express": "^4.16.3",
+    "html-webpack-plugin": "^3.1.0",
+    "memory-fs": "^0.4.1",
     "mkdirp": "^0.5.1",
     "prettier": "^1.11.1",
-    "rimraf": "^2.5.2",
-    "semistandard": "^9.1.0",
-    "webpack": "^1.13.0",
-    "webpack-dev-middleware": "^1.6.1"
+    "rimraf": "^2.6.2",
+    "semistandard": "^12.0.1",
+    "webpack": "^3.1.10",
+    "webpack-dev-middleware": "^3.1.0"
   },
   "dependencies": {
-    "favicons": "^4.8.3",
-    "loader-utils": "^0.2.14"
+    "favicons": "^5.0.0",
+    "loader-utils": "^1.1.0"
   },
   "peerDependencies": {
     "webpack": "^2.0.0 || ^3.0.0 || ^4.0.0"
