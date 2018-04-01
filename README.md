@@ -3,8 +3,8 @@ App Manifest Webpack Plugin
 
 [![npm][npm]][npm-url]
 [![node][node]][node-url]
-[![deps](deps)](deps-url)
-[![travis](travis)](travis-url)
+[![deps][deps]][deps-url]
+[![travis][travis]][travis-url]
 [![Maintainability](https://api.codeclimate.com/v1/badges/ea3844bff7db00d519de/maintainability)](https://codeclimate.com/github/romanlex/app-manifest-webpack-plugin/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/ea3844bff7db00d519de/test_coverage)](https://codeclimate.com/github/romanlex/app-manifest-webpack-plugin/test_coverage)
 
