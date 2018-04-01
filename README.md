@@ -1,11 +1,24 @@
 App Manifest Webpack Plugin
 ========================================
 
-[![NPM version](https://badge.fury.io/js/app-manifest-webpack-plugin.svg)](https://www.npmjs.com/package/app-manifest-webpack-plugin)
-[![Dependency Status](https://david-dm.org/romanlex/app-manifest-webpack-plugin.svg)](https://david-dm.org/romanlex/app-manifest-webpack-plugin)
-[![build status](https://travis-ci.org/gilbarbara/app-manifest-webpack-plugin.svg)](https://travis-ci.org/romanlex/app-manifest-webpack-plugin)
+[![npm][npm]][npm-url]
+[![node][node]][node-url]
+[![deps](deps)](deps-url)
+[![travis](travis)](travis-url)
 [![Maintainability](https://api.codeclimate.com/v1/badges/ea3844bff7db00d519de/maintainability)](https://codeclimate.com/github/romanlex/app-manifest-webpack-plugin/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/ea3844bff7db00d519de/test_coverage)](https://codeclimate.com/github/romanlex/app-manifest-webpack-plugin/test_coverage)
+
+[npm]: https://img.shields.io/npm/v/app-manifest-webpack-plugin.svg
+[npm-url]: https://www.npmjs.com/package/app-manifest-webpack-plugin
+
+[node]: https://img.shields.io/node/v/app-manifest-webpack-plugin.svg
+[node-url]: https://nodejs.org
+
+[travis]: https://travis-ci.org/gilbarbara/app-manifest-webpack-plugin.svg
+[travis-url]: https://travis-ci.org/romanlex/app-manifest-webpack-plugin
+
+[deps]: https://david-dm.org/romanlex/app-manifest-webpack-plugin.svg
+[deps-url]: https://david-dm.org/romanlex/app-manifest-webpack-plugin
 
 This is fork of [jantimon/favicons-webpack-plugin](https://github.com/jantimon/favicons-webpack-plugin).
 
