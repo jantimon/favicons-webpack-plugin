@@ -1,3 +1,9 @@
+# 0.1.5
+
++ Update dependencies
++ Update tests
++ Cleanup, refactoring
+
 # 0.1.4
 
 + Remove prefix from parameters. See config.path of `favicons` package
