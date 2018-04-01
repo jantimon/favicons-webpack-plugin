@@ -13,7 +13,7 @@ const writeFile = denodeify(require('fs').writeFile)
 const mkdirp = denodeify(require('mkdirp'))
 
 const LOGO_PATH = path.resolve(__dirname, 'fixtures/logo.png')
-const compareOptions = { compareSize: true }
+const compareOptions = { compareSize: true, excludeFilter: 'bundle.js' }
 
 let outputIndex = 1
 
@@ -24,6 +24,7 @@ function baseWebpackConfig(plugin) {
     devtool: 'eval',
     entry: path.resolve(__dirname, 'fixtures/entry.js'),
     output: {
+      filename: 'bundle.js',
       path: path.resolve(__dirname, '../dist', `test-${outputIndex++}`),
     },
     plugins: [].concat(plugin),
@@ -36,7 +37,7 @@ test('should throw error when called without arguments', async t => {
   try {
     plugin = new AppManifestWebpackPlugin()
   } catch (err) {
-    t.is(err.message, 'AppManifestWebpackPlugin options are required')
+    t.is(err.message, 'app-manifest-webpack-plugin: options are required')
   }
   t.is(plugin, undefined)
 })
@@ -89,7 +90,6 @@ test('should work together with the html-webpack-plugin', async t => {
     baseWebpackConfig([
       new AppManifestWebpackPlugin({
         logo: LOGO_PATH,
-        emitStats: true,
         statsFilename: 'iconstats.json',
         persistentCache: false,
       }),
@@ -108,7 +108,6 @@ test('should work together with the html-webpack-plugin and subfolders', async t
     baseWebpackConfig([
       new AppManifestWebpackPlugin({
         logo: LOGO_PATH,
-        emitStats: true,
         statsFilename: 'iconstats.json',
         persistentCache: false,
         config: {
@@ -129,7 +128,6 @@ test('should not recompile if there is a cache file', async t => {
   const options = baseWebpackConfig([
     new AppManifestWebpackPlugin({
       logo: LOGO_PATH,
-      emitStats: false,
       persistentCache: true,
     }),
     new HtmlWebpackPlugin(),

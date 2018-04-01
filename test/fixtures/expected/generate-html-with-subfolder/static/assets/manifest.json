@@ -1,14 +1,13 @@
 {
-  "name": "Webpack App",
-  "short_name": "Webpack App",
+  "name": "app-manifest-webpack-plugin",
+  "short_name": "app-manifest-webpack-plugin",
   "description": null,
   "dir": "auto",
   "lang": "en-US",
   "display": "standalone",
-  "orientation": "portrait",
+  "orientation": "any",
   "start_url": "/?homescreen=1",
   "background_color": "#fff",
-  "theme_color": "#fff",
   "icons": [
     {
       "src": "/static/assets/android-chrome-36x36.png",

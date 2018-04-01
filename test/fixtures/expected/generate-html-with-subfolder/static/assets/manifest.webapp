@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "name": "Webpack App",
+  "name": "app-manifest-webpack-plugin",
   "description": null,
   "icons": {
     "60": "/static/assets/firefox_app_60x60.png",
