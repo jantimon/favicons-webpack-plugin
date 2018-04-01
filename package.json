@@ -61,5 +61,8 @@
   },
   "peerDependencies": {
     "webpack": "^2.0.0 || ^3.0.0 || ^4.0.0"
+  },
+  "engines": {
+    "node": ">=6.14.1"
   }
 }
