@@ -30,6 +30,8 @@ This plugin also generates manifest files:
 + `browserconfig.xml`
 + `yandex-browser-manifest.json`
 
+![Screenshot](example/Screenshot_20180401_111647.png?raw=true "Screenshot")
+
 Installation
 ------------
 
