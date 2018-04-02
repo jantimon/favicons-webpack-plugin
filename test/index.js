@@ -57,6 +57,7 @@ test('should generate the expected default result', async t => {
     baseWebpackConfig(
       new AppManifestWebpackPlugin({
         logo: LOGO_PATH,
+        inject: false,
       }),
     ),
   )
@@ -75,6 +76,7 @@ test('should generate a configured JSON file', async t => {
         emitStats: true,
         persistentCache: false,
         statsFilename: 'iconstats.json',
+        inject: false,
       }),
     ),
   )
@@ -88,12 +90,12 @@ test('should generate a configured JSON file', async t => {
 test('should work together with the html-webpack-plugin', async t => {
   const stats = await webpack(
     baseWebpackConfig([
+      new HtmlWebpackPlugin(),
       new AppManifestWebpackPlugin({
         logo: LOGO_PATH,
         statsFilename: 'iconstats.json',
         persistentCache: false,
       }),
-      new HtmlWebpackPlugin(),
     ]),
   )
   const outputPath = stats.compilation.compiler.outputPath
@@ -103,9 +105,10 @@ test('should work together with the html-webpack-plugin', async t => {
   t.is(diffFiles[0], undefined)
 })
 
-test('should work together with the html-webpack-plugin and subfolders', async t => {
+test('should work together with the html-webpack-plugin with custom path', async t => {
   const stats = await webpack(
     baseWebpackConfig([
+      new HtmlWebpackPlugin(),
       new AppManifestWebpackPlugin({
         logo: LOGO_PATH,
         statsFilename: 'iconstats.json',
@@ -114,7 +117,6 @@ test('should work together with the html-webpack-plugin and subfolders', async t
           path: '/static/assets/',
         },
       }),
-      new HtmlWebpackPlugin(),
     ]),
   )
   const outputPath = stats.compilation.compiler.outputPath
@@ -126,11 +128,11 @@ test('should work together with the html-webpack-plugin and subfolders', async t
 
 test('should not recompile if there is a cache file', async t => {
   const options = baseWebpackConfig([
+    new HtmlWebpackPlugin(),
     new AppManifestWebpackPlugin({
       logo: LOGO_PATH,
       persistentCache: true,
     }),
-    new HtmlWebpackPlugin(),
   ])
 
   // Bring cache file in place

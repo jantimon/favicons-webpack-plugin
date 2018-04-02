@@ -1,3 +1,9 @@
+# 0.2.0
+
++ Add webpack 4 support
++ Update tests for webpack 4 compatibility
++ Update dependencies
+
 # 0.1.5
 
 + Update dependencies

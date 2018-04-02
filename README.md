@@ -20,7 +20,7 @@ App Manifest Webpack Plugin
 [deps]: https://david-dm.org/romanlex/app-manifest-webpack-plugin.svg
 [deps-url]: https://david-dm.org/romanlex/app-manifest-webpack-plugin
 
-This is fork of [jantimon/favicons-webpack-plugin](https://github.com/jantimon/favicons-webpack-plugin).
+This is fork of [jantimon/favicons-webpack-plugin](https://github.com/jantimon/favicons-webpack-plugin). Webpack v4 support.
 
 Allows to use the [favicons](https://github.com/haydenbleasel/favicons) generator with webpack.
 
@@ -62,13 +62,17 @@ const AppManifestWebpackPlugin = require('app-manifest-webpack-plugin')
 plugins: [
   new AppManifestWebpackPlugin({
     logo: 'my-logo.png',
+    inject: false,
   })
 ]
 ```
 
 This basic configuration will generate 37 different icons for iOS devices, Android devices and the Desktop browser out of your `my-logo.png` file.
 
-It can optionally also generate a [JSON file with all information about the icons](https://github.com/jantimon/favicons-webpack-plugin/blob/master/test/fixtures/expected/generate-html/iconstats.json) for you.
+It can optionally also generate a `iconstats.json` for you.
+
+Usage with `html-webpack-plugin`
+-----------
 
 If you are using with [html-webpack-plugin](https://github.com/ampedandwired/html-webpack-plugin) it will also inject the necessary html for you:
 
@@ -81,7 +85,22 @@ If you are using with [html-webpack-plugin](https://github.com/ampedandwired/htm
   <link rel="apple-touch-startup-image" media="(device-width: 768px) and (device-height: 1024px) and (orientation: portrait) and (-webkit-device-pixel-ratio: 2)" href="icons-366a3768de05f9e78c392fa62b8fbb80/apple-touch-startup-image-1536x2008.png">
 ```
 
-Advanced Usage
+```javascript
+plugins: [
+  new HtmlWebpackPlugin(),
+  // Make sure that AppManifestWebpackPlugin below HtmlWebpackPlugin
+  new AppManifestWebpackPlugin({
+    logo: 'my-logo.png',
+    statsFilename: 'iconstats.json',
+    persistentCache: false,
+    config: {
+      path: '/static/assets/',
+    },
+  }),
+]
+```
+
+All properties
 -----------
 
 ```javascript
@@ -96,7 +115,7 @@ plugins: [
     // Generate a cache file with control hashes and
     // don't rebuild the favicons until those hashes change
     persistentCache: true,
-    // Inject the html into the html-webpack-plugin
+    // Inject the html into the html-webpack-plugin. Default true
     inject: true,
     // favicons configuration object. Support all keys of favicons (see https://github.com/haydenbleasel/favicons)
     config: {

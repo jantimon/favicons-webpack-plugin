@@ -97,24 +97,26 @@ class AppManifestWebpackPlugin {
     if (cb) cb(null)
   }
 
-  htmlPluginHandler(compilation) {
-    if (this.beforeV4) {
-      compilation.plugin('html-webpack-plugin-before-html-processing', (htmlPluginData, cb) => {
-        this.beforeHtmlProccessingFn(htmlPluginData, cb)
-      })
-    } else {
-      if (compilation.hooks.htmlWebpackPluginBeforeHtmlProcessing) {
-        compilation.hooks.htmlWebpackPluginBeforeHtmlProcessing.tapAsync(
-          EVENTS.HTML_BEFORE,
-          this.beforeHtmlProccessingFn,
-        )
-      }
-    }
+  pluginHandler(compilation) {
+    compilation.plugin('html-webpack-plugin-before-html-processing', (htmlPluginData, cb) => {
+      this.htmlProccessingFn(htmlPluginData, cb)
+    })
   }
 
-  beforeHtmlProccessingFn(htmlPluginData, cb) {
-    // Hook into the html-webpack-plugin processing
-    // and add the html
+  hooksHandler(compilation) {
+    if (!compilation.hooks.htmlWebpackPluginAfterHtmlProcessing && this.options.inject) {
+      const message = `compilation.hooks.htmlWebpackPluginAfterHtmlProcessing is lost.
+       Please make sure you have installed html-webpack-plugin and put it before ${PLUGIN_NAME}`
+      throw new Error(message)
+    }
+
+    compilation.hooks.htmlWebpackPluginAfterHtmlProcessing.tapAsync(
+      PLUGIN_NAME,
+      (htmlPluginData, cb) => this.htmlProccessingFn(htmlPluginData, cb),
+    )
+  }
+
+  htmlProccessingFn(htmlPluginData, cb) {
     if (htmlPluginData.plugin.options.favicons !== false) {
       htmlPluginData.html = htmlPluginData.html.replace(
         /(<\/head>)/i,
@@ -162,14 +164,9 @@ class AppManifestWebpackPlugin {
 
     if (this.options.inject) {
       if (this.beforeV4) {
-        compiler.plugin('compilation', this.htmlPluginHandler.bind(this))
+        compiler.plugin('compilation', this.pluginHandler.bind(this))
       } else {
-        compiler.hooks['compilation'].tap(EVENTS.COMPILE, compilation => {
-          compiler.hooks.compilation.tap(
-            'HtmlWebpackPluginHooks',
-            this.htmlPluginHandler.bind(this),
-          )
-        })
+        compiler.hooks['compilation'].tap(EVENTS.COMPILE, this.hooksHandler.bind(this))
       }
     }
 
