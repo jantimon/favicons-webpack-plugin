@@ -20,7 +20,13 @@ App Manifest Webpack Plugin
 [deps]: https://david-dm.org/romanlex/app-manifest-webpack-plugin.svg
 [deps-url]: https://david-dm.org/romanlex/app-manifest-webpack-plugin
 
-This is fork of [jantimon/favicons-webpack-plugin](https://github.com/jantimon/favicons-webpack-plugin). Webpack v4 support.
+This is fork of [jantimon/favicons-webpack-plugin](https://github.com/jantimon/favicons-webpack-plugin) with improvements:
+
++ All tests is rewritten with support of webpack v4
++ All dependencies is updated
++ The plugin is rewritten in accordance with the principles of DRY
++ Added support of webpack v4
++ Added support of all params for config from `favicons` package
 
 Allows to use the [favicons](https://github.com/haydenbleasel/favicons) generator with webpack.
 
@@ -29,6 +35,9 @@ This plugin also generates manifest files:
 + `manifest.json`
 + `browserconfig.xml`
 + `yandex-browser-manifest.json`
+
+Screenshot with inject to HtmlWebpackPlugin
+------------
 
 ![Screenshot](example/Screenshot_20180401_111647.png?raw=true "Screenshot")
 
