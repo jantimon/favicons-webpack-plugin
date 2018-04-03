@@ -41,17 +41,18 @@ FaviconsWebpackPlugin.prototype.apply = function (compiler) {
 
   // Generate the favicons (webpack 4 compliant + back compat)
   var compilationResult;
-  (compiler.hooks ?
-    compiler.hooks.make.tapAsync.bind(compiler.hooks.make, 'FaviconsWebpackPluginMake') :
-    compiler.plugin.bind(compiler, 'make')
+  (compiler.hooks
+    ? compiler.hooks.make.tapAsync.bind(compiler.hooks.make, 'FaviconsWebpackPluginMake')
+    : compiler.plugin.bind(compiler, 'make')
   )((compilation, callback) => {
-      childCompiler.compileTemplate(self.options, compiler.context, compilation)
-        .then(function (result) {
-          compilationResult = result;
-          callback();
-        })
-        .catch(callback);
-    });
+    childCompiler.compileTemplate(self.options, compiler.context, compilation)
+      .then(function (result) {
+        compilationResult = result;
+        callback();
+      })
+      .catch(callback);
+    }
+  );
 
   // Hook into the html-webpack-plugin processing
   // and add the html
@@ -86,9 +87,9 @@ FaviconsWebpackPlugin.prototype.apply = function (compiler) {
 
   // Remove the stats from the output if they are not required (webpack 4 compliant + back compat)
   if (!self.options.emitStats) {
-    (compiler.hooks ?
-      compiler.hooks.emit.tapAsync.bind(compiler.hooks.emit, 'FaviconsWebpackPluginEmit') :
-      compiler.plugin.bind(compiler, 'emit')
+    (compiler.hooks
+      ? compiler.hooks.emit.tapAsync.bind(compiler.hooks.emit, 'FaviconsWebpackPluginEmit')
+      : compiler.plugin.bind(compiler, 'emit')
     )((compilation, callback) => {
       delete compilation.assets[compilationResult.outputName];
       callback();
