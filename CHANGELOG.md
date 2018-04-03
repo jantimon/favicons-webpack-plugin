@@ -1,3 +1,7 @@
+# 0.0.9
+
++ Improve support for Webpack 4
+
 # 0.0.8
 
 + Add support for Webpack 4
