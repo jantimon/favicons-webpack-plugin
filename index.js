@@ -51,8 +51,7 @@ FaviconsWebpackPlugin.prototype.apply = function (compiler) {
         callback();
       })
       .catch(callback);
-    }
-  );
+  });
 
   // Hook into the html-webpack-plugin processing
   // and add the html
