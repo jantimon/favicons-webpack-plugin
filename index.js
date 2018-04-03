@@ -39,9 +39,12 @@ FaviconsWebpackPlugin.prototype.apply = function (compiler) {
     self.options.title = guessAppName(compiler.context);
   }
 
-  // Generate the favicons
+  // Generate the favicons (webpack 4 compliant + back compat)
   var compilationResult;
-  compiler.plugin('make', function (compilation, callback) {
+  (compiler.hooks
+    ? compiler.hooks.make.tapAsync.bind(compiler.hooks.make, 'FaviconsWebpackPluginMake')
+    : compiler.plugin.bind(compiler, 'make')
+  )((compilation, callback) => {
     childCompiler.compileTemplate(self.options, compiler.context, compilation)
       .then(function (result) {
         compilationResult = result;
@@ -81,9 +84,12 @@ FaviconsWebpackPlugin.prototype.apply = function (compiler) {
     }
   }
 
-  // Remove the stats from the output if they are not required
+  // Remove the stats from the output if they are not required (webpack 4 compliant + back compat)
   if (!self.options.emitStats) {
-    compiler.plugin('emit', function (compilation, callback) {
+    (compiler.hooks
+      ? compiler.hooks.emit.tapAsync.bind(compiler.hooks.emit, 'FaviconsWebpackPluginEmit')
+      : compiler.plugin.bind(compiler, 'emit')
+    )((compilation, callback) => {
       delete compilation.assets[compilationResult.outputName];
       callback();
     });
