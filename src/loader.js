@@ -16,7 +16,10 @@ module.exports = function (content) {
   const callback = this.async();
   const context = getContext(this);
   const publicPath = getPublicPath(this._compilation);
-  const path = prefix && trailingSlash(interpolateName(this, prefix, {context, content}));
+  const path = prefix && trailingSlash(interpolateName(this, prefix, {
+    context,
+    content: msgpack.encode([content, options]), // hash must depend on logo + config
+  }));
 
   // Generate icons
   favicons(content, Object.assign(options, {path: url.resolve(publicPath, path)}), (err, result) => {
