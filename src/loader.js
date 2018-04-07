@@ -22,16 +22,14 @@ module.exports = function (content) {
   }));
 
   // Generate icons
-  favicons(content, Object.assign(options, {path: url.resolve(publicPath, path)}), (err, result) => {
-    if (err) {
-      return callback(new Error(err));
-    }
+  return favicons(content, Object.assign(options, {path: url.resolve(publicPath, path)}))
+    .then(result => {
+      const html = result.html.join('');
+      const assets = [...result.images, ...result.files].map(({name, contents}) => ({name: path + name, contents}));
 
-    const html = result.html.join('');
-    const assets = [...result.images, ...result.files].map(({name, contents}) => ({name: path + name, contents}));
-
-    return callback(null, 'module.exports = ' + JSON.stringify(msgpack.encode({html, assets}).toString('base64')));
-  });
+      return callback(null, 'module.exports = ' + JSON.stringify(msgpack.encode({html, assets}).toString('base64')));
+    })
+    .catch(callback);
 };
 
 module.exports.raw = true;
