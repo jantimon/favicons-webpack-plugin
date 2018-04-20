@@ -5,7 +5,7 @@ var _ = require('lodash');
 var fs = require('fs');
 var path = require('path');
 
-function FaviconsWebpackPlugin (options) {
+function FaviconsWebpackPlugin(options) {
   if (typeof options === 'string') {
     options = { logo: options };
   }
@@ -70,6 +70,7 @@ FaviconsWebpackPlugin.prototype.apply = function (compiler) {
     if (compiler.hooks) {
       var tapped = 0;
       compiler.hooks.compilation.tap('FaviconsWebpackPlugin', function (cmpp) {
+
         compiler.hooks.compilation.tap('HtmlWebpackPluginHooks', function () {
           if (!tapped++ && cmpp.hooks.htmlWebpackPluginBeforeHtmlProcessing) {
             cmpp.hooks.htmlWebpackPluginBeforeHtmlProcessing.tapAsync(
@@ -104,7 +105,7 @@ FaviconsWebpackPlugin.prototype.apply = function (compiler) {
 /**
  * Tries to guess the name from the package.json
  */
-function guessAppName (compilerWorkingDirectory) {
+function guessAppName(compilerWorkingDirectory) {
   var packageJson = path.resolve(compilerWorkingDirectory, 'package.json');
   if (!fs.existsSync(packageJson)) {
     packageJson = path.resolve(compilerWorkingDirectory, '../package.json');
