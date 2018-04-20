@@ -5,9 +5,9 @@ var _ = require('lodash');
 var fs = require('fs');
 var path = require('path');
 
-function FaviconsWebpackPlugin (options) {
+function FaviconsWebpackPlugin(options) {
   if (typeof options === 'string') {
-    options = {logo: options};
+    options = { logo: options };
   }
   assert(typeof options === 'object', 'FaviconsWebpackPlugin options are required');
   assert(options.logo, 'An input file is required');
@@ -64,12 +64,16 @@ FaviconsWebpackPlugin.prototype.apply = function (compiler) {
       callback(null, htmlPluginData);
     };
 
-    // webpack 4
+    /**
+     * Use: if webpack 4 is detected
+     */
     if (compiler.hooks) {
       var tapped = 0;
       compiler.hooks.compilation.tap('FaviconsWebpackPlugin', function (cmpp) {
+
         compiler.hooks.compilation.tap('HtmlWebpackPluginHooks', function () {
-          if (!tapped++) {
+          console.log("Tapped: ", tapped);
+          if (!tapped++ && cmpp.hooks.htmlWebpackPluginBeforeHtmlProcessing) {
             cmpp.hooks.htmlWebpackPluginBeforeHtmlProcessing.tapAsync(
               'favicons-webpack-plugin',
               addFaviconsToHtml
@@ -77,6 +81,9 @@ FaviconsWebpackPlugin.prototype.apply = function (compiler) {
           }
         });
       });
+      /**
+       * Use: if webpack 3 is detected
+       */
     } else {
       compiler.plugin('compilation', function (compilation) {
         compilation.plugin('html-webpack-plugin-before-html-processing', addFaviconsToHtml);
@@ -99,7 +106,7 @@ FaviconsWebpackPlugin.prototype.apply = function (compiler) {
 /**
  * Tries to guess the name from the package.json
  */
-function guessAppName (compilerWorkingDirectory) {
+function guessAppName(compilerWorkingDirectory) {
   var packageJson = path.resolve(compilerWorkingDirectory, 'package.json');
   if (!fs.existsSync(packageJson)) {
     packageJson = path.resolve(compilerWorkingDirectory, '../package.json');
