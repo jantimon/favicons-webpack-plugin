@@ -12,31 +12,32 @@ function FaviconsWebpackPlugin (options) {
   assert(typeof options === 'object', 'FaviconsWebpackPlugin options are required');
   assert(options.logo, 'An input file is required');
   this.options = _.extend({
-    prefix: 'icons-[hash]/',
+    outputFilePrefix: 'favicons/',
     emitStats: false,
     statsFilename: 'iconstats-[hash].json',
     persistentCache: true,
     inject: true,
-    background: '#fff'
+    background: '#fff',
+    theme_color: '#fff',
   }, options);
   this.options.icons = _.extend({
     android: true,
     appleIcon: true,
-    appleStartup: true,
+    appleStartup: false,
     coast: false,
     favicons: true,
-    firefox: true,
+    firefox: false,
     opengraph: false,
     twitter: false,
     yandex: false,
-    windows: false
+    windows: false,
   }, this.options.icons);
 }
 
 FaviconsWebpackPlugin.prototype.apply = function (compiler) {
   var self = this;
-  if (!self.options.title) {
-    self.options.title = guessAppName(compiler.context);
+  if (!self.options.appName) {
+    self.options.appName = guessAppName(compiler.context);
   }
 
   // Generate the favicons (webpack 4 compliant + back compat)
