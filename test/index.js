@@ -24,9 +24,9 @@ function baseWebpackConfig (plugin) {
     devtool: 'eval',
     entry: path.resolve(__dirname, 'fixtures/entry.js'),
     output: {
-      path: path.resolve(__dirname, '../dist', 'test-' + (outputId++))
+      path: path.resolve(__dirname, '../dist', 'test-' + (outputId++)),
     },
-    plugins: [].concat(plugin)
+    plugins: [].concat(plugin),
   };
 }
 
@@ -53,7 +53,7 @@ test('should take an object with just the logo as argument', async t => {
 
 test('should generate the expected default result', async t => {
   const stats = await webpack(baseWebpackConfig(new FaviconsWebpackPlugin({
-    logo: LOGO_PATH
+    logo: LOGO_PATH,
   })));
   const outputPath = stats.compilation.compiler.outputPath;
   const expected = path.resolve(__dirname, 'fixtures/expected/default');
@@ -67,7 +67,20 @@ test('should generate a configured JSON file', async t => {
     logo: LOGO_PATH,
     emitStats: true,
     persistentCache: false,
-    statsFilename: 'iconstats.json'
+    statsFilename: 'iconstats.json',
+    outputFilePrefix: 'icons-[hash]/',
+    icons: {
+      android: true,
+      appleIcon: true,
+      appleStartup: true,
+      coast: false,
+      favicons: true,
+      firefox: true,
+      opengraph: false,
+      twitter: false,
+      yandex: false,
+      windows: false,
+    },
   })));
   const outputPath = stats.compilation.compiler.outputPath;
   const expected = path.resolve(__dirname, 'fixtures/expected/generate-json');
@@ -82,9 +95,9 @@ test('should work together with the html-webpack-plugin', async t => {
       logo: LOGO_PATH,
       emitStats: true,
       statsFilename: 'iconstats.json',
-      persistentCache: false
+      persistentCache: false,
     }),
-    new HtmlWebpackPlugin()
+    new HtmlWebpackPlugin(),
   ]));
   const outputPath = stats.compilation.compiler.outputPath;
   const expected = path.resolve(__dirname, 'fixtures/expected/generate-html');
@@ -98,9 +111,10 @@ test('should not recompile if there is a cache file', async t => {
     new FaviconsWebpackPlugin({
       logo: LOGO_PATH,
       emitStats: false,
-      persistentCache: true
+      persistentCache: true,
+      outputFilePrefix: 'icons-[hash]/',
     }),
-    new HtmlWebpackPlugin()
+    new HtmlWebpackPlugin(),
   ]);
 
   // Bring cache file in place
