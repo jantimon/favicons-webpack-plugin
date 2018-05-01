@@ -1,6 +1,6 @@
 {
   "name": "favicons-webpack-plugin",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "Let webpack generate all your favicons and icons for you",
   "main": "index.js",
   "files": [
@@ -15,7 +15,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/jantimon/favicons-webpack-plugin.git"
+    "url": "https://github.com/donskov/favicons-webpack-plugin"
   },
   "keywords": [
     "webpack",
@@ -27,12 +27,12 @@
   "author": "Jan Nicklas <j.nicklas@me.com> (https://github.com/jantimon)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/jantimon/favicons-webpack-plugin/issues"
+    "url": "https://github.com/donskov/favicons-webpack-plugin/issues"
   },
   "semistandard": {
     "parser": "babel-eslint"
   },
-  "homepage": "https://github.com/jantimon/favicons-webpack-plugin",
+  "homepage": "https://github.com/donskov/favicons-webpack-plugin",
   "devDependencies": {
     "ava": "^0.16.0",
     "babel-eslint": "^7.1.0",
