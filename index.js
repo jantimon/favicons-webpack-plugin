@@ -70,7 +70,7 @@ FaviconsWebpackPlugin.prototype.apply = function (compiler) {
       compiler.hooks.compilation.tap('FaviconsWebpackPlugin', function (cmpp) {
         compiler.hooks.compilation.tap('HtmlWebpackPluginHooks', function () {
           if (!tapped++) {
-            cmpp.hooks.htmlWebpackPluginBeforeHtmlProcessing.tapAsync(
+            cmpp.hooks.htmlWebpackPluginBeforeHtmlProcessing && cmpp.hooks.htmlWebpackPluginBeforeHtmlProcessing.tapAsync(
               'favicons-webpack-plugin',
               addFaviconsToHtml
             );
