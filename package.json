@@ -48,7 +48,7 @@
     "express": "^4.16.3",
     "html-webpack-plugin": "^3.2.0",
     "memory-fs": "^0.4.1",
-    "mkdirp": "^0.5.1",
+    "shelljs": "^0.8.2",
     "prettier": "^1.13.4",
     "rimraf": "^2.6.2",
     "semistandard": "^12.0.1",

@@ -5,15 +5,12 @@ import AppManifestWebpackPlugin from '..'
 import denodeify from 'denodeify'
 import HtmlWebpackPlugin from 'html-webpack-plugin'
 import dircompare from 'dir-compare'
-import packageJson from '../package.json'
+import shell from 'shelljs'
 
 const webpack = denodeify(require('webpack'))
-const readFile = denodeify(require('fs').readFile)
-const writeFile = denodeify(require('fs').writeFile)
-const mkdirp = denodeify(require('mkdirp'))
 
 const LOGO_PATH = path.resolve(__dirname, 'fixtures/logo.png')
-const compareOptions = { compareSize: true, excludeFilter: 'bundle.js' }
+const compareOptions = { compareSize: true, excludeFilter: 'bundle.js,*.png' }
 
 let outputIndex = 1
 
@@ -137,13 +134,12 @@ test('should not recompile if there is a cache file', async t => {
   const cacheFile = '.cache'
   const cacheFileExpected = path.resolve(__dirname, 'fixtures/expected/from-cache/', cacheFile)
   const cacheFileDist = path.resolve(__dirname, options.output.path, cacheFile)
-  await mkdirp(path.dirname(cacheFileDist))
-  const cache = JSON.parse(await readFile(cacheFileExpected))
-  cache.version = packageJson.version
-  await writeFile(cacheFileDist, JSON.stringify(cache))
+  shell.mkdir('-p', path.dirname(cacheFileDist))
+  shell.cp(cacheFileExpected, path.dirname(cacheFileDist))
 
   const stats = await webpack(options)
   const outputPath = stats.compilation.compiler.outputPath
+
   const expected = path.resolve(__dirname, 'fixtures/expected/from-cache')
   const compareResult = await dircompare.compare(outputPath, expected, compareOptions)
   const diffFiles = compareResult.diffSet.filter(diff => diff.state !== 'equal')
