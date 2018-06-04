@@ -111,11 +111,9 @@ test('should work together with the html-webpack-plugin with custom path', async
       new HtmlWebpackPlugin(),
       new AppManifestWebpackPlugin({
         logo: LOGO_PATH,
+        output: '/static/assets/',
         statsFilename: 'iconstats.json',
         persistentCache: false,
-        config: {
-          path: '/static/assets/',
-        },
       }),
     ]),
   )
