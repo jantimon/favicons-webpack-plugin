@@ -1,3 +1,12 @@
+# 1.0.0
+
++ statsFilename can be absolute path
++ Add output option
++ Add prefix option
++ Updated dependencies
+- Removed config.path option
+
+
 # 0.2.0
 
 + Add webpack 4 support

@@ -117,10 +117,14 @@ plugins: [
   new AppManifestWebpackPlugin({
     // Your source logo
     logo: 'my-logo.png',
+    // Prefix for file names
+    prefix: '/assets/icons-[hash:8]/', // default '/'
+    // Output path for icons (icons will be saved to output.path(webpack config) + this key)
+    output: '/icons-[hash:8]/', // default '/'
     // Emit all stats of the generated icons
     emitStats: false,
     // The name of the json containing all favicon information
-    statsFilename: 'iconstats-[hash].json',
+    statsFilename: 'iconstats.json', // can be absolute path
     // Generate a cache file with control hashes and
     // don't rebuild the favicons until those hashes change
     persistentCache: true,
@@ -134,7 +138,6 @@ plugins: [
       developerURL: null, // Your (or your developer's) URL. `string`
       background: '#fff', // Background colour for flattened icons. `string`
       theme_color: '#fff', // Theme color for browser chrome. `string`
-      path: '/', // Path for overriding default icons path. `string`
       display: 'standalone', // Android display: "browser" or "standalone". `string`
       orientation: 'portrait', // Android orientation: "portrait" or "landscape". `string`
       start_url: '/?homescreen=1', // Android start application's URL. `string`
@@ -162,6 +165,39 @@ plugins: [
   })
 ]
 ```
+
+Prefix and output options
+-----------
+This options help you save output files or change paths to icons in your html as you want.
+Example you want save output icons to `icons/` directory in your build path but in html you want set another prefix for files, example `/assets/webpack/icons/`
+when you can use options for this
+
+```javascript
+  new AppManifestWebpackPlugin({
+    // Your source logo
+    logo: 'my-logo.png',
+    // Prefix for file names
+    prefix: '/assets/webpack/icons-[hash:8]/',
+    // Output path for icons (icons will be saved to output.path(webpack config) + this key)
+    output: '/icons-[hash:8]/'
+  })
+```
+
+html file will be contains current paths
+
+```html
+<link rel="apple-touch-icon" sizes="120x120" href="/assets/webpack/icons-4b62aad7/apple-touch-icon-120x120.png">
+<link rel="apple-touch-icon" sizes="144x144" href="/assets/webpack/icons-4b62aad7/apple-touch-icon-144x144.png">
+<link rel="apple-touch-icon" sizes="152x152" href="/assets/webpack/icons-4b62aad7/apple-touch-icon-152x152.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/webpack/icons-4b62aad7/apple-touch-icon-180x180.png">
+```
+
+but files will be saved to `/icons-4b62aad7/` directory and you `iconstats.json` contains 
+
+```json
+{ "outputFilePrefix":"/assets/webpack/icons-4b62aad7/" }
+```
+
 
 # Changelog
 
