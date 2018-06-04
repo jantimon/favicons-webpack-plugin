@@ -176,8 +176,8 @@ when you can use options for this
   new AppManifestWebpackPlugin({
     // Your source logo
     logo: 'my-logo.png',
-    // Prefix for file names
-    prefix: '/assets/webpack/icons-[hash:8]/',
+    // Prefix for file names (html will be container icons with this prefix)
+    prefix: '/assets/webpack/',
     // Output path for icons (icons will be saved to output.path(webpack config) + this key)
     output: '/icons-[hash:8]/'
   })
@@ -192,11 +192,14 @@ html file will be contains current paths
 <link rel="apple-touch-icon" sizes="180x180" href="/assets/webpack/icons-4b62aad7/apple-touch-icon-180x180.png">
 ```
 
-but files will be saved to `/icons-4b62aad7/` directory and you `iconstats.json` contains 
+but files will be saved to `/icons-4b62aad7/` directory and you `iconstats.json` contains correct outputFilePrefix
 
 ```json
 { "outputFilePrefix":"/assets/webpack/icons-4b62aad7/" }
 ```
+
+#### Keep in mind what `prefix` change filenames inside html, `output` it is the path where icons wiil be saved
+
 
 
 # Changelog
