@@ -33,6 +33,8 @@ function FaviconsWebpackPlugin (options) {
   }, this.options.icons);
 }
 
+var tapped = 0;
+
 FaviconsWebpackPlugin.prototype.apply = function (compiler) {
   var self = this;
   if (!self.options.title) {
@@ -66,7 +68,6 @@ FaviconsWebpackPlugin.prototype.apply = function (compiler) {
 
     // webpack 4
     if (compiler.hooks) {
-      var tapped = 0;
       compiler.hooks.compilation.tap('FaviconsWebpackPlugin', function (cmpp) {
         compiler.hooks.compilation.tap('HtmlWebpackPluginHooks', function () {
           if (!tapped++) {
