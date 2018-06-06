@@ -1,3 +1,7 @@
+# 1.1.0
+
++ Add `statsEncodeHtml` option for encoding html string to entities in stats file
+
 # 1.0.0
 
 + statsFilename can be absolute path

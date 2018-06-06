@@ -145,3 +145,21 @@ test('should not recompile if there is a cache file', async t => {
   const diffFiles = compareResult.diffSet.filter(diff => diff.state !== 'equal')
   t.is(diffFiles[0], undefined)
 })
+
+test('should has html encoded string in stats file', async t => {
+  const stats = await webpack(
+    baseWebpackConfig([
+      new HtmlWebpackPlugin(),
+      new AppManifestWebpackPlugin({
+        logo: LOGO_PATH,
+        statsFilename: 'iconstats.json',
+        statsEncodeHtml: true,
+      }),
+    ]),
+  )
+  const outputPath = stats.compilation.compiler.outputPath
+  const expected = path.resolve(__dirname, 'fixtures/expected/generate-json-with-escaped-html')
+  const compareResult = await dircompare.compare(outputPath, expected, compareOptions)
+  const diffFiles = compareResult.diffSet.filter(diff => diff.state !== 'equal')
+  t.is(diffFiles[0], undefined)
+})

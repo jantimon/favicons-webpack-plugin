@@ -125,6 +125,8 @@ plugins: [
     emitStats: false,
     // The name of the json containing all favicon information
     statsFilename: 'iconstats.json', // can be absolute path
+    // Encode html entities for output (Example json_decode from php doesn't support html strings with escaped double quotes but it's valid json)
+    statsEncodeHtml: false,
     // Generate a cache file with control hashes and
     // don't rebuild the favicons until those hashes change
     persistentCache: true,
