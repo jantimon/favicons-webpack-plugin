@@ -125,7 +125,7 @@ plugins: [
     emitStats: false,
     // The name of the json containing all favicon information
     statsFilename: 'iconstats.json', // can be absolute path
-    // Encode html entities for output (Example json_decode from php doesn't support html strings with escaped double quotes but it's valid json)
+    // Encode html entities in stats file (Example json_decode from php doesn't support html strings with escaped double quotes but it's valid json)
     statsEncodeHtml: false,
     // Generate a cache file with control hashes and
     // don't rebuild the favicons until those hashes change
@@ -203,6 +203,19 @@ but files will be saved to `/icons-4b62aad7/` directory and you `iconstats.json`
 #### Keep in mind what `prefix` change filenames inside html, `output` it is the path where icons wiil be saved
 
 
+Stats file
+-----------
+When you use option `emitStats` the plugin is generated stats file with `statsFilename` and contains usefull data
+
+```json
+{
+  "outputFilePrefix":"/",
+  "html": [], // array of html strings
+  "files": [], // array of generated icon names 
+  "encodedHtml": "", // endoded html string if you use statsEncodeHtml option
+}
+
+```
 
 # Changelog
 

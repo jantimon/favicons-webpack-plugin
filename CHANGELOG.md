@@ -1,3 +1,7 @@
+# 1.1.2
+
++ changed output key to encoded html string in stats file
+
 # 1.1.1
 
 + Fix `statsEncodeHtml` option handle
