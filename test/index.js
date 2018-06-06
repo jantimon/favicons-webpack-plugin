@@ -152,6 +152,7 @@ test('should has html encoded string in stats file', async t => {
       new HtmlWebpackPlugin(),
       new AppManifestWebpackPlugin({
         logo: LOGO_PATH,
+        emitStats: true,
         statsFilename: 'iconstats.json',
         statsEncodeHtml: true,
       }),
