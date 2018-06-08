@@ -1,6 +1,7 @@
 const test = require('ava');
 const path = require('path');
 const fs = require('fs-extra');
+const findCacheDir = require('find-cache-dir');
 const FaviconsWebpackPlugin = require('../');
 
 const {logo, mkdir, generate} = require('./util');
@@ -18,7 +19,9 @@ test('should allow disabling caching', async t => {
     plugins: [new FaviconsWebpackPlugin({logo, cache: false})],
   });
 
-  t.deepEqual(fs.readdirSync(t.context.root), ['dist']);
+  const cache = findCacheDir({name: 'favicons-webpack-plugin'});
+
+  t.pass(!fs.existsSync(cache));
 });
 
 test.afterEach(t => fs.remove(t.context.root));

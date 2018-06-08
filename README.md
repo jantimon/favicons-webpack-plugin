@@ -103,9 +103,9 @@ plugins: [
   new FaviconsWebpackPlugin({
     // Your source logo (required)
     logo: '/path/to/logo.png',
-    // Path to store cached data or false/null to disable caching altogether
+    // Enable caching and optionally specify the path to store cached data
     // Note: disabling caching may increase build times considerably
-    cache: '.wwp-cache',
+    cache: true,
     // Prefix path for generated assets
     prefix: 'assets/',
     // Inject html links/metadata (requires html-webpack-plugin)

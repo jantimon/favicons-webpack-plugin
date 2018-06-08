@@ -1,5 +1,3 @@
-'use strict';
-const path = require('path');
 const assert = require('assert');
 const child = require('./compiler');
 const Oracle = require('./oracle');
@@ -11,19 +9,15 @@ module.exports = class FaviconsWebpackPlugin {
     assert(typeof options === 'object' && typeof options.logo === 'string', 'An input file is required');
 
     this.options = Object.assign({
-      cache: '.wwp-cache',
-      prefix: 'assets/',
-      favicons: {},
+      cache: true,
       inject: true,
+      favicons: {},
+      prefix: 'assets/',
     }, options);
   }
 
   apply(compiler) {
     const oracle = new Oracle(compiler.context);
-
-    if (this.options.cache) {
-      this.options.cache = path.resolve(compiler.context, this.options.cache);
-    }
 
     {
       const {

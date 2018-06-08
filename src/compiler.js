@@ -1,10 +1,10 @@
-'use strict';
 const path = require('path');
 const msgpack = require('msgpack-lite');
+const findCacheDir = require('find-cache-dir');
 const SingleEntryPlugin = require('webpack/lib/SingleEntryPlugin');
 const {getAssetPath} = require('./compat');
 
-module.exports.run = ({prefix, favicons: options, logo, cache: cacheDirectory}, context, compilation) => {
+module.exports.run = ({prefix, favicons: options, logo, cache}, context, compilation) => {
   // The entry file is just an empty helper
   const filename = '[hash]';
   const publicPath = compilation.outputOptions.publicPath;
@@ -16,12 +16,19 @@ module.exports.run = ({prefix, favicons: options, logo, cache: cacheDirectory}, 
   compiler.context = context;
 
   const loader = `!${require.resolve('./loader')}?${JSON.stringify({prefix, options})}`;
-  const cache = cacheDirectory
+
+  const cacheDirectory = cache && (
+      (typeof cache === 'string')
+    ? path.resolve(context, cache)
+    : findCacheDir({name: 'favicons-webpack-plugin', cwd: context}) || path.resolve(__dirname, '.cache')
+  );
+
+  const cacher = cacheDirectory
     ? `!${require.resolve('cache-loader')}?${JSON.stringify({cacheDirectory})}`
     : ''
   ;
 
-  new SingleEntryPlugin(context, `!${cache}${loader}!${logo}`, path.basename(logo)).apply(compiler);
+  new SingleEntryPlugin(context, `!${cacher}${loader}!${logo}`, path.basename(logo)).apply(compiler);
 
   // Compile and return a promise
   return new Promise((resolve, reject) => {

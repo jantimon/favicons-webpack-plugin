@@ -51,6 +51,7 @@
     "cache-loader": "^1.2.2",
     "camelcase": "^5.0.0",
     "favicons": "^5.1.1",
+    "find-cache-dir": "^1.0.0",
     "find-root": "^1.1.0",
     "loader-utils": "^1.1.0",
     "msgpack-lite": "^0.1.26",

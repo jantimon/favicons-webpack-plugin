@@ -11,8 +11,6 @@ test.beforeEach(async t => t.context.root = await mkdir());
 test('should cache assets', async t => {
   const plugin = new FaviconsWebpackPlugin({logo});
 
-  await fs.writeJSON(path.join(t.context.root, 'package.json'), {});
-
   await generate({
     context: t.context.root,
     output: {
@@ -21,10 +19,7 @@ test('should cache assets', async t => {
     plugins: [plugin],
   });
 
-  const cache = path.resolve(t.context.root, findCacheDir({
-    name: 'favicons-webpack-plugin',
-    cwd: t.context.root,
-  }));
+  const cache = path.resolve(t.context.root, '.wwp-cache');
 
   t.pass(fs.existsSync(cache));
   t.pass(fs.lstatSync(cache).isDirectory());
