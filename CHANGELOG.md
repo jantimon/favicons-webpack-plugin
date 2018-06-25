@@ -1,3 +1,7 @@
+# 1.1.3
+
++ add support relative paths for output
+
 # 1.1.2
 
 + changed output key to encoded html string in stats file

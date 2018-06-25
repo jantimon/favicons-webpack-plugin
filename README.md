@@ -120,7 +120,7 @@ plugins: [
     // Prefix for file names
     prefix: '/assets/icons-[hash:8]/', // default '/'
     // Output path for icons (icons will be saved to output.path(webpack config) + this key)
-    output: '/icons-[hash:8]/', // default '/'
+    output: '/icons-[hash:8]/', // default '/'. Can be absolute or relative
     // Emit all stats of the generated icons
     emitStats: false,
     // The name of the json containing all favicon information
@@ -202,6 +202,18 @@ but files will be saved to `/icons-4b62aad7/` directory and you `iconstats.json`
 
 #### Keep in mind what `prefix` change filenames inside html, `output` it is the path where icons wiil be saved
 
+#### Or another case. You want save icons above the directory of webpack `output`  and want set corrent path in the manifest files and html files
+
+```javascript
+  new AppManifestWebpackPlugin({
+    // Your source logo
+    logo: 'my-logo.png',
+    // Output path can be relative. Icons will be saved to webpack output directory + output
+    output: '../icons/',
+    // Change prefix of files  for correct paths in your html and manifest files
+    prefix: '/icons/'
+  })
+```
 
 Stats file
 -----------

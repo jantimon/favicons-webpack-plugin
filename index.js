@@ -5,6 +5,8 @@ const path = require('path')
 
 const DEFAULT_OPTIONS = {
   emitStats: false,
+  prefix: '',
+  output: '/',
   statsFilename: 'iconstats-[hash].json',
   persistentCache: true,
   inject: true,
