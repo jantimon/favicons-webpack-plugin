@@ -1,5 +1,5 @@
-/node_modules/
 /coverage/
 /.nyc_output/
-**/public/
 **/.wwp-cache/
+**/node_modules/
+/example/**/public/

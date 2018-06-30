@@ -7,7 +7,7 @@ const {getAssetPath} = require('./compat');
 module.exports.run = ({prefix, favicons: options, logo, cache}, context, compilation) => {
   // The entry file is just an empty helper
   const filename = '[hash]';
-  const publicPath = compilation.outputOptions.publicPath;
+  const {publicPath = '/'} = compilation.outputOptions;
 
   // Create an additional child compiler which takes the template
   // and turns it into an Node.JS html factory.
@@ -15,7 +15,7 @@ module.exports.run = ({prefix, favicons: options, logo, cache}, context, compila
   const compiler = compilation.createChildCompiler('favicons-webpack-plugin', {filename, publicPath});
   compiler.context = context;
 
-  const loader = `!${require.resolve('./loader')}?${JSON.stringify({prefix, options})}`;
+  const loader = `!${require.resolve('./loader')}?${JSON.stringify({prefix, options, path: publicPath})}`;
 
   const cacheDirectory = cache && (
       (typeof cache === 'string')
