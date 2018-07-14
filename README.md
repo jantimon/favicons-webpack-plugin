@@ -163,7 +163,7 @@ Take a look at the [CHANGELOG.md](https://github.com/jantimon/favicons-webpack-p
 
 # Contribution
 
-You're free to contribute to this project by submitting [issues](https://github.com/jantimon/favicons-webpack-plugin/issues) and/or [pull requests](https://github.com/jantimon/favicons-webpack-plugin/pulls). This project is test-driven, so keep in mind that every change and new feature should be covered by tests.
+You're free to contribute to this project by submitting [issues](https://github.com/jantimon/favicons-webpack-plugin/issues) and/or [pull requests](https://github.com/jantimon/favicons-webpack-plugin/pulls).
 
 Please keep in mind that every change and new feature should be covered by
 tests.
