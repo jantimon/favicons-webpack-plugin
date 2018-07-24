@@ -30,7 +30,7 @@ function FaviconsWebpackPlugin (options) {
     display: 'standalone',
     orientation: 'any',
     start_url: '/?homescreen=1',
-    version: '1.0',
+    version: '1.0'
   }, options);
   this.options.icons = _.extend({
     android: true,
