@@ -48,6 +48,7 @@
     "webpack-dev-middleware": "^1.6.1"
   },
   "dependencies": {
+    "core-js": "^2.5.7",
     "favicons": "^5.1.1",
     "loader-utils": "^1.1.0",
     "lodash": "^4.17.10"
