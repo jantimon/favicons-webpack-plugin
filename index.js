@@ -27,6 +27,7 @@ function FaviconsWebpackPlugin (options) {
     lang: 'en-US',
     background: '#fff',
     theme_color: '#fff',
+    appleStatusBarStyle: 'black-translucent',
     display: 'standalone',
     orientation: 'any',
     start_url: '/?homescreen=1',
