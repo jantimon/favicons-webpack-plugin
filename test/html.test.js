@@ -40,4 +40,20 @@ test('should inject html despite HtmlWebpackPlugin@inject flag with inject force
   t.deepEqual(await compare(dist, path.resolve(expected, 'html')), []);
 });
 
+test('should work together with the html-webpack-plugin with no <head></head> tags', async t => {
+    const dist = path.join(t.context.root, 'dist');
+    await generate({
+        context: t.context.root,
+        output: {
+            path: dist,
+        },
+        plugins: [
+            new HtmlWebpackPlugin({templateContent: ''}),
+            new WebappWebpackPlugin({logo}),
+        ],
+    });
+
+    t.deepEqual(await compare(dist, path.resolve(expected, 'htmlnohead')), []);
+});
+
 test.afterEach(t => fs.remove(t.context.root));
