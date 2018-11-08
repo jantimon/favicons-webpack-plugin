@@ -68,16 +68,16 @@ FaviconsWebpackPlugin.prototype.apply = function (compiler) {
     if (compiler.hooks) {
       compiler.hooks.compilation.tap('FaviconsWebpackPlugin', function (cmpp) {
         // This is set in html-webpack-plugin pre-v4.
-        let hook = cmpp.hooks.htmlWebpackPluginAfterHtmlProcessing
+        let hook = cmpp.hooks.htmlWebpackPluginAfterHtmlProcessing;
         if (!hook) {
-          const HtmlWebpackPlugin = require('html-webpack-plugin')
-          hook = HtmlWebpackPlugin.getHooks(cmpp).beforeEmit
+          const HtmlWebpackPlugin = require('html-webpack-plugin');
+          hook = HtmlWebpackPlugin.getHooks(cmpp).beforeEmit;
         }
         hook.tapAsync('favicons-webpack-plugin', (htmlPluginData, cb) => {
           try {
-            addFaviconsToHtml(htmlPluginData, cb)
-          } catch(error) {
-            cb(error)
+            addFaviconsToHtml(htmlPluginData, cb);
+          } catch (error) {
+            cb(error);
           }
         });
       });
