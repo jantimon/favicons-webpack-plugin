@@ -27,7 +27,12 @@ module.exports.compiler = (config) => {
   config.plugins
     .filter(plugin => plugin.constructor.name === 'HtmlWebpackPlugin')
     .forEach(plugin => {
-      plugin.options.chunks = [];
+      Object.assign(plugin.options, {
+        meta: {},
+        minify: false,
+        chunks: [],
+        template: path.resolve(fixtures, 'index.html')
+      });
     });
 
   return webpack(config);

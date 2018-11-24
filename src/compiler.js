@@ -49,7 +49,7 @@ module.exports.run = ({prefix, favicons: options, logo, cache}, context, compila
         };
       }
 
-      return resolve(result.html);
+      return resolve(result.tags);
     });
   });
 };

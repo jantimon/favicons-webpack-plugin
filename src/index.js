@@ -1,7 +1,7 @@
 const assert = require('assert');
 const child = require('./compiler');
 const Oracle = require('./oracle');
-const {tap} = require('./compat');
+const {tap, tapHtml} = require('./compat');
 
 module.exports = class FaviconsWebpackPlugin {
   constructor(args) {
@@ -40,15 +40,14 @@ module.exports = class FaviconsWebpackPlugin {
     tap(compiler, 'make', 'FaviconsWebpackPlugin', (compilation, callback) =>
       // Generate favicons
       child.run(this.options, compiler.context, compilation)
-        .then(result => {
+        .then(tags => {
           if (this.options.inject) {
             // Hook into the html-webpack-plugin processing and add the html
-            tap(compilation, 'html-webpack-plugin-before-html-processing', 'FaviconsWebpackPlugin', (htmlPluginData, callback) => {
-              const htmlPluginDataInject  = htmlPluginData.plugin.options.inject && htmlPluginData.plugin.options.favicons !== false;
+            tapHtml(compilation, 'FaviconsWebpackPlugin', (htmlPluginData, callback) => {
+              const htmlPluginDataInject = htmlPluginData.plugin.options.inject && htmlPluginData.plugin.options.favicons !== false;
               if ( htmlPluginDataInject || this.options.inject === 'force') {
-                  let position = htmlPluginData.html.search(/<\/head>/i);
-                  position = position === -1 ? htmlPluginData.html.length : position;
-                  htmlPluginData.html = [htmlPluginData.html.slice(0, position), result, htmlPluginData.html.slice(position)].join('');
+                  const idx = (htmlPluginData.html + '</head>').search(/<\/head>/i);
+                  htmlPluginData.html = [htmlPluginData.html.slice(0, idx), ...tags, htmlPluginData.html.slice(idx)].join('');
               }
               return callback(null, htmlPluginData);
             });
