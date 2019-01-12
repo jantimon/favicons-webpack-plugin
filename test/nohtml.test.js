@@ -4,7 +4,7 @@ const fs = require('fs-extra');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const WebappWebpackPlugin = require('../');
 
-const {logo, mkdir, generate, compare, expected} = require('./util');
+const { logo, mkdir, generate, compare, expected } = require('./util');
 
 test.beforeEach(async t => t.context.root = await mkdir());
 
@@ -17,7 +17,7 @@ test('should allow disabling html injection', async t => {
     },
     plugins: [
       new HtmlWebpackPlugin(),
-      new WebappWebpackPlugin({logo, inject: false}),
+      new WebappWebpackPlugin({ logo, inject: false }),
     ],
   });
 
@@ -32,8 +32,8 @@ test('should respect HtmlWebpackPlugin@inject flag', async t => {
       path: dist,
     },
     plugins: [
-      new HtmlWebpackPlugin({inject: false}),
-      new WebappWebpackPlugin({logo}),
+      new HtmlWebpackPlugin({ inject: false }),
+      new WebappWebpackPlugin({ logo }),
     ],
   });
 
@@ -48,8 +48,8 @@ test('should respect HtmlWebpackPlugin@favicons flag', async t => {
       path: dist,
     },
     plugins: [
-      new HtmlWebpackPlugin({favicons: false}),
-      new WebappWebpackPlugin({logo}),
+      new HtmlWebpackPlugin({ favicons: false }),
+      new WebappWebpackPlugin({ logo }),
     ],
   });
 

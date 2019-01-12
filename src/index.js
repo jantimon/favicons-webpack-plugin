@@ -1,11 +1,11 @@
 const assert = require('assert');
 const child = require('./compiler');
 const Oracle = require('./oracle');
-const {tap, tapHtml} = require('./compat');
+const { tap, tapHtml } = require('./compat');
 
 module.exports = class FaviconsWebpackPlugin {
   constructor(args) {
-    const options = (typeof args === 'string') ? {logo: args} : args;
+    const options = (typeof args === 'string') ? { logo: args } : args;
     assert(typeof options === 'object' && typeof options.logo === 'string', 'An input file is required');
 
     this.options = Object.assign({
@@ -45,9 +45,9 @@ module.exports = class FaviconsWebpackPlugin {
             // Hook into the html-webpack-plugin processing and add the html
             tapHtml(compilation, 'FaviconsWebpackPlugin', (htmlPluginData, callback) => {
               const htmlPluginDataInject = htmlPluginData.plugin.options.inject && htmlPluginData.plugin.options.favicons !== false;
-              if ( htmlPluginDataInject || this.options.inject === 'force') {
-                  const idx = (htmlPluginData.html + '</head>').search(/<\/head>/i);
-                  htmlPluginData.html = [htmlPluginData.html.slice(0, idx), ...tags, htmlPluginData.html.slice(idx)].join('');
+              if (htmlPluginDataInject || this.options.inject === 'force') {
+                const idx = (htmlPluginData.html + '</head>').search(/<\/head>/i);
+                htmlPluginData.html = [htmlPluginData.html.slice(0, idx), ...tags, htmlPluginData.html.slice(idx)].join('');
               }
               return callback(null, htmlPluginData);
             });

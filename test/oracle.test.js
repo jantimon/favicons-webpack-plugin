@@ -4,7 +4,7 @@ const fs = require('fs-extra');
 const parseAuthor = require('parse-author');
 const FaviconsWebpackPlugin = require('../src');
 
-const {logo, mkdir, compiler} = require('./util');
+const { logo, mkdir, compiler } = require('./util');
 
 test.beforeEach(async t => t.context.root = await mkdir());
 
@@ -14,20 +14,20 @@ test('should infer missing information from the nearest parent package.json', as
     "version": "1.2.3",
     "description": "Some App",
     "author": {
-      "name" : "Jane Doe",
-      "email" : "jane@doe.com",
-      "url" : "https://jane.doe.com"
+      "name": "Jane Doe",
+      "email": "jane@doe.com",
+      "url": "https://jane.doe.com"
     }
   };
 
   const context = path.join(t.context.root, 'a', 'b', 'c', 'd');
 
   await fs.ensureDir(context);
-  await fs.writeJSON(path.join(t.context.root, 'package.json'), pkg, {spaces: 2});
+  await fs.writeJSON(path.join(t.context.root, 'package.json'), pkg, { spaces: 2 });
 
   {
     const plugin = new FaviconsWebpackPlugin(logo);
-    plugin.apply(compiler({context}));
+    plugin.apply(compiler({ context }));
 
     t.is(plugin.options.favicons.appName, pkg.name);
     t.is(plugin.options.favicons.version, pkg.version);
@@ -36,11 +36,11 @@ test('should infer missing information from the nearest parent package.json', as
     t.is(plugin.options.favicons.developerURL, pkg.author.url);
   }
 
-  await fs.writeJSON(path.join(context, 'package.json'), {}, {spaces: 2});
+  await fs.writeJSON(path.join(context, 'package.json'), {}, { spaces: 2 });
 
   {
     const plugin = new FaviconsWebpackPlugin(logo);
-    plugin.apply(compiler({context}));
+    plugin.apply(compiler({ context }));
 
     t.is(plugin.options.favicons.appName, undefined);
     t.is(plugin.options.favicons.version, undefined);
@@ -52,9 +52,9 @@ test('should infer missing information from the nearest parent package.json', as
 });
 
 test('should parse author string from package.json', async t => {
-  const pkg = {"author": "John Doe <john@doe.com> (https://john.doe.com)"};
+  const pkg = { "author": "John Doe <john@doe.com> (https://john.doe.com)" };
 
-  await fs.writeJSON(path.join(t.context.root, 'package.json'), pkg, {spaces: 2});
+  await fs.writeJSON(path.join(t.context.root, 'package.json'), pkg, { spaces: 2 });
 
   const plugin = new FaviconsWebpackPlugin(logo);
   plugin.apply(compiler({
@@ -84,13 +84,13 @@ test('should not reach for the package.json if metadata defined', async t => {
     "version": "1.2.3",
     "description": "Some App",
     "author": {
-      "name" : "Jane Doe",
-      "email" : "jane@doe.com",
-      "url" : "https://jane.doe.com"
+      "name": "Jane Doe",
+      "email": "jane@doe.com",
+      "url": "https://jane.doe.com"
     }
   };
 
-  await fs.writeJSON(path.join(t.context.root, 'package.json'), pkg, {spaces: 2});
+  await fs.writeJSON(path.join(t.context.root, 'package.json'), pkg, { spaces: 2 });
 
   const favicons = {
     appName: null,
@@ -100,7 +100,7 @@ test('should not reach for the package.json if metadata defined', async t => {
     developerURL: null,
   };
 
-  const plugin = new FaviconsWebpackPlugin({logo, favicons});
+  const plugin = new FaviconsWebpackPlugin({ logo, favicons });
   plugin.apply(compiler({
     context: t.context.root,
   }));

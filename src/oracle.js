@@ -6,7 +6,7 @@ module.exports = class Oracle {
   constructor(context) {
     try {
       this.pkg = require(path.join(findRoot(context), 'package.json'));
-    } catch(_) {
+    } catch (_) {
       this.pkg = {};
     }
   }
@@ -37,15 +37,15 @@ module.exports = class Oracle {
    */
   guessDeveloper() {
     return (
-        typeof this.pkg.author === 'string'
-      ? parseAuthor(this.pkg.author)
-      : typeof this.pkg.author === 'object' && this.pkg.author
-      ? {
-          name: this.pkg.author.name,
-          email: this.pkg.author.email,
-          url: this.pkg.author.url,
-        }
-      : {}
+      typeof this.pkg.author === 'string'
+        ? parseAuthor(this.pkg.author)
+        : typeof this.pkg.author === 'object' && this.pkg.author
+          ? {
+            name: this.pkg.author.name,
+            email: this.pkg.author.email,
+            url: this.pkg.author.url,
+          }
+          : {}
     );
   }
 

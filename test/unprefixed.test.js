@@ -17,7 +17,7 @@ test('should correctly handle an empty prefix', async t => {
     },
     plugins: [
       new HtmlWebpackPlugin(),
-      new FaviconsWebpackPlugin({logo, prefix: ''}),
+      new FaviconsWebpackPlugin({ logo, prefix: '' }),
     ],
   });
 

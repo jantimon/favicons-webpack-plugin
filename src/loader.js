@@ -1,8 +1,8 @@
 const url = require('url');
 const favicons = require('favicons');
 const msgpack = require('msgpack-lite');
-const {parseQuery, interpolateName} = require('loader-utils');
-const {getContext} = require('./compat');
+const { parseQuery, interpolateName } = require('loader-utils');
+const { getContext } = require('./compat');
 
 const trailingSlash = (path) => (path.substr(-1) !== '/') ? path + '/' : path;
 
@@ -19,10 +19,10 @@ module.exports = function (content) {
   }));
 
   // Generate icons
-  return favicons(content, Object.assign(query.options, {path: url.resolve(path, prefix)}))
-    .then(({html: tags, images, files}) => {
-      const assets = [...images, ...files].map(({name, contents}) => ({name: prefix + name, contents}));
-      return callback(null, 'module.exports = ' + JSON.stringify(msgpack.encode({tags, assets}).toString('base64')));
+  return favicons(content, Object.assign(query.options, { path: url.resolve(path, prefix) }))
+    .then(({ html: tags, images, files }) => {
+      const assets = [...images, ...files].map(({ name, contents }) => ({ name: prefix + name, contents }));
+      return callback(null, 'module.exports = ' + JSON.stringify(msgpack.encode({ tags, assets }).toString('base64')));
     })
     .catch(callback);
 };

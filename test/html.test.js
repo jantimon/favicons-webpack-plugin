@@ -4,7 +4,7 @@ const fs = require('fs-extra');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const FaviconsWebpackPlugin = require('../');
 
-const {logo, mkdir, generate, compare, expected} = require('./util');
+const { logo, mkdir, generate, compare, expected } = require('./util');
 
 test.beforeEach(async t => t.context.root = await mkdir());
 
@@ -17,7 +17,7 @@ test('should work together with the html-webpack-plugin', async t => {
     },
     plugins: [
       new HtmlWebpackPlugin(),
-      new FaviconsWebpackPlugin({logo}),
+      new FaviconsWebpackPlugin({ logo }),
     ],
   });
 
@@ -32,8 +32,8 @@ test('should inject html despite HtmlWebpackPlugin@inject flag with inject force
       path: dist,
     },
     plugins: [
-      new HtmlWebpackPlugin({inject: false}),
-      new WebappWebpackPlugin({logo, inject: 'force'}),
+      new HtmlWebpackPlugin({ inject: false }),
+      new WebappWebpackPlugin({ logo, inject: 'force' }),
     ],
   });
 
@@ -41,19 +41,19 @@ test('should inject html despite HtmlWebpackPlugin@inject flag with inject force
 });
 
 test('should work together with the html-webpack-plugin with no <head></head> tags', async t => {
-    const dist = path.join(t.context.root, 'dist');
-    await generate({
-        context: t.context.root,
-        output: {
-            path: dist,
-        },
-        plugins: [
-            new HtmlWebpackPlugin({templateContent: ''}),
-            new WebappWebpackPlugin({logo}),
-        ],
-    });
+  const dist = path.join(t.context.root, 'dist');
+  await generate({
+    context: t.context.root,
+    output: {
+      path: dist,
+    },
+    plugins: [
+      new HtmlWebpackPlugin({ templateContent: '' }),
+      new WebappWebpackPlugin({ logo }),
+    ],
+  });
 
-    t.deepEqual(await compare(dist, path.resolve(expected, 'htmlnohead')), []);
+  t.deepEqual(await compare(dist, path.resolve(expected, 'htmlnohead')), []);
 });
 
 test.afterEach(t => fs.remove(t.context.root));

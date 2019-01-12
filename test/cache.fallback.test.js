@@ -4,12 +4,12 @@ const fs = require('fs-extra');
 const findCacheDir = require('find-cache-dir');
 const FaviconsWebpackPlugin = require('../');
 
-const {logo, mkdir, generate} = require('./util');
+const { logo, mkdir, generate } = require('./util');
 
 test.beforeEach(async t => t.context.root = await mkdir());
 
 test('should cache assets', async t => {
-  const plugin = new FaviconsWebpackPlugin({logo});
+  const plugin = new FaviconsWebpackPlugin({ logo });
 
   await generate({
     context: t.context.root,
