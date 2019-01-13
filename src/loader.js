@@ -3,6 +3,7 @@ const favicons = require('favicons');
 const msgpack = require('msgpack-lite');
 const { parseQuery, interpolateName } = require('loader-utils');
 const { getContext } = require('./compat');
+const pkg = require('../package.json')
 
 const trailingSlash = (path) => (path.substr(-1) !== '/') ? path + '/' : path;
 
@@ -15,7 +16,7 @@ module.exports = function (content) {
   const path = query.path && trailingSlash(query.path);
   const prefix = query.prefix && trailingSlash(interpolateName(this, query.prefix, {
     context: getContext(this),
-    content: msgpack.encode([content, query.options]), // hash must depend on logo + config
+    content: msgpack.encode([content, query.options, pkg.version]), // hash must depend on logo + config + version
   }));
 
   // Generate icons
