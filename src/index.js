@@ -41,17 +41,15 @@ module.exports = class FaviconsWebpackPlugin {
       // Generate favicons
       child.run(this.options, compiler.context, compilation)
         .then(tags => {
-          if (this.options.inject) {
-            // Hook into the html-webpack-plugin processing and add the html
-            tapHtml(compilation, 'FaviconsWebpackPlugin', (htmlPluginData, callback) => {
-              const htmlPluginDataInject = htmlPluginData.plugin.options.inject && htmlPluginData.plugin.options.favicons !== false;
-              if (htmlPluginDataInject || this.options.inject === 'force') {
-                const idx = (htmlPluginData.html + '</head>').search(/<\/head>/i);
-                htmlPluginData.html = [htmlPluginData.html.slice(0, idx), ...tags, htmlPluginData.html.slice(idx)].join('');
-              }
-              return callback(null, htmlPluginData);
-            });
-          }
+          // Hook into the html-webpack-plugin processing and add the html
+          tapHtml(compilation, 'FaviconsWebpackPlugin', (htmlPluginData, callback) => {
+            const htmlPluginDataInject = htmlPluginData.plugin.options.inject && htmlPluginData.plugin.options.favicons !== false;
+            if (htmlPluginDataInject && this.options.inject || this.options.inject === 'force') {
+              const idx = (htmlPluginData.html + '</head>').search(/<\/head>/i);
+              htmlPluginData.html = [htmlPluginData.html.slice(0, idx), ...tags, htmlPluginData.html.slice(idx)].join('');
+            }
+            return callback(null, htmlPluginData);
+          });
           return callback();
         })
         .catch(callback)

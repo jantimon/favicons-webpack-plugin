@@ -14,12 +14,17 @@ module.exports.tap = (tappable, hook, name, plugin) => (
     : tappable.plugin(hook, plugin)
 );
 
+/* istanbul ignore next */
 module.exports.tapHtml = (tappable, name, plugin) => {
-  const HtmlWebpackPlugin = require('html-webpack-plugin');
-  return HtmlWebpackPlugin.getHooks /* HtmlWebpackPlugin >= 4.0 */
-    ? HtmlWebpackPlugin.getHooks(tappable).afterTemplateExecution.tapAsync(name, plugin)
-    : module.exports.tap(tappable, 'html-webpack-plugin-before-html-processing', name, plugin)
-    ;
+  try {
+    const HtmlWebpackPlugin = require('html-webpack-plugin');
+    return HtmlWebpackPlugin.getHooks /* HtmlWebpackPlugin >= 4.0 */
+      ? HtmlWebpackPlugin.getHooks(tappable).afterTemplateExecution.tapAsync(name, plugin)
+      : module.exports.tap(tappable, 'html-webpack-plugin-before-html-processing', name, plugin)
+      ;
+  } catch (_) {
+    // ignore
+  }
 };
 
 /* istanbul ignore next */
