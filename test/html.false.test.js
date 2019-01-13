@@ -2,7 +2,7 @@ const test = require('ava');
 const path = require('path');
 const fs = require('fs-extra');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const WebappWebpackPlugin = require('../');
+const FaviconsWebpackPlugin = require('../');
 
 const { logo, mkdir, generate, compare, expected } = require('./util');
 
@@ -17,7 +17,7 @@ test('should allow disabling html injection', async t => {
     },
     plugins: [
       new HtmlWebpackPlugin(),
-      new WebappWebpackPlugin({ logo, inject: false }),
+      new FaviconsWebpackPlugin({ logo, inject: false }),
     ],
   });
 
@@ -33,7 +33,7 @@ test('should respect HtmlWebpackPlugin@inject flag', async t => {
     },
     plugins: [
       new HtmlWebpackPlugin({ inject: false }),
-      new WebappWebpackPlugin({ logo }),
+      new FaviconsWebpackPlugin({ logo }),
     ],
   });
 
@@ -49,7 +49,7 @@ test('should respect HtmlWebpackPlugin@favicons flag', async t => {
     },
     plugins: [
       new HtmlWebpackPlugin({ favicons: false }),
-      new WebappWebpackPlugin({ logo }),
+      new FaviconsWebpackPlugin({ logo }),
     ],
   });
 

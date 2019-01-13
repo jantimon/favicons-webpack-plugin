@@ -37,14 +37,20 @@ module.exports = class FaviconsWebpackPlugin {
       });
     }
 
+    if (typeof this.options.inject !== 'function') {
+      const { inject } = this.options;
+      this.options.inject = htmlPlugin =>
+        inject === 'force'
+        || htmlPlugin.options.favicons !== false && htmlPlugin.options.inject && inject;
+    }
+
     tap(compiler, 'make', 'FaviconsWebpackPlugin', (compilation, callback) =>
       // Generate favicons
       child.run(this.options, compiler.context, compilation)
         .then(tags => {
           // Hook into the html-webpack-plugin processing and add the html
           tapHtml(compilation, 'FaviconsWebpackPlugin', (htmlPluginData, callback) => {
-            const htmlPluginDataInject = htmlPluginData.plugin.options.inject && htmlPluginData.plugin.options.favicons !== false;
-            if (htmlPluginDataInject && this.options.inject || this.options.inject === 'force') {
+            if (this.options.inject(htmlPluginData.plugin)) {
               const idx = (htmlPluginData.html + '</head>').search(/<\/head>/i);
               htmlPluginData.html = [htmlPluginData.html.slice(0, idx), ...tags, htmlPluginData.html.slice(idx)].join('');
             }

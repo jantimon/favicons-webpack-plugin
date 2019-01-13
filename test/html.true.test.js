@@ -33,7 +33,7 @@ test('should inject html despite HtmlWebpackPlugin@inject flag with inject force
     },
     plugins: [
       new HtmlWebpackPlugin({ inject: false }),
-      new WebappWebpackPlugin({ logo, inject: 'force' }),
+      new FaviconsWebpackPlugin({ logo, inject: 'force' }),
     ],
   });
 
@@ -49,7 +49,7 @@ test('should work together with the html-webpack-plugin with no <head></head> ta
     },
     plugins: [
       new HtmlWebpackPlugin({ templateContent: '' }),
-      new WebappWebpackPlugin({ logo }),
+      new FaviconsWebpackPlugin({ logo }),
     ],
   });
 
