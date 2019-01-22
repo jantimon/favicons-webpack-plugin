@@ -19,9 +19,12 @@ test('should allow disabling caching', async t => {
     plugins: [new FaviconsWebpackPlugin({ logo, cache: false })],
   });
 
-  const cache = findCacheDir({ name: 'favicons-webpack-plugin' });
+  const cache = findCacheDir({
+    name: 'favicons-webpack-plugin',
+    cwd: t.context.root,
+  });
 
-  t.pass(!fs.existsSync(cache));
+  t.falsy(fs.existsSync(cache));
 });
 
 test.afterEach(t => fs.remove(t.context.root));

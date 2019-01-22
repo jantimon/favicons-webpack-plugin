@@ -21,9 +21,9 @@ test('should cache assets', async t => {
 
   const cache = path.resolve(t.context.root, '.wwp-cache');
 
-  t.pass(fs.existsSync(cache));
-  t.pass(fs.lstatSync(cache).isDirectory());
-  t.pass(fs.readdirSync(cache).length);
+  t.truthy(fs.existsSync(cache));
+  t.truthy(fs.lstatSync(cache).isDirectory());
+  t.truthy(fs.readdirSync(cache).length);
 });
 
 test.afterEach(t => fs.remove(t.context.root));

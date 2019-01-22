@@ -19,9 +19,9 @@ test('should allow configuring cache directory', async t => {
     plugins: [new FaviconsWebpackPlugin({ logo, cache })],
   });
 
-  t.pass(fs.existsSync(cache));
-  t.pass(fs.lstatSync(cache).isDirectory());
-  t.pass(fs.readdirSync(cache).length);
+  t.truthy(fs.existsSync(cache));
+  t.truthy(fs.lstatSync(cache).isDirectory());
+  t.truthy(fs.readdirSync(cache).length);
 });
 
 test.afterEach(t => fs.remove(t.context.root));
