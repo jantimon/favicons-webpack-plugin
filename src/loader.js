@@ -23,7 +23,7 @@ module.exports = function (content) {
   return favicons(content, Object.assign(query.options, { path: url.resolve(path, prefix) }))
     .then(({ html: tags, images, files }) => {
       const assets = [...images, ...files].map(({ name, contents }) => ({ name: prefix + name, contents }));
-      return callback(null, 'module.exports = ' + JSON.stringify(msgpack.encode({ tags, assets }).toString('base64')));
+      return callback(null, `module.exports = '${msgpack.encode({ tags, assets }).toString('base64')}'`);
     })
     .catch(callback);
 };
