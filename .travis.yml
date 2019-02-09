@@ -1,9 +1,11 @@
 language: node_js
 node_js:
-  - "6"
-  - "7"
-  - "8"
-  - "9"
+- lts/*
+cache:
+  directories:
+  - "${TRAVIS_BUILD_DIR}/node_modules"
+git:
+  depth: 1
 install:
   - npm install --ignore-scripts
 script:
