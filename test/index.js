@@ -28,7 +28,7 @@ function baseWebpackConfig(plugin) {
   }
 }
 
-test('should throw error when called without arguments', async t => {
+test(`should throw error when called without arguments`, async t => {
   t.plan(2)
   let plugin
   try {
@@ -39,17 +39,17 @@ test('should throw error when called without arguments', async t => {
   t.is(plugin, undefined)
 })
 
-test('should take a string as argument', async t => {
+test(`should take a string as argument`, async t => {
   const plugin = new AppManifestWebpackPlugin(LOGO_PATH)
   t.is(plugin.options.logo, LOGO_PATH)
 })
 
-test('should take an object with just the logo as argument', async t => {
+test(`should take an object with just the logo as argument`, async t => {
   const plugin = new AppManifestWebpackPlugin({ logo: LOGO_PATH })
   t.is(plugin.options.logo, LOGO_PATH)
 })
 
-test('should generate the expected default result', async t => {
+test(`should generate the expected default result`, async t => {
   const stats = await webpack(
     baseWebpackConfig(
       new AppManifestWebpackPlugin({
@@ -65,7 +65,7 @@ test('should generate the expected default result', async t => {
   t.is(diffFiles[0], undefined)
 })
 
-test('should generate a configured JSON file', async t => {
+test(`should generate a configured JSON file`, async t => {
   const stats = await webpack(
     baseWebpackConfig(
       new AppManifestWebpackPlugin({
@@ -84,7 +84,7 @@ test('should generate a configured JSON file', async t => {
   t.is(diffFiles[0], undefined)
 })
 
-test('should work together with the html-webpack-plugin', async t => {
+test(`should work together with the html-webpack-plugin`, async t => {
   const stats = await webpack(
     baseWebpackConfig([
       new HtmlWebpackPlugin(),
@@ -102,7 +102,7 @@ test('should work together with the html-webpack-plugin', async t => {
   t.is(diffFiles[0], undefined)
 })
 
-test('should work together with the html-webpack-plugin with custom path', async t => {
+test(`should work together with the html-webpack-plugin with custom path`, async t => {
   const stats = await webpack(
     baseWebpackConfig([
       new HtmlWebpackPlugin(),
@@ -121,7 +121,7 @@ test('should work together with the html-webpack-plugin with custom path', async
   t.is(diffFiles[0], undefined)
 })
 
-test('should not recompile if there is a cache file', async t => {
+test(`should not recompile if there is a cache file`, async t => {
   const options = baseWebpackConfig([
     new HtmlWebpackPlugin(),
     new AppManifestWebpackPlugin({
@@ -146,7 +146,7 @@ test('should not recompile if there is a cache file', async t => {
   t.is(diffFiles[0], undefined)
 })
 
-test('should has html encoded string in stats file', async t => {
+test(`should has html encoded string in stats file`, async t => {
   const stats = await webpack(
     baseWebpackConfig([
       new HtmlWebpackPlugin(),

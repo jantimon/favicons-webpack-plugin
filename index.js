@@ -2,7 +2,7 @@ const childCompiler = require('./lib/compiler.js')
 const assert = require('assert')
 const fs = require('fs')
 const path = require('path')
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 const DEFAULT_OPTIONS = {
   emitStats: false,
@@ -107,16 +107,17 @@ class AppManifestWebpackPlugin {
   }
 
   hooksHandler(compilation) {
-    const beforeEmit = compilation.hooks.htmlWebpackPluginAfterHtmlProcessing || HtmlWebpackPlugin.getHooks(compilation).beforeEmit;
+    const beforeEmit =
+      compilation.hooks.htmlWebpackPluginAfterHtmlProcessing ||
+      HtmlWebpackPlugin.getHooks(compilation).beforeEmit
     if (!beforeEmit && this.options.inject) {
       const message = `compilation.hooks.htmlWebpackPluginAfterHtmlProcessing is lost.
        Please make sure you have installed html-webpack-plugin and put it before ${PLUGIN_NAME}`
       throw new Error(message)
     }
 
-    beforeEmit.tapAsync(
-      PLUGIN_NAME,
-      (htmlPluginData, cb) => this.htmlProccessingFn(htmlPluginData, cb),
+    beforeEmit.tapAsync(PLUGIN_NAME, (htmlPluginData, cb) =>
+      this.htmlProccessingFn(htmlPluginData, cb),
     )
   }
 
