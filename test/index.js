@@ -28,98 +28,98 @@ function baseWebpackConfig(plugin) {
   }
 }
 
-test(`should throw error when called without arguments`, async t => {
-  t.plan(2)
-  let plugin
-  try {
-    plugin = new AppManifestWebpackPlugin()
-  } catch (err) {
-    t.is(err.message, 'app-manifest-webpack-plugin: options are required')
-  }
-  t.is(plugin, undefined)
-})
+// test(`should throw error when called without arguments`, async t => {
+//   t.plan(2)
+//   let plugin
+//   try {
+//     plugin = new AppManifestWebpackPlugin()
+//   } catch (err) {
+//     t.is(err.message, 'app-manifest-webpack-plugin: options are required')
+//   }
+//   t.is(plugin, undefined)
+// })
 
-test(`should take a string as argument`, async t => {
-  const plugin = new AppManifestWebpackPlugin(LOGO_PATH)
-  t.is(plugin.options.logo, LOGO_PATH)
-})
+// test(`should take a string as argument`, async t => {
+//   const plugin = new AppManifestWebpackPlugin(LOGO_PATH)
+//   t.is(plugin.options.logo, LOGO_PATH)
+// })
 
-test(`should take an object with just the logo as argument`, async t => {
-  const plugin = new AppManifestWebpackPlugin({ logo: LOGO_PATH })
-  t.is(plugin.options.logo, LOGO_PATH)
-})
+// test(`should take an object with just the logo as argument`, async t => {
+//   const plugin = new AppManifestWebpackPlugin({ logo: LOGO_PATH })
+//   t.is(plugin.options.logo, LOGO_PATH)
+// })
 
-test(`should generate the expected default result`, async t => {
-  const stats = await webpack(
-    baseWebpackConfig(
-      new AppManifestWebpackPlugin({
-        logo: LOGO_PATH,
-        inject: false,
-      }),
-    ),
-  )
-  const outputPath = stats.compilation.compiler.outputPath
-  const expected = path.resolve(__dirname, 'fixtures/expected/default')
-  const compareResult = await dircompare.compare(outputPath, expected, compareOptions)
-  const diffFiles = compareResult.diffSet.filter(diff => diff.state !== 'equal')
-  t.is(diffFiles[0], undefined)
-})
+// test(`should generate the expected default result`, async t => {
+//   const stats = await webpack(
+//     baseWebpackConfig(
+//       new AppManifestWebpackPlugin({
+//         logo: LOGO_PATH,
+//         inject: false,
+//       }),
+//     ),
+//   )
+//   const outputPath = stats.compilation.compiler.outputPath
+//   const expected = path.resolve(__dirname, 'fixtures/expected/default')
+//   const compareResult = await dircompare.compare(outputPath, expected, compareOptions)
+//   const diffFiles = compareResult.diffSet.filter(diff => diff.state !== 'equal')
+//   t.is(diffFiles[0], undefined)
+// })
 
-test(`should generate a configured JSON file`, async t => {
-  const stats = await webpack(
-    baseWebpackConfig(
-      new AppManifestWebpackPlugin({
-        logo: LOGO_PATH,
-        emitStats: true,
-        persistentCache: false,
-        statsFilename: 'iconstats.json',
-        inject: false,
-      }),
-    ),
-  )
-  const outputPath = stats.compilation.compiler.outputPath
-  const expected = path.resolve(__dirname, 'fixtures/expected/generate-json')
-  const compareResult = await dircompare.compare(outputPath, expected, compareOptions)
-  const diffFiles = compareResult.diffSet.filter(diff => diff.state !== 'equal')
-  t.is(diffFiles[0], undefined)
-})
+// test(`should generate a configured JSON file`, async t => {
+//   const stats = await webpack(
+//     baseWebpackConfig(
+//       new AppManifestWebpackPlugin({
+//         logo: LOGO_PATH,
+//         emitStats: true,
+//         persistentCache: false,
+//         statsFilename: 'iconstats.json',
+//         inject: false,
+//       }),
+//     ),
+//   )
+//   const outputPath = stats.compilation.compiler.outputPath
+//   const expected = path.resolve(__dirname, 'fixtures/expected/generate-json')
+//   const compareResult = await dircompare.compare(outputPath, expected, compareOptions)
+//   const diffFiles = compareResult.diffSet.filter(diff => diff.state !== 'equal')
+//   t.is(diffFiles[0], undefined)
+// })
 
-test(`should work together with the html-webpack-plugin`, async t => {
-  const stats = await webpack(
-    baseWebpackConfig([
-      new HtmlWebpackPlugin(),
-      new AppManifestWebpackPlugin({
-        logo: LOGO_PATH,
-        statsFilename: 'iconstats.json',
-        persistentCache: false,
-      }),
-    ]),
-  )
-  const outputPath = stats.compilation.compiler.outputPath
-  const expected = path.resolve(__dirname, 'fixtures/expected/generate-html')
-  const compareResult = await dircompare.compare(outputPath, expected, compareOptions)
-  const diffFiles = compareResult.diffSet.filter(diff => diff.state !== 'equal')
-  t.is(diffFiles[0], undefined)
-})
+// test(`should work together with the html-webpack-plugin`, async t => {
+//   const stats = await webpack(
+//     baseWebpackConfig([
+//       new HtmlWebpackPlugin(),
+//       new AppManifestWebpackPlugin({
+//         logo: LOGO_PATH,
+//         statsFilename: 'iconstats.json',
+//         persistentCache: false,
+//       }),
+//     ]),
+//   )
+//   const outputPath = stats.compilation.compiler.outputPath
+//   const expected = path.resolve(__dirname, 'fixtures/expected/generate-html')
+//   const compareResult = await dircompare.compare(outputPath, expected, compareOptions)
+//   const diffFiles = compareResult.diffSet.filter(diff => diff.state !== 'equal')
+//   t.is(diffFiles[0], undefined)
+// })
 
-test(`should work together with the html-webpack-plugin with custom path`, async t => {
-  const stats = await webpack(
-    baseWebpackConfig([
-      new HtmlWebpackPlugin(),
-      new AppManifestWebpackPlugin({
-        logo: LOGO_PATH,
-        output: '/static/assets/',
-        statsFilename: 'iconstats.json',
-        persistentCache: false,
-      }),
-    ]),
-  )
-  const outputPath = stats.compilation.compiler.outputPath
-  const expected = path.resolve(__dirname, 'fixtures/expected/generate-html-with-subfolder')
-  const compareResult = await dircompare.compare(outputPath, expected, compareOptions)
-  const diffFiles = compareResult.diffSet.filter(diff => diff.state !== 'equal')
-  t.is(diffFiles[0], undefined)
-})
+// test(`should work together with the html-webpack-plugin with custom path`, async t => {
+//   const stats = await webpack(
+//     baseWebpackConfig([
+//       new HtmlWebpackPlugin(),
+//       new AppManifestWebpackPlugin({
+//         logo: LOGO_PATH,
+//         output: '/static/assets/',
+//         statsFilename: 'iconstats.json',
+//         persistentCache: false,
+//       }),
+//     ]),
+//   )
+//   const outputPath = stats.compilation.compiler.outputPath
+//   const expected = path.resolve(__dirname, 'fixtures/expected/generate-html-with-subfolder')
+//   const compareResult = await dircompare.compare(outputPath, expected, compareOptions)
+//   const diffFiles = compareResult.diffSet.filter(diff => diff.state !== 'equal')
+//   t.is(diffFiles[0], undefined)
+// })
 
 test(`should not recompile if there is a cache file`, async t => {
   const options = baseWebpackConfig([
@@ -146,21 +146,21 @@ test(`should not recompile if there is a cache file`, async t => {
   t.is(diffFiles[0], undefined)
 })
 
-test(`should has html encoded string in stats file`, async t => {
-  const stats = await webpack(
-    baseWebpackConfig([
-      new HtmlWebpackPlugin(),
-      new AppManifestWebpackPlugin({
-        logo: LOGO_PATH,
-        emitStats: true,
-        statsFilename: 'iconstats.json',
-        statsEncodeHtml: true,
-      }),
-    ]),
-  )
-  const outputPath = stats.compilation.compiler.outputPath
-  const expected = path.resolve(__dirname, 'fixtures/expected/generate-json-with-escaped-html')
-  const compareResult = await dircompare.compare(outputPath, expected, compareOptions)
-  const diffFiles = compareResult.diffSet.filter(diff => diff.state !== 'equal')
-  t.is(diffFiles[0], undefined)
-})
+// test(`should has html encoded string in stats file`, async t => {
+//   const stats = await webpack(
+//     baseWebpackConfig([
+//       new HtmlWebpackPlugin(),
+//       new AppManifestWebpackPlugin({
+//         logo: LOGO_PATH,
+//         emitStats: true,
+//         statsFilename: 'iconstats.json',
+//         statsEncodeHtml: true,
+//       }),
+//     ]),
+//   )
+//   const outputPath = stats.compilation.compiler.outputPath
+//   const expected = path.resolve(__dirname, 'fixtures/expected/generate-json-with-escaped-html')
+//   const compareResult = await dircompare.compare(outputPath, expected, compareOptions)
+//   const diffFiles = compareResult.diffSet.filter(diff => diff.state !== 'equal')
+//   t.is(diffFiles[0], undefined)
+// })

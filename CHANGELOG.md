@@ -1,3 +1,8 @@
+# 1.2.0
+
++ add support html-webpack-plugin v4
+
+
 # 1.1.3
 
 + add support relative paths for output
