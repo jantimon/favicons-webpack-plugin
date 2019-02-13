@@ -80,6 +80,12 @@ plugins: [
       twitter: false,
       yandex: false,
       windows: false
+    },
+
+    // extra options to be passed to favicons (see https://github.com/haydenbleasel/favicons#usage)
+    faviconsOptions: {
+      pixel_art: true,
+      ...
     }
   })
 ]

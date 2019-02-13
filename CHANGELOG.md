@@ -1,3 +1,7 @@
+# 0.0.10
+
++ Add `faviconsOptions` option
+
 # 0.0.9
 
 + Improve support for Webpack 4
