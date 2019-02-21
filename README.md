@@ -76,8 +76,6 @@ plugins: [
       coast: false,
       favicons: true,
       firefox: true,
-      opengraph: false,
-      twitter: false,
       yandex: false,
       windows: false
     }
