@@ -18,11 +18,11 @@ module.exports = function (content) {
     context: getContext(this),
     content: msgpack.encode([content, query.options, pkg.version]), // hash must depend on logo + config + version
   }));
-
+  const outputPath = query.outputPath ? trailingSlash(query.outputPath) : prefix;
   // Generate icons
   return favicons(content, Object.assign(query.options, { path: url.resolve(path, prefix) }))
     .then(({ html: tags, images, files }) => {
-      const assets = [...images, ...files].map(({ name, contents }) => ({ name: prefix + name, contents }));
+      const assets = [...images, ...files].map(({ name, contents }) => ({ name: outputPath + name, contents }));
       return callback(null, `module.exports = '${msgpack.encode({ tags, assets }).toString('base64')}'`);
     })
     .catch(callback);

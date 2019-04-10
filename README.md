@@ -105,6 +105,12 @@ plugins: [
     // Enable caching and optionally specify the path to store cached data
     // Note: disabling caching may increase build times considerably
     cache: true,
+    // Override the publicPath option usually read from webpack configuration
+    publicPath: '/static',
+    // The directory to output the assets relative to the webpack output dir.
+    // Relative string paths are allowed here ie '../public/static'. If this
+    // option is not set, `prefix` is used.
+    outputPath: '/public/static',
     // Prefix path for generated assets
     prefix: 'assets/',
     // Inject html links/metadata (requires html-webpack-plugin).
