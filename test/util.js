@@ -46,7 +46,8 @@ module.exports.run = (compiler) => new Promise((resolve, reject) => {
 
 module.exports.generate = (config) => module.exports.run(module.exports.compiler(config));
 
-module.exports.compare = (a, b) => dircompare.compare(a, b, { compareContent: true, excludeFilter: '*.js' }).then(diff =>
-  diff.diffSet.filter(({ state }) => state !== 'equal')
+module.exports.compare = async (a, b) => {
+  const diff = await dircompare.compare(a, b, { compareContent: true, excludeFilter: '*.js' });
+  return diff.diffSet.filter(({ state }) => state !== 'equal')
     .map(({ path1, name1, path2, name2 }) => `${path.join(path1 || '', name1 + '')} ≠ ${path.join(path2 || '', name2 + '')}`)
-);
+}

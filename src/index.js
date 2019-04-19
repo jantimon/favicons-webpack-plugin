@@ -60,16 +60,8 @@ module.exports = class FaviconsWebpackPlugin {
     // Hook into the webpack compilation
     // to start the favicon generation
     tap(compiler, 'make', 'FaviconsWebpackPlugin', (compilation, callback) => {
-      let faviconCompilation;
-      switch (this.getCurrentCompilationMode(compiler) ) {
-        case 'light':
-          faviconCompilation = this.generateFaviconsLight(compiler, compilation);
-          break;
-        case 'webapp':
-        default:
-          faviconCompilation = this.generateFaviconsWebapp(compiler, compilation);
-      }
-      
+      const faviconCompilation = this.generateFavicons(compilation);
+
       // Hook into the html-webpack-plugin processing and add the html
       tapHtml(compilation, 'FaviconsWebpackPlugin', (htmlPluginData, htmlWebpackPluginCallback) => {
         faviconCompilation.then((tags) => {
@@ -81,8 +73,8 @@ module.exports = class FaviconsWebpackPlugin {
         }).catch(htmlWebpackPluginCallback);
       });
 
-      // Save the promise and execute the callback immediately to not block 
-      // the webpack build see the `afterCompile` FaviconsWebpackPlugin hook 
+      // Save the promise and execute the callback immediately to not block
+      // the webpack build see the `afterCompile` FaviconsWebpackPlugin hook
       // implementation where the promise is picked up again
       faviconCompilations.set(compilation, faviconCompilation);
       callback();
@@ -94,21 +86,30 @@ module.exports = class FaviconsWebpackPlugin {
       faviconCompilations.delete(compilation);
       faviconCompilation.then(() => callback(), callback);
     });
-
   }
 
-  /** 
+  generateFavicons(compilation) {
+    switch (this.getCurrentCompilationMode(compilation.compiler)) {
+      case 'light':
+        return this.generateFaviconsLight(compilation);
+      case 'webapp':
+      default:
+        return this.generateFaviconsWebapp(compilation);
+    }
+  }
+
+  /**
    * The light mode will only add a favicon
    * this is very fast but also very limited
    * it is the default mode for development
    */
-  generateFaviconsLight(compiler, compilation) {
+  generateFaviconsLight(compilation) {
     return new Promise((resolve, reject) => {
       const logoFileName = path.resolve(compilation.compiler.context, this.options.logo);
       const webpackPublicPath = compilation.outputOptions.publicPath || '/';
       const faviconExt = path.extname(this.options.logo);
       // Copy file to output directory
-      compiler.inputFileSystem.readFile(logoFileName, (err, content) => {
+      compilation.compiler.inputFileSystem.readFile(logoFileName, (err, content) => {
         if (err) {
           return reject(err);
         }
@@ -117,7 +118,7 @@ module.exports = class FaviconsWebpackPlugin {
           hash: hash,
           contentHash: hash
         }});
-        const logoOutputPath = outputPath + (outputPath.substr(-1) === '/' ? '' : '/') + 'favicon' + faviconExt;  
+        const logoOutputPath = outputPath + (outputPath.substr(-1) === '/' ? '' : '/') + 'favicon' + faviconExt;
         compilation.assets[logoOutputPath] = {
           source: () => content,
           size: () => content.length
@@ -134,19 +135,19 @@ module.exports = class FaviconsWebpackPlugin {
    * this is not as fast as the light mode but
    * supports all common browsers and devices
    */
-  generateFaviconsWebapp(compiler, compilation) {
+  generateFaviconsWebapp(compilation) {
     // Generate favicons using the npm favicons library
-    return child.run(this.options, compiler.context, compilation)
+    return child.run(this.options, compilation.compiler.context, compilation)
   }
 
-  /** 
+  /**
    * Returns wether the plugin should generate a light version or a full webapp
    */
   getCurrentCompilationMode(compiler) {
     // From https://github.com/webpack/webpack/blob/3366421f1784c449f415cda5930a8e445086f688/lib/WebpackOptionsDefaulter.js#L12-L14
     const isProductionLikeMode = compiler.options.mode === 'production' || !compiler.options.mode;
     // Read the current `mode` and `devMode` option
-    const faviconDefaultMode = isProductionLikeMode ? 'webapp': 'light';
+    const faviconDefaultMode = isProductionLikeMode ? 'webapp' : 'light';
     const faviconMode = isProductionLikeMode ? (this.options.mode || faviconDefaultMode) : (this.options.devMode || this.options.mode || faviconDefaultMode);
     return faviconMode;
   }
