@@ -58,6 +58,6 @@
     "parse-author": "^2.0.0"
   },
   "peerDependencies": {
-    "webpack": "^1.13.0 || ^2.0.0 || ^3.0.0 || ^4.0.0"
+    "webpack": "^3.0.0 || ^4.0.0"
   }
 }
