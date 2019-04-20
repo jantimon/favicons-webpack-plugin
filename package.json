@@ -48,7 +48,7 @@
     "webpack-merge": "^4.2.1"
   },
   "dependencies": {
-    "cache-loader": "^2.0.1",
+    "cache-loader": "^3.0.0",
     "camelcase": "^5.3.1",
     "favicons": "5.3.0",
     "find-cache-dir": "^2.0.0",
