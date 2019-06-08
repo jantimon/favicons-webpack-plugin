@@ -1,0 +1,9 @@
+{
+  "version": "1.0",
+  "api_version": 1,
+  "layout": {
+    "logo": "/custom/prefix/c3d4baba/yandex-browser-50x50.png",
+    "color": "#fff",
+    "show_title": true
+  }
+}

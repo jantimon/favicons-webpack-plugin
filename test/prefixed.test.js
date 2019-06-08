@@ -17,7 +17,7 @@ test('should allow configuring the output prefix', async t => {
     },
     plugins: [
       new HtmlWebpackPlugin(),
-      new FaviconsWebpackPlugin({ logo, prefix: 'custom/prefix/[hash:8]' }),
+      new FaviconsWebpackPlugin({ logo, prefix: 'custom/prefix/[contenthash:8]' }),
     ],
   });
 
