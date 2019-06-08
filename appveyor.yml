@@ -6,7 +6,7 @@ environment:
   - TARGET: "webpack@4 html-webpack-plugin@3"
 
 install:
-- ps: Install-Product node $env:nodejs_version
+- ps: Install-Product node $env:nodejs_version x64
 
 - appveyor-retry npm install -g npm@latest
 - appveyor-retry npm install
