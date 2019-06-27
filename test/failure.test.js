@@ -9,7 +9,7 @@ test.beforeEach(async t => t.context.root = await mkdir());
 
 test('should fail gracefully if path to logo is wrong', async t => {
   const dist = path.join(t.context.root, 'dist');
-  const logo = path.join(t.context.root, 'logo.png');
+  const logo = path.join(t.context.root, 'missing.png');
 
   try {
     await generate({

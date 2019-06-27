@@ -1,7 +1,7 @@
 const test = require('ava');
 const FaviconsWebpackPlugin = require('../');
 
-const { logo, mkdir } = require('./util');
+const { logo } = require('./util');
 
 test('should throw error when instantiated without a logo', t => {
   try {
