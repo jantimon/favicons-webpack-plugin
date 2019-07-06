@@ -1,7 +1,6 @@
 const assert = require('assert');
 const child = require('./compiler');
 const Oracle = require('./oracle');
-const { tap, tapHtml, getAssetPath } = require('./compat');
 const path = require('path');
 const crypto = require('crypto');
 
@@ -59,32 +58,33 @@ module.exports = class FaviconsWebpackPlugin {
 
     // Hook into the webpack compilation
     // to start the favicon generation
-    tap(compiler, 'make', 'FaviconsWebpackPlugin', (compilation, callback) => {
+    compiler.hooks.make.tapPromise('FaviconsWebpackPlugin', async compilation => {
       const faviconCompilation = this.generateFavicons(compilation);
 
       // Hook into the html-webpack-plugin processing and add the html
-      tapHtml(compilation, 'FaviconsWebpackPlugin', (htmlPluginData, htmlWebpackPluginCallback) => {
-        faviconCompilation.then((tags) => {
-          if (this.options.inject(htmlPluginData.plugin)) {
-            const idx = (htmlPluginData.html + '</head>').search(/<\/head>/i);
-            htmlPluginData.html = [htmlPluginData.html.slice(0, idx), ...tags, htmlPluginData.html.slice(idx)].join('');
-          }
-          htmlWebpackPluginCallback(null, htmlPluginData);
-        }).catch(htmlWebpackPluginCallback);
-      });
+      if (compilation.hooks.htmlWebpackPluginBeforeHtmlProcessing) {
+        compilation.hooks.htmlWebpackPluginBeforeHtmlProcessing.tapAsync('FaviconsWebpackPlugin', (htmlPluginData, htmlWebpackPluginCallback) => {
+          faviconCompilation.then((tags) => {
+            if (this.options.inject(htmlPluginData.plugin)) {
+              const idx = (htmlPluginData.html + '</head>').search(/<\/head>/i);
+              htmlPluginData.html = [htmlPluginData.html.slice(0, idx), ...tags, htmlPluginData.html.slice(idx)].join('');
+            }
+            htmlWebpackPluginCallback(null, htmlPluginData);
+          }).catch(htmlWebpackPluginCallback);
+        });
+      }
 
       // Save the promise and execute the callback immediately to not block
       // the webpack build see the `afterCompile` FaviconsWebpackPlugin hook
       // implementation where the promise is picked up again
       faviconCompilations.set(compilation, faviconCompilation);
-      callback();
     });
 
     // Make sure that the build waits for the favicon generation to complete
-    tap(compiler, 'afterCompile', 'FaviconsWebpackPlugin', (compilation, callback) => {
+    compiler.hooks.afterCompile.tapPromise('FaviconsWebpackPlugin', async compilation => {
       const faviconCompilation = faviconCompilations.get(compilation) || Promise.resolve();
       faviconCompilations.delete(compilation);
-      faviconCompilation.then(() => callback(), callback);
+      await faviconCompilation;
     });
   }
 
@@ -114,10 +114,12 @@ module.exports = class FaviconsWebpackPlugin {
           return reject(err);
         }
         const hash = crypto.createHash('sha256').update(content.toString('utf8')).digest('hex');
-        const outputPath = webpackPublicPath + getAssetPath(compilation, this.options.prefix, {hash, chunk: {
-          hash: hash,
-          contentHash: hash
-        }});
+        const outputPath = webpackPublicPath + compilation.mainTemplate.getAssetPath(this.options.prefix, {
+          hash, chunk: {
+            hash: hash,
+            contentHash: hash
+          }
+        });
         const logoOutputPath = outputPath + (outputPath.substr(-1) === '/' ? '' : '/') + 'favicon' + faviconExt;
         compilation.assets[logoOutputPath] = {
           source: () => content,
@@ -137,7 +139,7 @@ module.exports = class FaviconsWebpackPlugin {
    */
   generateFaviconsWebapp(compilation) {
     // Generate favicons using the npm favicons library
-    return child.run(this.options, compilation.compiler.context, compilation)
+    return child.run(this.options, compilation.compiler.context, compilation);
   }
 
   /**

@@ -54,7 +54,6 @@
   },
   "dependencies": {
     "cache-loader": "^4.1.0",
-    "camelcase": "^5.3.1",
     "favicons": "5.4.1",
     "find-cache-dir": "^3.0.0",
     "find-root": "^1.1.0",
@@ -62,7 +61,7 @@
     "parse-author": "^2.0.0"
   },
   "peerDependencies": {
-    "webpack": "^3.0.0 || ^4.0.0"
+    "webpack": "^4.0.0"
   },
   "config": {
     "commitizen": {

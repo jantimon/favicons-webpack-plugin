@@ -1,9 +1,8 @@
 const path = require('path');
 const findCacheDir = require('find-cache-dir');
 const SingleEntryPlugin = require('webpack/lib/SingleEntryPlugin');
-const { getAssetPath } = require('./compat');
 
-module.exports.run = ({ prefix, favicons: options, logo, cache, publicPath: publicPathOption, outputPath }, context, compilation) => {
+module.exports.run = async ({ prefix, favicons: options, logo, cache, publicPath: publicPathOption, outputPath }, context, compilation) => {
   // The entry file is just an empty helper
   const filename = '[hash]';
   const publicPath = publicPathOption || compilation.outputOptions.publicPath || '/';
@@ -26,34 +25,32 @@ module.exports.run = ({ prefix, favicons: options, logo, cache, publicPath: publ
     ;
 
   const faviconsLoader = `${require.resolve('./loader')}?${JSON.stringify({ prefix, options, path: publicPath, outputPath })}`;
-  
+
   new SingleEntryPlugin(context, `!${cacheLoader}!${faviconsLoader}!${logo}`, path.basename(logo)).apply(compiler);
 
   // Compile and return a promise
-  return new Promise((resolve, reject) => {
-    compiler.runAsChild((err, [chunk] = [], { hash, errors = [], assets = {} } = {}) => {
+  const { chunk, hash, assets } = await new Promise((resolve, reject) => {
+    return compiler.runAsChild((err, [chunk] = [], { hash, errors = [], assets = {} } = {}) => {
       if (err || errors.length) {
         return reject(err || errors[0].error);
       }
 
-      // Replace [hash] placeholders in filename
-      const result = extractAssetFromCompilation(compilation, getAssetPath(compilation, filename, { hash, chunk }))
-
-      for (const { name, contents } of result.assets) {
-        const binaryContents = Buffer.from(contents, 'base64');
-        compilation.assets[name] = {
-          source: () => binaryContents,
-          size: () => binaryContents.length
-        };
-      }
-
-      return resolve(result.tags);
+      return resolve({ chunk, hash, assets });
     });
   });
-};
 
-function extractAssetFromCompilation(compilation, assetPath) {
-  const content = compilation.assets[assetPath].source();
+  // Replace [hash] placeholders in filename
+  const assetPath = compilation.mainTemplate.getAssetPath(filename, { hash, chunk });
+  const { tags, assets: files } = eval(assets[assetPath].source());
   delete compilation.assets[assetPath];
-  return eval(content);
-}
+
+  for (const { name, contents } of files) {
+    const binaryContents = Buffer.from(contents, 'base64');
+    compilation.assets[name] = {
+      source: () => binaryContents,
+      size: () => binaryContents.length
+    };
+  }
+
+  return tags;
+};
