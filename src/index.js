@@ -1,8 +1,9 @@
 const assert = require('assert');
-const child = require('./compiler');
-const Oracle = require('./oracle');
+const parse5 = require('parse5');
 const path = require('path');
+const child = require('./compiler');
 const crypto = require('crypto');
+const Oracle = require('./oracle');
 
 const faviconCompilations = new WeakMap();
 
@@ -62,12 +63,23 @@ module.exports = class FaviconsWebpackPlugin {
       const faviconCompilation = this.generateFavicons(compilation);
 
       // Hook into the html-webpack-plugin processing and add the html
-      if (compilation.hooks.htmlWebpackPluginBeforeHtmlProcessing) {
-        compilation.hooks.htmlWebpackPluginBeforeHtmlProcessing.tapAsync('FaviconsWebpackPlugin', (htmlPluginData, htmlWebpackPluginCallback) => {
+      const htmlWebpackPlugin = compiler.options.plugins
+        .map(({ constructor }) => constructor)
+        .find(({ name }) => name === 'HtmlWebpackPlugin');
+
+      if (htmlWebpackPlugin) {
+        htmlWebpackPlugin.getHooks(compilation).alterAssetTags.tapAsync('FaviconsWebpackPlugin', (htmlPluginData, htmlWebpackPluginCallback) => {
           faviconCompilation.then((tags) => {
+
             if (this.options.inject(htmlPluginData.plugin)) {
-              const idx = (htmlPluginData.html + '</head>').search(/<\/head>/i);
-              htmlPluginData.html = [htmlPluginData.html.slice(0, idx), ...tags, htmlPluginData.html.slice(idx)].join('');
+              htmlPluginData.plugin.options.inject = true;
+              htmlPluginData.assetTags.meta.push(
+                ...tags.map(tag => parse5.parseFragment(tag).childNodes[0]).map(({ tagName, attrs }) => ({
+                  tagName,
+                  voidTag: true,
+                  attributes: attrs.reduce((obj, { name, value }) => Object.assign(obj, { [name]: value }), {}),
+                })),
+              );
             }
             htmlWebpackPluginCallback(null, htmlPluginData);
           }).catch(htmlWebpackPluginCallback);

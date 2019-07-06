@@ -24,7 +24,7 @@ test('should work together with the html-webpack-plugin', async t => {
   t.deepEqual(await compare(dist, path.resolve(expected, 'html')), []);
 });
 
-test('should inject html despite HtmlWebpackPlugin@inject flag with inject force', async t => {
+test('should inject html regardless of HtmlWebpackPlugin@inject flag with inject force', async t => {
   const dist = path.join(t.context.root, 'dist');
   await generate({
     context: t.context.root,
