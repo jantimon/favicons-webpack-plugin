@@ -54,7 +54,6 @@
     "find-cache-dir": "^2.1.0",
     "find-root": "^1.1.0",
     "loader-utils": "^1.2.3",
-    "msgpack-lite": "^0.1.26",
     "parse-author": "^2.0.0"
   },
   "peerDependencies": {

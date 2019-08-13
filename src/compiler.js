@@ -1,5 +1,4 @@
 const path = require('path');
-const msgpack = require('msgpack-lite');
 const findCacheDir = require('find-cache-dir');
 const SingleEntryPlugin = require('webpack/lib/SingleEntryPlugin');
 const { getAssetPath } = require('./compat');
@@ -15,20 +14,20 @@ module.exports.run = ({ prefix, favicons: options, logo, cache, publicPath: publ
   const compiler = compilation.createChildCompiler('favicons-webpack-plugin', { filename, publicPath });
   compiler.context = context;
 
-  const loader = `!${require.resolve('./loader')}?${JSON.stringify({ prefix, options, path: publicPath, outputPath })}`;
-
   const cacheDirectory = cache && (
     (typeof cache === 'string')
       ? path.resolve(context, cache)
       : findCacheDir({ name: 'favicons-webpack-plugin', cwd: context }) || path.resolve(context, '.wwp-cache')
   );
 
-  const cacher = cacheDirectory
+  const cacheLoader = cacheDirectory
     ? `!${require.resolve('cache-loader')}?${JSON.stringify({ cacheDirectory })}`
     : ''
     ;
 
-  new SingleEntryPlugin(context, `!${cacher}${loader}!${logo}`, path.basename(logo)).apply(compiler);
+  const faviconsLoader = `${require.resolve('./loader')}?${JSON.stringify({ prefix, options, path: publicPath, outputPath })}`;
+  
+  new SingleEntryPlugin(context, `!${cacheLoader}!${faviconsLoader}!${logo}`, path.basename(logo)).apply(compiler);
 
   // Compile and return a promise
   return new Promise((resolve, reject) => {
@@ -38,14 +37,13 @@ module.exports.run = ({ prefix, favicons: options, logo, cache, publicPath: publ
       }
 
       // Replace [hash] placeholders in filename
-      const output = getAssetPath(compilation, filename, { hash, chunk });
-      const result = msgpack.decode(Buffer.from(eval(assets[output].source()), 'base64'));
+      const result = extractAssetFromCompilation(compilation, getAssetPath(compilation, filename, { hash, chunk }))
 
-      delete compilation.assets[output];
-      for (const {name, contents} of result.assets) {
+      for (const { name, contents } of result.assets) {
+        const binaryContents = Buffer.from(contents, 'base64');
         compilation.assets[name] = {
-          source: () => contents,
-          size: () => contents.length,
+          source: () => binaryContents,
+          size: () => binaryContents.length
         };
       }
 
@@ -53,3 +51,9 @@ module.exports.run = ({ prefix, favicons: options, logo, cache, publicPath: publ
     });
   });
 };
+
+function extractAssetFromCompilation(compilation, assetPath) {
+  const content = compilation.assets[assetPath].source();
+  delete compilation.assets[assetPath];
+  return eval(content);
+}
