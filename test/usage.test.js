@@ -3,20 +3,6 @@ const FaviconsWebpackPlugin = require('../');
 
 const { logo } = require('./util');
 
-test('should throw error when instantiated without a logo', t => {
-  try {
-    new FaviconsWebpackPlugin();
-  } catch (err) {
-    t.is(err.message, 'An input file is required');
-  }
-
-  try {
-    new FaviconsWebpackPlugin({});
-  } catch (err) {
-    t.is(err.message, 'An input file is required');
-  }
-});
-
 test('should take a string as argument', t => {
   const plugin = new FaviconsWebpackPlugin(logo);
   t.is(plugin.options.logo, logo);

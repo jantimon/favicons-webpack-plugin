@@ -9,7 +9,6 @@ const faviconCompilations = new WeakMap();
 module.exports = class FaviconsWebpackPlugin {
   constructor(args) {
     const options = (typeof args === 'string') ? { logo: args } : args;
-    assert(typeof options === 'object' && typeof options.logo === 'string', 'An input file is required');
 
     this.options = Object.assign({
       cache: true,
@@ -38,6 +37,16 @@ module.exports = class FaviconsWebpackPlugin {
         developerName,
         developerURL,
       });
+    }
+
+    if (this.options.logo === undefined) {
+      const defaultLogo = path.resolve(compiler.context, 'logo.png');
+      try {
+        compiler.inputFileSystem.statSync(defaultLogo);
+        this.options.logo = defaultLogo;
+      } catch (e) {
+      }
+      assert(typeof this.options.logo === 'string', 'Could not find `logo.png` for the current webpack context');
     }
 
     if (typeof this.options.inject !== 'function') {

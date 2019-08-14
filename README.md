@@ -11,6 +11,21 @@ Install the plugin with npm:
 $ npm install --save-dev favicons-webpack-plugin
 ```
 
+## Zero Config Usage
+
+Add your base logo as `logo.png` file to you webpack context folder.
+(By default the context is the current working directory)
+
+Add the plugin to your webpack config as follows:
+
+```javascript
+const FaviconsWebpackPlugin = require('favicons-webpack-plugin')
+
+plugins: [
+  new FaviconsWebpackPlugin()
+]
+```
+
 ## Basic Usage
 
 Add the plugin to your webpack config as follows:
