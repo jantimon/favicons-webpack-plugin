@@ -1,5 +1,6 @@
-/node_modules/
-/dist/
-/example/dist/
-npm-debug.log
-yarn.lock
+/coverage/
+/.nyc_output/
+/.vscode/
+/example/**/public/
+**/.wwp-cache/
+**/node_modules/

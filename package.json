@@ -1,17 +1,15 @@
 {
   "name": "favicons-webpack-plugin",
-  "version": "0.0.9",
+  "version": "1.0.0",
   "description": "Let webpack generate all your favicons and icons for you",
-  "main": "index.js",
+  "main": "src/index.js",
   "files": [
-    "index.js",
-    "lib/"
+    "src/"
   ],
   "scripts": {
-    "lint": "semistandard",
-    "prepublish": "npm run test",
-    "posttest": "npm run lint",
-    "test": "ava"
+    "test": "ava test/*.test.js",
+    "coverage": "nyc npm test",
+    "release": "standard-version"
   },
   "repository": {
     "type": "git",
@@ -21,38 +19,46 @@
     "webpack",
     "plugin",
     "html-webpack-plugin",
+    "webapp",
+    "pwa",
+    "manifest",
     "favicon",
-    "icon"
+    "icon",
+    "png",
+    "svg"
   ],
   "author": "Jan Nicklas <j.nicklas@me.com> (https://github.com/jantimon)",
+  "contributors": [
+    "Bruno Dutra <brunocodutra@gmail.com> (https://github.com/brunocodutra)",
+    "Jan Nicklas <j.nicklas@me.com> (https://github.com/jantimon)"
+  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/jantimon/favicons-webpack-plugin/issues"
   },
-  "semistandard": {
-    "parser": "babel-eslint"
-  },
   "homepage": "https://github.com/jantimon/favicons-webpack-plugin",
   "devDependencies": {
-    "ava": "^0.16.0",
-    "babel-eslint": "^7.1.0",
-    "denodeify": "^1.2.1",
-    "dir-compare": "^1.0.1",
-    "express": "^4.13.4",
-    "html-webpack-plugin": "^2.16.0",
-    "memory-fs": "^0.3.0",
-    "mkdirp": "^0.5.1",
-    "rimraf": "^2.5.2",
-    "semistandard": "^9.1.0",
-    "webpack": "^1.13.0",
-    "webpack-dev-middleware": "^1.6.1"
+    "ava": "^1.4.1",
+    "dir-compare": "^1.7.2",
+    "fs-extra": "^8.0.1",
+    "html-webpack-plugin": "^3.2.0",
+    "nyc": "^14.1.1",
+    "standard-version": "7.0.0",
+    "webpack": "^4.35.0",
+    "webpack-cli": "^3.3.5",
+    "webpack-dev-server": "^3.7.2",
+    "webpack-merge": "^4.2.1"
   },
   "dependencies": {
-    "favicons": "^4.8.3",
-    "loader-utils": "^0.2.14",
-    "lodash": "^4.11.1"
+    "cache-loader": "^3.0.1",
+    "camelcase": "^5.3.1",
+    "favicons": "5.4.1",
+    "find-cache-dir": "^2.1.0",
+    "find-root": "^1.1.0",
+    "loader-utils": "^1.2.3",
+    "parse-author": "^2.0.0"
   },
   "peerDependencies": {
-    "webpack": "^1.13.0 || ^2.0.0 || ^3.0.0 || ^4.0.0"
+    "webpack": "^3.0.0 || ^4.0.0"
   }
 }

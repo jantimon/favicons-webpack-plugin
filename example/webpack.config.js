@@ -1,18 +1,18 @@
-'use strict';
-var FaviconsWebpackPlugin = require('..');
-var HtmlWebpackPlugin = require('html-webpack-plugin');
-var path = require('path');
+const FaviconsWebpackPlugin = require('..');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const path = require('path');
 
 module.exports = {
-  context: __dirname,
-  devtool: 'eval',
-  entry: './src/entry.js',
+  entry: 'entry.js',
+  resolve: {
+    modules: [path.resolve(__dirname, 'src')],
+  },
   output: {
-    path: path.join(__dirname, 'dist'),
+    path: path.resolve(__dirname, 'dist'),
     filename: 'bundle.js'
   },
   plugins: [
-    new FaviconsWebpackPlugin('./src/logo.png'),
+    new FaviconsWebpackPlugin('logo.svg'),
     new HtmlWebpackPlugin()
   ]
 };

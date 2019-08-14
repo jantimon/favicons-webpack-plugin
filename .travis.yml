@@ -1,9 +1,21 @@
 language: node_js
 node_js:
-  - "4"
-  - "5"
-  - "6"
+- '6'
+- node
+
+os:
+- linux
+- osx
+
+git:
+  depth: 1
+
+before_install:
+# package-lock.json was introduced in npm@5
+- travis_retry npm install -g npm@latest
+
 install:
-  - npm install --ignore-scripts
+- travis_retry npm install
+
 script:
-  - npm test
+- travis_retry npm test
