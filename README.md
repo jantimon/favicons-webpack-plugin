@@ -155,6 +155,8 @@ const FaviconsWebpackPlugin = require('favicons-webpack-plugin')
 plugins: [
   new FaviconsWebpackPlugin({
     logo: '/path/to/logo.png', // svg works too!
+    mode: 'webapp', // optional can be 'webapp' or 'light' - 'webapp' by default
+    devMode: 'webapp', // optional can be 'webapp' or 'light' - 'light' by default 
     favicons: {
       appName: 'my-app',
       appDescription: 'My awesome App',
@@ -199,6 +201,16 @@ plugins: [
     }),
 ],
 ```
+
+### Compilation Modes
+
+Modes allow you to choose a very fast simplified favicon compilation or a production ready favicon compilation
+
+By default this mode is controlled by webpack  
+If the webpack mode is set to `development` the favicons mode will use `light`.
+If the webpack mode is set to `production` the favicons mode will use `webapp`.
+
+This behaviour can be adjusted by setting the favicon `mode` and `devMode` options.
 
 ## Changelog
 

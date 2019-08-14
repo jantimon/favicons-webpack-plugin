@@ -19,6 +19,16 @@ module.exports = (env, args) => {
       new FaviconsWebpackPlugin({
         // Your source logo (required)
         logo: './src/favicon.png',
+        // Favicon generation mode which is used if webpack is in `production` mode
+        // Can be set to:
+        // `webapp` (Slow but production ready favicon geneation)
+        // `light` (Limited but fast favicon geneation during development)
+        mode: 'webapp',
+        // Favicon generation mode which is used if webpack is in `development` mode
+        // Can be set to:
+        // `webapp` (Slow but production ready favicon geneation)
+        // `light` (Limited but fast favicon geneation during development)
+        devMode: 'light',
         // Path to store cached data or false/null to disable caching altogether
         // Note: disabling caching may increase build times considerably
         cache: '.wwp-cache',
