@@ -7,6 +7,7 @@
     "src/"
   ],
   "scripts": {
+    "commit": "git-cz",
     "test": "ava test/*.test.js",
     "coverage": "nyc npm test",
     "release": "standard-version"
@@ -39,6 +40,8 @@
   "homepage": "https://github.com/jantimon/favicons-webpack-plugin",
   "devDependencies": {
     "ava": "^1.4.1",
+    "commitizen": "4.0.3",
+    "cz-conventional-changelog": "3.0.2",
     "dir-compare": "^1.7.2",
     "fs-extra": "^8.0.1",
     "html-webpack-plugin": "^3.2.0",
@@ -60,5 +63,10 @@
   },
   "peerDependencies": {
     "webpack": "^3.0.0 || ^4.0.0"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
   }
 }
