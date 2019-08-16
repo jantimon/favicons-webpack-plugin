@@ -3,6 +3,7 @@ const child = require('./compiler');
 const Oracle = require('./oracle');
 const { tap, tapHtml, getAssetPath } = require('./compat');
 const path = require('path');
+const crypto = require('crypto');
 
 const faviconCompilations = new WeakMap();
 
@@ -105,13 +106,20 @@ module.exports = class FaviconsWebpackPlugin {
     return new Promise((resolve, reject) => {
       const logoFileName = path.resolve(compilation.compiler.context, this.options.logo);
       const webpackPublicPath = compilation.outputOptions.publicPath || '/';
-      const outputPath = webpackPublicPath + getAssetPath(compilation, this.options.prefix, {hash: compilation.hash, chunk: {}});
       const faviconExt = path.extname(this.options.logo);
-      const logoOutputPath = outputPath + 'favicon' + faviconExt;
+      // Copy file to output directory
       compiler.inputFileSystem.readFile(logoFileName, (err, content) => {
         if (err) {
           return reject(err);
         }
+        const hasher = crypto.createHash("md5");
+        hasher.update(content.toString('utf8'));
+        const hash = hasher.digest('hex');
+        const outputPath = webpackPublicPath + getAssetPath(compilation, this.options.prefix, {hash, chunk: {
+          hash: hash,
+          contentHash: hash
+        }});
+        const logoOutputPath = outputPath + (outputPath.substr(-1) === '/' ? '' : '/') + 'favicon' + faviconExt;  
         compilation.assets[logoOutputPath] = {
           source: () => content,
           size: () => content.length

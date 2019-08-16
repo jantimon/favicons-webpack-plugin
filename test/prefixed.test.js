@@ -24,4 +24,20 @@ test('should allow configuring the output prefix', async t => {
   t.deepEqual(await compare(dist, path.resolve(expected, 'prefixed')), []);
 });
 
+test('should allow configuring the output prefix for light mode', async t => {
+  const dist = path.join(t.context.root, 'dist');
+  await generate({
+    context: t.context.root,
+    output: {
+      path: dist,
+    },
+    plugins: [
+      new HtmlWebpackPlugin(),
+      new FaviconsWebpackPlugin({ logo, mode:'light', prefix: 'custom/prefix/[hash:8]' }),
+    ],
+  });
+
+  t.deepEqual(await compare(dist, path.resolve(expected, 'prefixedlight')), []);
+});
+
 test.afterEach(t => fs.remove(t.context.root));
