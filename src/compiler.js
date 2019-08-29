@@ -1,7 +1,6 @@
 const path = require('path');
 const findCacheDir = require('find-cache-dir');
 const SingleEntryPlugin = require('webpack/lib/SingleEntryPlugin');
-const { getAssetPath } = require('./compat');
 
 module.exports.run = (faviconOptions, context, compilation) => {
   const { prefix, favicons: options, logo, cache, publicPath: publicPathOption, outputPath } = faviconOptions;
@@ -28,7 +27,8 @@ module.exports.run = (faviconOptions, context, compilation) => {
 
   const faviconsLoader = `${require.resolve('./loader')}?${JSON.stringify({ prefix, options, path: publicPath, outputPath })}`;
   
-  new SingleEntryPlugin(context, `!${cacheLoader}!${faviconsLoader}!${logo}`, path.basename(logo)).apply(compiler);
+  const logoCompilationEntry = new SingleEntryPlugin(context, `!${cacheLoader}!${faviconsLoader}!${logo}`, path.basename(logo));
+  logoCompilationEntry.apply(compiler);
 
   // Compile and return a promise
   return new Promise((resolve, reject) => {
@@ -38,7 +38,7 @@ module.exports.run = (faviconOptions, context, compilation) => {
       }
 
       // Replace [hash] placeholders in filename
-      const result = extractAssetFromCompilation(compilation, getAssetPath(compilation, filename, { hash, chunk }))
+      const result = extractAssetFromCompilation(compilation, compilation.mainTemplate.getAssetPath(filename, { hash, chunk }))
 
       for (const { name, contents } of result.assets) {
         const binaryContents = Buffer.from(contents, 'base64');

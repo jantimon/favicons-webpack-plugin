@@ -227,6 +227,11 @@ If the webpack mode is set to `production` the favicons mode will use `webapp`.
 
 This behaviour can be adjusted by setting the favicon `mode` and `devMode` options.
 
+## Compatibility
+
+favicons-webpack-plugin 2.x is compatible with html-webpack-plugin 3.x
+favicons-webpack-plugin 3.x is compatible with html-webpack-plugin 4.x 
+
 ## Changelog
 
 Take a look at the [CHANGELOG.md](https://github.com/jantimon/favicons-webpack-plugin/tree/master/CHANGELOG.md).

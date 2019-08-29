@@ -46,7 +46,7 @@
     "cz-conventional-changelog": "3.0.2",
     "diffable-html": "4.0.0",
     "fs-extra": "^8.1.0",
-    "html-webpack-plugin": "^3.2.0",
+    "html-webpack-plugin": "4.0.0-beta.11",
     "image-size": "0.8.3",
     "nyc": "^15.0.0",
     "standard-version": "7.0.1",
@@ -64,10 +64,15 @@
     "find-cache-dir": "^3.2.0",
     "find-root": "^1.1.0",
     "loader-utils": "^1.2.3",
-    "parse-author": "^2.0.0"
+    "parse-author": "^2.0.0",
+    "parse5": "^5.1.0",
+    "tapable": "^1.1.3"
   },
   "peerDependencies": {
-    "webpack": "^4.41.5"
+    "webpack": "^4.0.0"
+  },
+  "optionalDependencies": {
+    "html-webpack-plugin": ">=4.0.0 || ^4.0.0-beta.11"
   },
   "config": {
     "commitizen": {
