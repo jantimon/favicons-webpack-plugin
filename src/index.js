@@ -113,7 +113,7 @@ module.exports = class FaviconsWebpackPlugin {
           return reject(err);
         }
         const hash = crypto.createHash('sha256').update(content.toString('utf8')).digest('hex');
-        const outputPath = webpackPublicPath + getAssetPath(compilation, this.options.prefix, {hash, chunk: {
+        const outputPath = getAssetPath(compilation, this.options.prefix, {hash, chunk: {
           hash: hash,
           contentHash: hash
         }});
@@ -123,7 +123,7 @@ module.exports = class FaviconsWebpackPlugin {
           size: () => content.length
         }
         resolve([
-          `<link rel="icon" href="${logoOutputPath}">`
+          `<link rel="icon" href="${webpackPublicPath}${logoOutputPath}">`
         ]);
       });
     });
