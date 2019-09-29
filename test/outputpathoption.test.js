@@ -4,14 +4,14 @@ const fs = require('fs-extra');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const FaviconsWebpackPlugin = require('../');
 
-const { logo, generate, mkdir, compare, expected } = require('./util');
+const { logo, generate, mkdir, snapshotCompilationAssets } = require('./util');
 
 test.beforeEach(async t => t.context.root = await mkdir());
 
 test('should allow for overriding the output path of favicons', async t => {
   const dist = path.join(t.context.root, 'dist');
 
-  await generate({
+  const compilationStats = await generate({
     context: t.context.root,
     output: {
       path: dist,
@@ -23,7 +23,7 @@ test('should allow for overriding the output path of favicons', async t => {
     ],
   });
 
-  t.deepEqual(await compare(dist, path.resolve(expected, 'outputpathoption')), []);
+  snapshotCompilationAssets(t, compilationStats);
 });
 
 test.afterEach(t => fs.remove(t.context.root));

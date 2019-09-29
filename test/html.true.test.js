@@ -4,13 +4,13 @@ const fs = require('fs-extra');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const FaviconsWebpackPlugin = require('../');
 
-const { logo, mkdir, generate, compare, expected } = require('./util');
+const { logo, mkdir, generate, snapshotCompilationAssets } = require('./util');
 
 test.beforeEach(async t => t.context.root = await mkdir());
 
 test('should work together with the html-webpack-plugin', async t => {
   const dist = path.join(t.context.root, 'dist');
-  await generate({
+  const compilationStats = await generate({
     context: t.context.root,
     output: {
       path: dist,
@@ -21,12 +21,12 @@ test('should work together with the html-webpack-plugin', async t => {
     ],
   });
 
-  t.deepEqual(await compare(dist, path.resolve(expected, 'html')), []);
+  snapshotCompilationAssets(t, compilationStats);
 });
 
 test('should inject html despite HtmlWebpackPlugin@inject flag with inject force', async t => {
   const dist = path.join(t.context.root, 'dist');
-  await generate({
+  const compilationStats = await generate({
     context: t.context.root,
     output: {
       path: dist,
@@ -37,12 +37,12 @@ test('should inject html despite HtmlWebpackPlugin@inject flag with inject force
     ],
   });
 
-  t.deepEqual(await compare(dist, path.resolve(expected, 'html')), []);
+  snapshotCompilationAssets(t, compilationStats);
 });
 
 test('should work together with the html-webpack-plugin with no <head></head> tags', async t => {
   const dist = path.join(t.context.root, 'dist');
-  await generate({
+  const compilationStats = await generate({
     context: t.context.root,
     output: {
       path: dist,
@@ -53,7 +53,7 @@ test('should work together with the html-webpack-plugin with no <head></head> ta
     ],
   });
 
-  t.deepEqual(await compare(dist, path.resolve(expected, 'htmlnohead')), []);
+  snapshotCompilationAssets(t, compilationStats);
 });
 
 test.afterEach(t => fs.remove(t.context.root));
