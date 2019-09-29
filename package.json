@@ -8,6 +8,7 @@
   ],
   "scripts": {
     "commit": "git-cz",
+    "update-snapshots": "ava -u test/*.test.js",
     "test": "ava test/*.test.js",
     "coverage": "nyc npm test",
     "release": "standard-version"
@@ -42,7 +43,6 @@
     "ava": "^1.4.1",
     "commitizen": "4.0.3",
     "cz-conventional-changelog": "3.0.2",
-    "dir-compare": "^1.7.2",
     "fs-extra": "^8.0.1",
     "html-webpack-plugin": "^3.2.0",
     "nyc": "^14.1.1",

@@ -3,8 +3,6 @@ const path = require('path');
 const fs = require('fs-extra');
 const webpack = require('webpack');
 const merge = require('webpack-merge');
-const dircompare = require('dir-compare');
-const { tap } = require('../src/compat');
 
 const fixtures = path.resolve(__dirname, 'fixtures');
 module.exports.expected = path.resolve(fixtures, 'expected');
@@ -46,7 +44,24 @@ module.exports.run = (compiler) => new Promise((resolve, reject) => {
 
 module.exports.generate = (config) => module.exports.run(module.exports.compiler(config));
 
-module.exports.compare = (a, b) => dircompare.compare(a, b, { compareContent: true, excludeFilter: '*.js' }).then(diff =>
-  diff.diffSet.filter(({ state }) => state !== 'equal')
-    .map(({ path1, name1, path2, name2 }) => `${path.join(path1 || '', name1 + '')} ≠ ${path.join(path2 || '', name2 + '')}`)
-);
+module.exports.snapshotCompilationAssets = (t, compilerStats) => {
+  const assets = compilerStats.compilation.assets;
+  const assetNames = Object.keys(assets).sort();
+  // Check if all files are generated correctly
+  t.snapshot(assetNames);
+  const textFiles = /\.(json|html?)$/;
+  // CSS and JS files are not touched by this plugin
+  // therefore those files are excluded from snapshots
+  const ignoredFiles = /\.(js|css)$/;
+  // Transform assets into a comparable view
+  const assetContents = assetNames
+    .filter((assetName) => !ignoredFiles.test(assetName))
+    .map((assetName) => {
+      const isTxtFile = textFiles.test(assetName);
+      const content = assets[assetName].source().toString('utf8').replace(/\r/g, '');
+      return {
+        assetName,
+        content: content.length === '' ? 'EMPTY FILE' : (isTxtFile ? content : 'binary'),
+    }});
+  t.snapshot(assetContents);
+}

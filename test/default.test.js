@@ -3,13 +3,13 @@ const path = require('path');
 const fs = require('fs-extra');
 const FaviconsWebpackPlugin = require('../');
 
-const { logo, generate, mkdir, compare, expected } = require('./util');
+const { logo, generate, mkdir, snapshotCompilationAssets } = require('./util');
 
 test.beforeEach(async t => t.context.root = await mkdir());
 
 test('should generate the expected default result', async t => {
   const dist = path.join(t.context.root, 'dist');
-  await generate({
+  const compilationStats = await generate({
     context: t.context.root,
     output: {
       path: dist,
@@ -17,7 +17,7 @@ test('should generate the expected default result', async t => {
     plugins: [new FaviconsWebpackPlugin({ logo })]
   });
 
-  t.deepEqual(await compare(dist, path.resolve(expected, 'default')), []);
+  snapshotCompilationAssets(t, compilationStats);
 });
 
 test.afterEach(t => fs.remove(t.context.root));
