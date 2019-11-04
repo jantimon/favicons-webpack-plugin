@@ -42,8 +42,8 @@
     "ava": "^1.4.1",
     "commitizen": "4.0.3",
     "cz-conventional-changelog": "3.0.2",
-    "dir-compare": "^1.7.2",
-    "fs-extra": "^8.0.1",
+    "dir-compare": "^1.8.0",
+    "fs-extra": "^8.1.0",
     "html-webpack-plugin": "^3.2.0",
     "nyc": "^14.1.1",
     "standard-version": "7.0.0",
@@ -53,10 +53,10 @@
     "webpack-merge": "^4.2.1"
   },
   "dependencies": {
-    "cache-loader": "^3.0.1",
+    "cache-loader": "^4.1.0",
     "camelcase": "^5.3.1",
     "favicons": "5.4.1",
-    "find-cache-dir": "^2.1.0",
+    "find-cache-dir": "^3.0.0",
     "find-root": "^1.1.0",
     "loader-utils": "^1.2.3",
     "parse-author": "^2.0.0"
