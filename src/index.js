@@ -105,7 +105,8 @@ module.exports = class FaviconsWebpackPlugin {
   generateFaviconsLight(compiler, compilation) {
     return new Promise((resolve, reject) => {
       const logoFileName = path.resolve(compilation.compiler.context, this.options.logo);
-      const publicPath = typeof this.options.publicPath !== 'undefined' ? this.options.publicPath : ( typeof compilation.outputOptions.publicPath !== 'undefined' ? compilation.outputOptions.publicPath : '/');
+      let publicPath = typeof this.options.publicPath !== 'undefined' ? this.options.publicPath : ( typeof compilation.outputOptions.publicPath !== 'undefined' ? compilation.outputOptions.publicPath : '/');
+      publicPath += (publicPath.substr(-1) === '/' ? '' : '/');
       const faviconExt = path.extname(this.options.logo);
       // Copy file to output directory
       compiler.inputFileSystem.readFile(logoFileName, (err, content) => {
