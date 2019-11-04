@@ -5,7 +5,7 @@ const SingleEntryPlugin = require('webpack/lib/SingleEntryPlugin');
 module.exports.run = async ({ prefix, favicons: options, logo, cache, publicPath: publicPathOption, outputPath }, context, compilation) => {
   // The entry file is just an empty helper
   const filename = '[hash]';
-  const publicPath = publicPathOption || compilation.outputOptions.publicPath || '/';
+  const publicPath = typeof publicPathOption !== 'undefined' ? publicPathOption : ( typeof compilation.outputOptions.publicPath !== 'undefined' ? compilation.outputOptions.publicPath : '/');
 
   // Create an additional child compiler which takes the template
   // and turns it into an Node.JS html factory.

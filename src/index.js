@@ -118,7 +118,8 @@ module.exports = class FaviconsWebpackPlugin {
   generateFaviconsLight(compilation) {
     return new Promise((resolve, reject) => {
       const logoFileName = path.resolve(compilation.compiler.context, this.options.logo);
-      const webpackPublicPath = compilation.outputOptions.publicPath || '/';
+      let publicPath = typeof this.options.publicPath !== 'undefined' ? this.options.publicPath : ( typeof compilation.outputOptions.publicPath !== 'undefined' ? compilation.outputOptions.publicPath : '/');
+      publicPath += (publicPath.substr(-1) === '/' ? '' : '/');
       const faviconExt = path.extname(this.options.logo);
       // Copy file to output directory
       compilation.compiler.inputFileSystem.readFile(logoFileName, (err, content) => {
@@ -126,7 +127,7 @@ module.exports = class FaviconsWebpackPlugin {
           return reject(err);
         }
         const hash = crypto.createHash('sha256').update(content.toString('utf8')).digest('hex');
-        const outputPath = webpackPublicPath + compilation.mainTemplate.getAssetPath(this.options.prefix, {
+        const outputPath = publicPath + compilation.mainTemplate.getAssetPath(this.options.prefix, {
           hash, chunk: {
             hash: hash,
             contentHash: hash
@@ -138,7 +139,7 @@ module.exports = class FaviconsWebpackPlugin {
           size: () => content.length
         }
         resolve([
-          `<link rel="icon" href="${logoOutputPath}">`
+          `<link rel="icon" href="${publicPath}${logoOutputPath}">`
         ]);
       });
     });
