@@ -67,7 +67,7 @@ module.exports = class FaviconsWebpackPlugin {
         .map(({ constructor }) => constructor)
         .find(({ name }) => name === 'HtmlWebpackPlugin');
 
-      if (htmlWebpackPlugin) {
+      if (htmlWebpackPlugin && htmlWebpackPlugin.getHooks) {
         htmlWebpackPlugin.getHooks(compilation).alterAssetTags.tapAsync('FaviconsWebpackPlugin', (htmlPluginData, htmlWebpackPluginCallback) => {
           faviconCompilation.then((tags) => {
 
