@@ -3,6 +3,7 @@ const path = require('path');
 const fs = require('fs-extra');
 const webpack = require('webpack');
 const merge = require('webpack-merge');
+const sizeOf = require('image-size');
 
 const fixtures = path.resolve(__dirname, 'fixtures');
 module.exports.expected = path.resolve(fixtures, 'expected');
@@ -48,8 +49,8 @@ module.exports.snapshotCompilationAssets = (t, compilerStats) => {
   const assets = compilerStats.compilation.assets;
   const assetNames = Object.keys(assets).sort();
   // Check if all files are generated correctly
-  t.snapshot(assetNames);
-  const textFiles = /\.(json|html?)$/;
+  t.snapshot(assetNames.map(replaceHash));
+  const textFiles = /\.(json|html?|webapp|xml)$/;
   // CSS and JS files are not touched by this plugin
   // therefore those files are excluded from snapshots
   const ignoredFiles = /\.(js|css)$/;
@@ -58,10 +59,30 @@ module.exports.snapshotCompilationAssets = (t, compilerStats) => {
     .filter((assetName) => !ignoredFiles.test(assetName))
     .map((assetName) => {
       const isTxtFile = textFiles.test(assetName);
-      const content = assets[assetName].source().toString('utf8').replace(/\r/g, '');
+      const content = assets[assetName].source();
+      const textContent = replaceHash(!isTxtFile ? '' : content.toString('utf8').replace(/\r/g, ''));
       return {
-        assetName,
-        content: content.length === '' ? 'EMPTY FILE' : (isTxtFile ? content : 'binary'),
+        assetName: replaceHash(assetName),
+        content: content.length === '' ? 'EMPTY FILE' : (isTxtFile ? textContent : getFileDetails(assetName, assets[assetName].source())),
     }});
   t.snapshot(assetContents);
+}
+
+function getFileDetails(assetName, buffer) {
+  try {
+    const size = sizeOf(buffer);
+    return size.type + ' ' + size.width + 'x' + size.height;
+  } catch(e) {
+    return 'binary ' + assetName;
+  }
+}
+
+/**
+ * Replace hashses to allow using the same snapshots for different versions of this library
+ * hashes will only be found if they are in a parent directory with the name "prefix"
+ */
+function replaceHash(content) {
+   return content.replace(/(prefix\/)([0-9A-Fa-f]*)(\/)/g, function(_, prefix, hash, suffix) {
+    return prefix + '__replaced_hash_' + hash.length + suffix
+   });
 }
