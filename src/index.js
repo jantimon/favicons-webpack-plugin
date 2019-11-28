@@ -114,8 +114,7 @@ module.exports = class FaviconsWebpackPlugin {
         }
         const hash = crypto.createHash('sha256').update(content.toString('utf8')).digest('hex');
         const outputPath = getAssetPath(compilation, this.options.prefix, {hash, chunk: {
-          hash: hash,
-          contentHash: hash
+          hash: hash
         }});
         const logoOutputPath = outputPath + (outputPath.substr(-1) === '/' ? '' : '/') + 'favicon' + faviconExt;  
         compilation.assets[logoOutputPath] = {
