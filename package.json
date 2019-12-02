@@ -55,7 +55,7 @@
   "dependencies": {
     "cache-loader": "^3.0.1",
     "camelcase": "^5.3.1",
-    "favicons": "5.4.1",
+    "favicons": "5.5.0",
     "find-cache-dir": "^2.1.0",
     "find-root": "^1.1.0",
     "loader-utils": "^1.2.3",
