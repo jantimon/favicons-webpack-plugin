@@ -6,7 +6,7 @@ const { getAssetPath } = require('./compat');
 module.exports.run = ({ prefix, favicons: options, logo, cache, publicPath: publicPathOption, outputPath }, context, compilation) => {
   // The entry file is just an empty helper
   const filename = '[hash]';
-  const publicPath = publicPathOption || compilation.outputOptions.publicPath || '/';
+  const publicPath = getPublicPath(publicPathOption, compilation.outputOptions.publicPath);
 
   // Create an additional child compiler which takes the template
   // and turns it into an Node.JS html factory.
@@ -57,3 +57,12 @@ function extractAssetFromCompilation(compilation, assetPath) {
   delete compilation.assets[assetPath];
   return eval(content);
 }
+
+/**
+ * faviconsPublicPath always wins over compilerPublicPath
+ * If both are undefined fallback to '/'
+ */
+function getPublicPath(faviconsPublicPath, compilerPublicPath) {
+  return faviconsPublicPath !== undefined ? faviconsPublicPath : compilerPublicPath !== undefined ? compilerPublicPath : '/';  
+}
+module.exports.getPublicPath = getPublicPath;
