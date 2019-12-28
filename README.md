@@ -116,7 +116,7 @@ In combination with [html-webpack-plugin](https://github.com/jantimon/html-webpa
 plugins: [
   new FaviconsWebpackPlugin({
     // Your source logo (required)
-    logo: '/path/to/logo.png',
+    logo: './src/logo.png',
     // Enable caching and optionally specify the path to store cached data
     // Note: disabling caching may increase build times considerably
     cache: true,
@@ -169,7 +169,7 @@ const FaviconsWebpackPlugin = require('favicons-webpack-plugin')
 
 plugins: [
   new FaviconsWebpackPlugin({
-    logo: '/path/to/logo.png', // svg works too!
+    logo: './src/logo.png', // svg works too!
     mode: 'webapp', // optional can be 'webapp' or 'light' - 'webapp' by default
     devMode: 'webapp', // optional can be 'webapp' or 'light' - 'light' by default 
     favicons: {
