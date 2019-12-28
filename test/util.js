@@ -4,6 +4,7 @@ const fs = require('fs-extra');
 const webpack = require('webpack');
 const merge = require('webpack-merge');
 const sizeOf = require('image-size');
+const formatHtml = require('diffable-html');
 
 const fixtures = path.resolve(__dirname, 'fixtures');
 module.exports.expected = path.resolve(fixtures, 'expected');
@@ -50,6 +51,7 @@ module.exports.snapshotCompilationAssets = (t, compilerStats) => {
   const assetNames = Object.keys(assets).sort();
   // Check if all files are generated correctly
   t.snapshot(assetNames.map(replaceHash));
+  const htmlFiles = /\.html?$/;
   const textFiles = /\.(json|html?|webapp|xml)$/;
   // CSS and JS files are not touched by this plugin
   // therefore those files are excluded from snapshots
@@ -60,10 +62,11 @@ module.exports.snapshotCompilationAssets = (t, compilerStats) => {
     .map((assetName) => {
       const isTxtFile = textFiles.test(assetName);
       const content = assets[assetName].source();
-      const textContent = replaceHash(!isTxtFile ? '' : content.toString('utf8').replace(/\r/g, ''));
+      const textContent = replaceHash(!isTxtFile ? '' : content.toString('utf8'));
+      const formattedContent = textContent && htmlFiles.test(assetName) ? formatHtml(textContent) : textContent;
       return {
         assetName: replaceHash(assetName),
-        content: content.length === '' ? 'EMPTY FILE' : (isTxtFile ? textContent : getFileDetails(assetName, assets[assetName].source())),
+        content: content.length === '' ? 'EMPTY FILE' : (isTxtFile ? formattedContent.replace(/\r/g, '') : getFileDetails(assetName, assets[assetName].source())),
     }});
   t.snapshot(assetContents);
 }
