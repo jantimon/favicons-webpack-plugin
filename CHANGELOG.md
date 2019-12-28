@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.0.0](https://github.com/jantimon/favicons-webpack-plugin/compare/v1.0.2...v2.0.0) (2019-12-28)
+
+
+### ⚠ BREAKING CHANGES
+
+* an empty string public path will no longer fallback to a slash
+* drop support for node versions < 8 to be able to upgrade favicons
+
+### Features
+
+* allow setting public path to an empty string ([b3a5eb3](https://github.com/jantimon/favicons-webpack-plugin/commit/b3a5eb352635d93395d280364468845097e07fc1))
+
+
+### Bug Fixes
+
+* remove unused contentHash ([b48697f](https://github.com/jantimon/favicons-webpack-plugin/commit/b48697f96a62857e13e15b2ba6309e9f0f462f0d))
+
+
+* upgrade to new favicons version ([7c86a6c](https://github.com/jantimon/favicons-webpack-plugin/commit/7c86a6c84f443b81f3b5dce1f1e89cd7da6c8456))
+
 ### [1.0.2](https://github.com/jantimon/favicons-webpack-plugin/compare/v1.0.1...v1.0.2) (2019-09-06)
 
 
