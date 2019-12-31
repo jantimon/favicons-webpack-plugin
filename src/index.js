@@ -58,41 +58,41 @@ class FaviconsWebpackPlugin {
       assert(typeof this.options.logo === 'string', 'Could not find `logo.png` for the current webpack context');
     }
 
-    const allowInjection = typeof this.options.inject === 'function' 
-      ? this.options.inject :
-      htmlPlugin => Boolean(
-        this.options.inject === 'force' || 
-        htmlPlugin.options.favicons !== false && htmlPlugin.options.inject && this.options.inject
-      );
-
     // Hook into the webpack compilation
     // to start the favicon generation
     compiler.hooks.make.tapPromise('FaviconsWebpackPlugin', async compilation => {
       const faviconCompilation = this.generateFavicons(compilation);
 
       // Hook into the html-webpack-plugin processing and add the html
-      const htmlWebpackPlugin = compiler.options.plugins
+      const HtmlWebpackPlugin = compiler.options.plugins
         .map(({ constructor }) => constructor)
-        .find(({ name }) => name === 'HtmlWebpackPlugin');
-
-      if (htmlWebpackPlugin) {
-        assert(typeof htmlWebpackPlugin.getHooks !== 'undefined',
+        .find(( constructor ) => constructor && constructor.name === 'HtmlWebpackPlugin');
+      
+      if (HtmlWebpackPlugin && this.options.inject) {
+        assert(typeof HtmlWebpackPlugin.getHooks !== 'undefined',
           'This FaviconsWebpackPlugin is not compatible with your current HtmlWebpackPlugin version.\n' + 
           'Please upgrade to HtmlWebpackPlugin >= 4 OR downgrade to FaviconsWebpackPlugin 2.x'
         );
-        htmlWebpackPlugin.getHooks(compilation).alterAssetTags.tapAsync('FaviconsWebpackPlugin', (htmlPluginData, htmlWebpackPluginCallback) => {
+        HtmlWebpackPlugin.getHooks(compilation).alterAssetTags.tapAsync('FaviconsWebpackPlugin', (htmlPluginData, htmlWebpackPluginCallback) => {
+          // Skip if a custom injectFunction returns false or if
+          // the htmlWebpackPlugin optuons includes a `favicons: false` flag
+          const isInjectionAllowed = typeof this.options.inject === 'function' 
+            ? this.options.inject(htmlPluginData.plugin)
+            : htmlPluginData.plugin.options.favicons !== false;
+          if (isInjectionAllowed === false) {
+            return htmlWebpackPluginCallback(null, htmlPluginData);;
+          }
+
           faviconCompilation.then((tags) => {
 
-            if (allowInjection(htmlPluginData.plugin)) {
-              htmlPluginData.plugin.options.inject = true;
-              htmlPluginData.assetTags.meta.push(
-                ...tags.map(tag => parse5.parseFragment(tag).childNodes[0]).map(({ tagName, attrs }) => ({
-                  tagName,
-                  voidTag: true,
-                  attributes: attrs.reduce((obj, { name, value }) => Object.assign(obj, { [name]: value }), {}),
-                })),
-              );
-            }
+            htmlPluginData.assetTags.meta.push(
+              ...tags.map(tag => parse5.parseFragment(tag).childNodes[0]).map(({ tagName, attrs }) => ({
+                tagName,
+                voidTag: true,
+                attributes: attrs.reduce((obj, { name, value }) => Object.assign(obj, { [name]: value }), {}),
+              })),
+            );
+
             htmlWebpackPluginCallback(null, htmlPluginData);
           }).catch(htmlWebpackPluginCallback);
         });
