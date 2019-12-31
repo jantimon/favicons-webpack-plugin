@@ -133,8 +133,6 @@ plugins: [
     //  * boolean
     //    `false`: disables injection
     //    `true`: enables injection if that is not disabled in html-webpack-plugin
-    //  * string
-    //    `'force'`: enables injection even if that is disabled in html-webpack-plugin
     //  * function
     //    any predicate that takes an instance of html-webpack-plugin and returns either
     //    `true` or `false` to control the injection of html metadata for the html files

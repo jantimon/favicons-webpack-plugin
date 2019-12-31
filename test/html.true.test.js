@@ -24,22 +24,6 @@ test('should work together with the html-webpack-plugin', async t => {
   snapshotCompilationAssets(t, compilationStats);
 });
 
-test('should inject html regardless of HtmlWebpackPlugin@inject flag with inject force', async t => {
-  const dist = path.join(t.context.root, 'dist');
-  const compilationStats = await generate({
-    context: t.context.root,
-    output: {
-      path: dist,
-    },
-    plugins: [
-      new HtmlWebpackPlugin({ inject: false }),
-      new FaviconsWebpackPlugin({ logo, inject: 'force' }),
-    ],
-  });
-
-  snapshotCompilationAssets(t, compilationStats);
-});
-
 test('should work together with the html-webpack-plugin with no <head></head> tags', async t => {
   const dist = path.join(t.context.root, 'dist');
   const compilationStats = await generate({
