@@ -24,7 +24,7 @@ test('should work together with the html-webpack-plugin', async t => {
   snapshotCompilationAssets(t, compilationStats);
 });
 
-test('should inject html despite HtmlWebpackPlugin@inject flag with inject force', async t => {
+test('should inject html regardless of HtmlWebpackPlugin@inject flag with inject force', async t => {
   const dist = path.join(t.context.root, 'dist');
   const compilationStats = await generate({
     context: t.context.root,
