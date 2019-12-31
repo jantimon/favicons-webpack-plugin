@@ -9,6 +9,7 @@
   "scripts": {
     "commit": "git-cz",
     "update-snapshots": "ava -u test/*.test.js",
+    "declarations": "node_modules/.bin/tsc --declaration --allowJs src/index.js",
     "test": "ava test/*.test.js",
     "coverage": "nyc npm test",
     "release": "standard-version"
@@ -49,12 +50,14 @@
     "image-size": "0.8.3",
     "nyc": "^15.0.0",
     "standard-version": "7.0.1",
+    "typescript": "3.7.4",
     "webpack": "^4.35.0",
     "webpack-cli": "^3.3.10",
     "webpack-dev-server": "^3.10.1",
     "webpack-merge": "^4.2.2"
   },
   "dependencies": {
+    "@types/favicons": "5.5.0",
     "cache-loader": "^4.1.0",
     "camelcase": "^5.3.1",
     "favicons": "5.5.0",

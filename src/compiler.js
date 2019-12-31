@@ -3,7 +3,8 @@ const findCacheDir = require('find-cache-dir');
 const SingleEntryPlugin = require('webpack/lib/SingleEntryPlugin');
 const { getAssetPath } = require('./compat');
 
-module.exports.run = ({ prefix, favicons: options, logo, cache, publicPath: publicPathOption, outputPath }, context, compilation) => {
+module.exports.run = (faviconOptions, context, compilation) => {
+  const { prefix, favicons: options, logo, cache, publicPath: publicPathOption, outputPath } = faviconOptions;
   // The entry file is just an empty helper
   const filename = '[hash]';
   const publicPath = getPublicPath(publicPathOption, compilation.outputOptions.publicPath);

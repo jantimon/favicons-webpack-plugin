@@ -1,3 +1,5 @@
+// @ts-check
+
 const assert = require('assert');
 const child = require('./compiler');
 const Oracle = require('./oracle');
@@ -7,14 +9,20 @@ const crypto = require('crypto');
 
 const faviconCompilations = new WeakMap();
 
-module.exports = class FaviconsWebpackPlugin {
+class FaviconsWebpackPlugin {
+  /**
+   * @param {import('./options').FaviconWebpackPlugionOptions | string} args 
+   */
   constructor(args) {
+    /* @type {import('./options').FaviconWebpackPlugionOptions} */
     const options = (typeof args === 'string') ? { logo: args } : args;
-
+    /** @type {Partial<import('favicons').Configuration>} */
+    const emptyFaviconsConfig = {};
+    /** @type {import('./options').FaviconWebpackPlugionInternalOptions} */
     this.options = Object.assign({
       cache: true,
       inject: true,
-      favicons: {},
+      favicons: emptyFaviconsConfig,
       prefix: 'assets/',
     }, options);
   }
@@ -50,12 +58,12 @@ module.exports = class FaviconsWebpackPlugin {
       assert(typeof this.options.logo === 'string', 'Could not find `logo.png` for the current webpack context');
     }
 
-    if (typeof this.options.inject !== 'function') {
-      const { inject } = this.options;
-      this.options.inject = htmlPlugin =>
-        inject === 'force'
-        || htmlPlugin.options.favicons !== false && htmlPlugin.options.inject && inject;
-    }
+    const allowInjection = typeof this.options.inject === 'function' 
+      ? this.options.inject :
+      htmlPlugin => Boolean(
+        this.options.inject === 'force' || 
+        htmlPlugin.options.favicons !== false && htmlPlugin.options.inject && this.options.inject
+      );
 
     // Hook into the webpack compilation
     // to start the favicon generation
@@ -73,7 +81,7 @@ module.exports = class FaviconsWebpackPlugin {
       // Hook into the html-webpack-plugin processing and add the html
       tapHtml(compilation, 'FaviconsWebpackPlugin', (htmlPluginData, htmlWebpackPluginCallback) => {
         faviconCompilation.then((tags) => {
-          if (this.options.inject(htmlPluginData.plugin)) {
+          if (allowInjection(htmlPluginData.plugin)) {
             const idx = (htmlPluginData.html + '</head>').search(/<\/head>/i);
             htmlPluginData.html = [htmlPluginData.html.slice(0, idx), ...tags, htmlPluginData.html.slice(idx)].join('');
           }
@@ -150,3 +158,5 @@ module.exports = class FaviconsWebpackPlugin {
     return faviconMode;
   }
 }
+
+module.exports = FaviconsWebpackPlugin
