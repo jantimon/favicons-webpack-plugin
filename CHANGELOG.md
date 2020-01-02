@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.0.0](https://github.com/jantimon/favicons-webpack-plugin/compare/v2.1.0...v3.0.0) (2020-01-02)
+
+
+### ⚠ BREAKING CHANGES
+
+* remove "force" inject option
+* drop support for Webpack v3 and html-webpack-plugin v3
+
+### Features
+
+* add support for html-webpack-plugin v4 ([395fc09](https://github.com/jantimon/favicons-webpack-plugin/commit/395fc09e9c12171e2c494fbc0b04c68a9c6462b7))
+
+
+### Bug Fixes
+
+* remove "force" inject option ([15bab27](https://github.com/jantimon/favicons-webpack-plugin/commit/15bab27a1ff7fdc1c4a651026ab171ec9e8561db))
+
 ## [2.1.0](https://github.com/jantimon/favicons-webpack-plugin/compare/v2.0.0...v2.1.0) (2019-12-31)
 
 
