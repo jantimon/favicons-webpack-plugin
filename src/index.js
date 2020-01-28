@@ -69,10 +69,13 @@ class FaviconsWebpackPlugin {
         .find(( constructor ) => constructor && constructor.name === 'HtmlWebpackPlugin');
       
       if (HtmlWebpackPlugin && this.options.inject) {
-        assert(typeof HtmlWebpackPlugin.getHooks !== 'undefined',
-          'This FaviconsWebpackPlugin is not compatible with your current HtmlWebpackPlugin version.\n' + 
-          'Please upgrade to HtmlWebpackPlugin >= 4 OR downgrade to FaviconsWebpackPlugin 2.x'
-        );
+       if (!verifyHtmlWebpackPluginVersion(HtmlWebpackPlugin)) {
+          compilation.errors.push(new Error(
+            'FaviconsWebpackPlugin - This FaviconsWebpackPlugin version is not compatible with your current HtmlWebpackPlugin version.\n' + 
+            'Please upgrade to HtmlWebpackPlugin >= 4 OR downgrade to FaviconsWebpackPlugin 2.x'
+          ));
+          return;
+        }
         HtmlWebpackPlugin.getHooks(compilation).alterAssetTags.tapAsync('FaviconsWebpackPlugin', (htmlPluginData, htmlWebpackPluginCallback) => {
           // Skip if a custom injectFunction returns false or if
           // the htmlWebpackPlugin optuons includes a `favicons: false` flag
@@ -176,6 +179,11 @@ class FaviconsWebpackPlugin {
     const faviconMode = isProductionLikeMode ? (this.options.mode || faviconDefaultMode) : (this.options.devMode || this.options.mode || faviconDefaultMode);
     return faviconMode;
   }
+}
+
+function verifyHtmlWebpackPluginVersion(HtmlWebpackPlugin) {
+  // Verify that this HtmlWebpackPlugin supports hooks
+  return (typeof HtmlWebpackPlugin.getHooks !== 'undefined');
 }
 
 module.exports = FaviconsWebpackPlugin;
