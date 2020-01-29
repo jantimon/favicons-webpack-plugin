@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.0.1](https://github.com/jantimon/favicons-webpack-plugin/compare/v3.0.0...v3.0.1) (2020-01-29)
+
+
+### Bug Fixes
+
+* provide a error message if the plugin is incompatible to the html-webpack-plugin ([bb26179](https://github.com/jantimon/favicons-webpack-plugin/commit/bb26179d7b41da371b1968d01b3bb862e53a1a7f))
+
 ## [3.0.0](https://github.com/jantimon/favicons-webpack-plugin/compare/v2.1.0...v3.0.0) (2020-01-02)
 
 
