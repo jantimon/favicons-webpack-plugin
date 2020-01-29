@@ -4,7 +4,6 @@ const FaviconsWebpackPlugin = require('../../src/');
 
 module.exports = (env, args) => {
   return {
-    mode: 'development',
     context: __dirname,
     entry: './src/app.js',
     output: {
@@ -16,15 +15,28 @@ module.exports = (env, args) => {
       new HtmlWebpackPlugin({
         filename: 'index.html',
         template: './src/index.html',
+        inject: false
       }),
       new FaviconsWebpackPlugin({
         // Your source logo (required)
         logo: './src/favicon.png',
+        // Favicon generation mode which is used if webpack is in `production` mode
+        // Can be set to:
+        // `webapp` (Slow but production ready favicon geneation)
+        // `light` (Limited but fast favicon geneation during development)
+        mode: 'webapp',
+        // Favicon generation mode which is used if webpack is in `development` mode
+        // Can be set to:
+        // `webapp` (Slow but production ready favicon geneation)
+        // `light` (Limited but fast favicon geneation during development)
+        devMode: 'light',
         // Path to store cached data or false/null to disable caching altogether
         // Note: disabling caching may increase build times considerably
         cache: '.wwp-cache',
         // Prefix path for generated assets
         prefix: 'assets/',
+        // Inject html links/metadata (requires html-webpack-plugin)
+        inject: true,
         // Favicons configuration options. Read more on: https://github.com/evilebottnawi/favicons#usage
         favicons: {
           appName: 'My WebApp with WebApp Webpack Plugin',              // Your application's name. `string`
@@ -34,10 +46,10 @@ module.exports = (env, args) => {
           developerURL: "https://github.com/fake-developer/",           // Your (or your developer's) URL. `string`
           dir: 'auto',                                                  // Primary text direction for name, short_name, and description
           lang: 'en-US',                                                // Primary language for name and short_name
-          background: '#AAA',                                             // Background colour for flattened icons. `string`
+          background: '#AAA',                                           // Background colour for flattened icons. `string`
           theme_color: '#BBB',                                          // Theme color user for example in Android's task switcher. `string`
           display: "standalone",                                        // Preferred display mode: "fullscreen", "standalone", "minimal-ui" or "browser". `string`
-          appleStatusBarStyle: 'black-translucent',                       // Color for appleStatusBarStyle : Not implemented Not implemented (black-translucent | default | black)
+          appleStatusBarStyle: 'black-translucent',                       // Color for appleStatusBarStyle : Not implemented (black-translucent | default | black)
           orientation: 'any',                                           // Default orientation: "any", "natural", "portrait" or "landscape". `string`
           start_url: "/?utm_source=homescreen",                         // Start URL when launching the application from a device. `string`
           scope: '.',                                                     // Color for appleStatusBarStyle : Not implemented
@@ -63,15 +75,6 @@ module.exports = (env, args) => {
         },
       }),
     ],
-    devServer: {
-      contentBase: resolve(__dirname, 'public'),
-      publicPath: '/',
-      compress: true,
-      port: 9000,
-      open: false,
-      openPage: '',
-      stats: "errors-only"
-    },
     stats: "errors-only"
   };
 }

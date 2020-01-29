@@ -34,8 +34,6 @@ module.exports = (env, args) => {
         cache: '.wwp-cache',
         // Prefix path for generated assets
         prefix: 'assets/',
-        // Inject html links/metadata (requires html-webpack-plugin)
-        inject: true,
         // Favicons configuration options. Read more on: https://github.com/evilebottnawi/favicons#usage
         favicons: {
           appName: 'My WebApp with WebApp Webpack Plugin',              // Your application's name. `string`
