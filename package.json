@@ -8,9 +8,9 @@
   ],
   "scripts": {
     "commit": "git-cz",
-    "update-snapshots": "ava -u test/*.test.js",
+    "update-snapshots": "ava -u test/*.test.js --timeout 1m",
     "declarations": "node_modules/.bin/tsc --declaration --allowJs src/index.js",
-    "test": "ava test/*.test.js",
+    "test": "ava test/*.test.js --timeout 1m",
     "coverage": "nyc npm test",
     "release": "standard-version"
   },
@@ -41,7 +41,7 @@
   },
   "homepage": "https://github.com/jantimon/favicons-webpack-plugin",
   "devDependencies": {
-    "ava": "^2.4.0",
+    "ava": "^3.5.0",
     "commitizen": "4.0.3",
     "cz-conventional-changelog": "3.0.2",
     "diffable-html": "4.0.0",
