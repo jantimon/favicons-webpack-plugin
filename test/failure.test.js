@@ -5,7 +5,7 @@ const FaviconsWebpackPlugin = require('../');
 
 const { empty, invalid, generate, mkdir } = require('./util');
 
-test.beforeEach(async t => t.context.root = await mkdir());
+test.beforeEach(async t => (t.context.root = await mkdir()));
 
 test('should fail gracefully if path to logo is wrong', async t => {
   const dist = path.join(t.context.root, 'dist');

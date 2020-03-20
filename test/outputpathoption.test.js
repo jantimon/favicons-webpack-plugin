@@ -6,7 +6,7 @@ const FaviconsWebpackPlugin = require('../');
 
 const { logo, generate, mkdir, snapshotCompilationAssets } = require('./util');
 
-test.beforeEach(async t => t.context.root = await mkdir());
+test.beforeEach(async t => (t.context.root = await mkdir()));
 
 test('should allow for overriding the output path of favicons', async t => {
   const dist = path.join(t.context.root, 'dist');

@@ -6,7 +6,7 @@ const FaviconsWebpackPlugin = require('../');
 
 const { logo, mkdir, generate, snapshotCompilationAssets } = require('./util');
 
-test.beforeEach(async t => t.context.root = await mkdir());
+test.beforeEach(async t => (t.context.root = await mkdir()));
 
 test('should work together with the html-webpack-plugin', async t => {
   const dist = path.join(t.context.root, 'dist');
@@ -15,10 +15,7 @@ test('should work together with the html-webpack-plugin', async t => {
     output: {
       path: dist
     },
-    plugins: [
-      new HtmlWebpackPlugin(),
-      new FaviconsWebpackPlugin({ logo })
-    ]
+    plugins: [new HtmlWebpackPlugin(), new FaviconsWebpackPlugin({ logo })]
   });
 
   snapshotCompilationAssets(t, compilationStats);

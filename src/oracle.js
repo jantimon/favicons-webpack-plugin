@@ -36,17 +36,15 @@ module.exports = class Oracle {
    * Tries to guess the developer {name, email, url} from package.json
    */
   guessDeveloper() {
-    return (
-      typeof this.pkg.author === 'string'
-        ? parseAuthor(this.pkg.author)
-        : typeof this.pkg.author === 'object' && this.pkg.author
-          ? {
-            name: this.pkg.author.name,
-            email: this.pkg.author.email,
-            url: this.pkg.author.url
-          }
-          : {}
-    );
+    return typeof this.pkg.author === 'string'
+      ? parseAuthor(this.pkg.author)
+      : typeof this.pkg.author === 'object' && this.pkg.author
+      ? {
+          name: this.pkg.author.name,
+          email: this.pkg.author.email,
+          url: this.pkg.author.url
+        }
+      : {};
   }
 
   /**
