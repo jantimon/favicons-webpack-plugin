@@ -6,7 +6,7 @@ const FaviconsWebpackPlugin = require('../');
 
 const { logo, generate, mkdir, snapshotCompilationAssets } = require('./util');
 
-test.beforeEach(async t => t.context.root = await mkdir());
+test.beforeEach(async t => (t.context.root = await mkdir()));
 
 test('should allow configuring the output prefix', async t => {
   const dist = path.join(t.context.root, 'dist');
@@ -17,7 +17,10 @@ test('should allow configuring the output prefix', async t => {
     },
     plugins: [
       new HtmlWebpackPlugin(),
-      new FaviconsWebpackPlugin({ logo, prefix: 'custom/prefix/[contenthash:8]' })
+      new FaviconsWebpackPlugin({
+        logo,
+        prefix: 'custom/prefix/[contenthash:8]'
+      })
     ]
   });
 
@@ -33,7 +36,11 @@ test('should allow configuring the output prefix for light mode', async t => {
     },
     plugins: [
       new HtmlWebpackPlugin(),
-      new FaviconsWebpackPlugin({ logo, prefix: 'custom/prefix/[hash:8]', mode: 'light' })
+      new FaviconsWebpackPlugin({
+        logo,
+        prefix: 'custom/prefix/[hash:8]',
+        mode: 'light'
+      })
     ]
   });
 

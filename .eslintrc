@@ -32,11 +32,6 @@
         "quotes": ["error", "single"],
         "spaced-comment": ["error", "always"],
         "comma-dangle": ["error", "never"],
-        "space-before-function-paren": ["error", {
-            "anonymous": "always",
-            "named": "never",
-            "asyncArrow": "always"
-        }],
         "indent": [
             "error", 2,
             {"SwitchCase": 1}
