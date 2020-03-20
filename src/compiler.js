@@ -83,6 +83,7 @@ function extractAssetFromCompilation(compilation, assetPath) {
   const content = compilation.assets[assetPath].source();
   delete compilation.assets[assetPath];
 
+  /* eslint-disable no-eval */
   return eval(content);
 }
 

@@ -19,15 +19,13 @@ class FaviconsWebpackPlugin {
     /** @type {Partial<import('favicons').Configuration>} */
     const emptyFaviconsConfig = {};
     /** @type {import('./options').FaviconWebpackPlugionInternalOptions} */
-    this.options = Object.assign(
-      {
-        cache: true,
-        inject: true,
-        favicons: emptyFaviconsConfig,
-        prefix: 'assets/'
-      },
-      options
-    );
+    this.options = {
+      cache: true,
+      inject: true,
+      favicons: emptyFaviconsConfig,
+      prefix: 'assets/',
+      ...options
+    };
   }
 
   apply(compiler) {
@@ -51,7 +49,6 @@ class FaviconsWebpackPlugin {
       });
     }
 
-    /* eslint-disable no-empty */
     if (this.options.logo === undefined) {
       const defaultLogo = path.resolve(compiler.context, 'logo.png');
       try {
