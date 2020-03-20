@@ -13,12 +13,12 @@ test('should work together with the html-webpack-plugin', async t => {
   const compilationStats = await generate({
     context: t.context.root,
     output: {
-      path: dist,
+      path: dist
     },
     plugins: [
       new HtmlWebpackPlugin(),
-      new FaviconsWebpackPlugin({ logo }),
-    ],
+      new FaviconsWebpackPlugin({ logo })
+    ]
   });
 
   snapshotCompilationAssets(t, compilationStats);
@@ -29,12 +29,12 @@ test('should work together with the html-webpack-plugin with no <head></head> ta
   const compilationStats = await generate({
     context: t.context.root,
     output: {
-      path: dist,
+      path: dist
     },
     plugins: [
       new HtmlWebpackPlugin({ templateContent: '' }),
-      new FaviconsWebpackPlugin({ logo }),
-    ],
+      new FaviconsWebpackPlugin({ logo })
+    ]
   });
 
   snapshotCompilationAssets(t, compilationStats);

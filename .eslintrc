@@ -1,0 +1,45 @@
+{
+    "extends": [
+        "eslint:recommended"
+    ],
+    "env": {
+        "node": true,
+        "es6": true
+    },
+    "parserOptions": {
+        "ecmaVersion": 2018,
+        "sourceType": "module"
+    },
+    "rules": {
+        "semi": "error",
+        "no-extra-semi": "error",
+        "newline-before-return": "error",
+        "no-var": "error",
+        "prefer-const": "error",
+        "object-shorthand": "error",
+        "prefer-arrow-callback": "error",
+        "prefer-numeric-literals": "error",
+        "prefer-template": "error",
+        "prefer-spread": "error",
+        "prefer-rest-params": "error",
+        "yoda": "error",
+        "callback-return": "error",
+        "handle-callback-err": "error",
+        "no-process-exit": "warn",
+        "no-buffer-constructor": "error",
+        "no-mixed-requires": "warn",
+        "no-new-require": "warn",
+        "quotes": ["error", "single"],
+        "spaced-comment": ["error", "always"],
+        "comma-dangle": ["error", "never"],
+        "space-before-function-paren": ["error", {
+            "anonymous": "always",
+            "named": "never",
+            "asyncArrow": "always"
+        }],
+        "indent": [
+            "error", 2,
+            {"SwitchCase": 1}
+        ]
+    }
+}

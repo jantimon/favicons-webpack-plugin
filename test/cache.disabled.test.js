@@ -14,14 +14,14 @@ test('should allow disabling caching', async t => {
   await generate({
     context: t.context.root,
     output: {
-      path: dist,
+      path: dist
     },
-    plugins: [new FaviconsWebpackPlugin({ logo, cache: false })],
+    plugins: [new FaviconsWebpackPlugin({ logo, cache: false })]
   });
 
   const cache = findCacheDir({
     name: 'favicons-webpack-plugin',
-    cwd: t.context.root,
+    cwd: t.context.root
   });
 
   t.falsy(fs.existsSync(cache));

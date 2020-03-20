@@ -11,6 +11,8 @@
     "update-snapshots": "ava -u test/*.test.js",
     "declarations": "node_modules/.bin/tsc --declaration --allowJs src/index.js",
     "test": "ava test/*.test.js",
+    "lint:fix": "eslint src/*.js test/*.js --fix",
+    "lint": "eslint src/*.js test/*.js",
     "coverage": "nyc npm test",
     "release": "standard-version"
   },
@@ -45,6 +47,7 @@
     "commitizen": "4.0.3",
     "cz-conventional-changelog": "3.0.2",
     "diffable-html": "4.0.0",
+    "eslint": "^6.8.0",
     "fs-extra": "^8.1.0",
     "html-webpack-plugin": "4.0.0-beta.11",
     "image-size": "0.8.3",

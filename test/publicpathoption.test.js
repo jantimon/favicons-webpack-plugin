@@ -15,12 +15,12 @@ test('should allow for overriding the publicPath option', async t => {
     context: t.context.root,
     output: {
       path: dist,
-      publicPath: '/public/path',
+      publicPath: '/public/path'
     },
     plugins: [
       new HtmlWebpackPlugin(),
-      new FaviconsWebpackPlugin({ logo, publicPath: '/another/path' }),
-    ],
+      new FaviconsWebpackPlugin({ logo, publicPath: '/another/path' })
+    ]
   });
 
   snapshotCompilationAssets(t, compilationStats);

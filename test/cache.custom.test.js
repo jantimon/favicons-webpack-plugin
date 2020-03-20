@@ -14,9 +14,9 @@ test('should allow configuring cache directory', async t => {
   await generate({
     context: t.context.root,
     output: {
-      path: dist,
+      path: dist
     },
-    plugins: [new FaviconsWebpackPlugin({ logo, cache })],
+    plugins: [new FaviconsWebpackPlugin({ logo, cache })]
   });
 
   t.truthy(fs.existsSync(cache));

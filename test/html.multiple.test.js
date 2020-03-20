@@ -13,20 +13,20 @@ test('should allow handling multiple html-webpack-plugin', async t => {
   const compilationStats = await generate({
     context: t.context.root,
     output: {
-      path: dist,
+      path: dist
     },
     plugins: [
       new HtmlWebpackPlugin({
-        filename: 'a.html',
+        filename: 'a.html'
       }),
       new HtmlWebpackPlugin({
-        filename: 'b.html',
+        filename: 'b.html'
       }),
       new FaviconsWebpackPlugin({
         logo,
-        inject: htmlPlugin => htmlPlugin.options.filename === 'a.html',
-      }),
-    ],
+        inject: htmlPlugin => htmlPlugin.options.filename === 'a.html'
+      })
+    ]
   });
 
   snapshotCompilationAssets(t, compilationStats);

@@ -13,12 +13,12 @@ test('should work if manual set to light mode', async t => {
   const compilationStats = await generate({
     context: t.context.root,
     output: {
-      path: dist,
+      path: dist
     },
     plugins: [
       new HtmlWebpackPlugin(),
-      new FaviconsWebpackPlugin({ logo, mode: 'light' }),
-    ],
+      new FaviconsWebpackPlugin({ logo, mode: 'light' })
+    ]
   });
 
   snapshotCompilationAssets(t, compilationStats);
@@ -30,15 +30,15 @@ test('should automatically pick up the dev mode from webpack', async t => {
     mode: 'development',
     context: t.context.root,
     output: {
-      path: dist,
+      path: dist
     },
     plugins: [
       new HtmlWebpackPlugin(),
-      new FaviconsWebpackPlugin({ logo }),
-    ],
+      new FaviconsWebpackPlugin({ logo })
+    ]
   });
 
   snapshotCompilationAssets(t, compilationStats);
-})
+});
 
 test.afterEach(t => fs.remove(t.context.root));

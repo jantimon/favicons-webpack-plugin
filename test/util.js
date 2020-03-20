@@ -18,7 +18,7 @@ module.exports.compiler = (config) => {
   config = merge(
     {
       entry: path.resolve(fixtures, 'entry.js'),
-      plugins: [],
+      plugins: []
     },
     config
   );
@@ -35,7 +35,7 @@ module.exports.compiler = (config) => {
     });
 
   return webpack(config);
-}
+};
 
 module.exports.run = (compiler) => new Promise((resolve, reject) => {
   compiler.run((err, stats) => (err || stats.hasErrors())
@@ -64,19 +64,21 @@ module.exports.snapshotCompilationAssets = (t, compilerStats) => {
       const content = assets[assetName].source();
       const textContent = replaceHash(!isTxtFile ? '' : content.toString('utf8'));
       const formattedContent = textContent && htmlFiles.test(assetName) ? formatHtml(textContent) : textContent;
+      
       return {
         assetName: replaceHash(assetName),
-        content: content.length === '' ? 'EMPTY FILE' : (isTxtFile ? formattedContent.replace(/\r/g, '') : getFileDetails(assetName, assets[assetName].source())),
-    }});
+        content: content.length === '' ? 'EMPTY FILE' : (isTxtFile ? formattedContent.replace(/\r/g, '') : getFileDetails(assetName, assets[assetName].source()))
+      };});
   t.snapshot(assetContents);
-}
+};
 
 function getFileDetails(assetName, buffer) {
   try {
     const size = sizeOf(buffer);
-    return size.type + ' ' + size.width + 'x' + size.height;
+    
+    return `${size.type  } ${  size.width  }x${  size.height}`;
   } catch(e) {
-    return 'binary ' + assetName;
+    return `binary ${  assetName}`;
   }
 }
 
@@ -85,7 +87,7 @@ function getFileDetails(assetName, buffer) {
  * hashes will only be found if they are in a parent directory with the name "prefix"
  */
 function replaceHash(content) {
-   return content.replace(/(prefix\/)([0-9A-Fa-f]*)(\/)/g, function(_, prefix, hash, suffix) {
-    return prefix + '__replaced_hash_' + hash.length + suffix
-   });
+  return content.replace(/(prefix\/)([0-9A-Fa-f]*)(\/)/g, (_, prefix, hash, suffix) => {
+    return `${prefix  }__replaced_hash_${  hash.length  }${suffix}`;
+  });
 }

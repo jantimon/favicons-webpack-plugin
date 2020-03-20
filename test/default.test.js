@@ -12,7 +12,7 @@ test('should generate the expected default result', async t => {
   const compilationStats = await generate({
     context: t.context.root,
     output: {
-      path: dist,
+      path: dist
     },
     plugins: [new FaviconsWebpackPlugin({ logo })]
   });
