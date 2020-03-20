@@ -1,7 +1,6 @@
 const test = require('ava');
 const path = require('path');
 const fs = require('fs-extra');
-const findCacheDir = require('find-cache-dir');
 const FaviconsWebpackPlugin = require('../');
 
 const { logo, mkdir, generate } = require('./util');
@@ -14,9 +13,9 @@ test('should cache assets', async t => {
   await generate({
     context: t.context.root,
     output: {
-      path: path.join(t.context.root, 'dist'),
+      path: path.join(t.context.root, 'dist')
     },
-    plugins: [plugin],
+    plugins: [plugin]
   });
 
   const cache = path.resolve(t.context.root, '.wwp-cache');

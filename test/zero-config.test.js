@@ -15,15 +15,15 @@ test('should work without configuration', async t => {
     mode: 'development',
     context: t.context.root,
     output: {
-      path: dist,
+      path: dist
     },
     plugins: [
       new HtmlWebpackPlugin(),
-      new FaviconsWebpackPlugin(),
-    ],
+      new FaviconsWebpackPlugin()
+    ]
   });
 
   snapshotCompilationAssets(t, compilationStats);
-})
+});
 
 test.afterEach(t => fs.remove(t.context.root));

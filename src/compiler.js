@@ -26,25 +26,25 @@ module.exports.run = (faviconOptions, context, compilation) => {
     ;
 
   const faviconsLoader = `${require.resolve('./loader')}?${JSON.stringify({ prefix, options, path: publicPath, outputPath })}`;
-  
+
   const logoCompilationEntry = new SingleEntryPlugin(context, `!${cacheLoader}!${faviconsLoader}!${logo}`, path.basename(logo));
   logoCompilationEntry.apply(compiler);
 
   // Compile and return a promise
   return new Promise((resolve, reject) => {
-    compiler.runAsChild((err, [chunk] = [], { hash, errors = [], assets = {} } = {}) => {
+    compiler.runAsChild((err, [chunk] = [], { hash, errors = []} = {}) => {
       if (err || errors.length) {
         return reject(err || errors[0].error);
       }
 
       // Replace [hash] placeholders in filename
-      const result = extractAssetFromCompilation(compilation, compilation.mainTemplate.getAssetPath(filename, { hash, chunk }))
+      const result = extractAssetFromCompilation(compilation, compilation.mainTemplate.getAssetPath(filename, { hash, chunk }));
 
       for (const { name, contents } of result.assets) {
         const binaryContents = Buffer.from(contents, 'base64');
         compilation.assets[name] = {
-          source: () => binaryContents,
-          size: () => binaryContents.length
+          source: () =>binaryContents,
+          size:() => binaryContents.length
         };
       }
 
@@ -56,6 +56,7 @@ module.exports.run = (faviconOptions, context, compilation) => {
 function extractAssetFromCompilation(compilation, assetPath) {
   const content = compilation.assets[assetPath].source();
   delete compilation.assets[assetPath];
+
   return eval(content);
 }
 
@@ -64,6 +65,6 @@ function extractAssetFromCompilation(compilation, assetPath) {
  * If both are undefined fallback to '/'
  */
 function getPublicPath(faviconsPublicPath, compilerPublicPath) {
-  return faviconsPublicPath !== undefined ? faviconsPublicPath : compilerPublicPath !== undefined ? compilerPublicPath : '/';  
+  return faviconsPublicPath !== undefined ? faviconsPublicPath : compilerPublicPath !== undefined ? compilerPublicPath : '/';
 }
 module.exports.getPublicPath = getPublicPath;

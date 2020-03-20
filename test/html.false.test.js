@@ -13,12 +13,12 @@ test('should allow disabling html injection', async t => {
   const compilationStats = await generate({
     context: t.context.root,
     output: {
-      path: dist,
+      path: dist
     },
     plugins: [
       new HtmlWebpackPlugin(),
-      new FaviconsWebpackPlugin({ logo, inject: false }),
-    ],
+      new FaviconsWebpackPlugin({ logo, inject: false })
+    ]
   });
 
   snapshotCompilationAssets(t, compilationStats);
@@ -29,12 +29,12 @@ test('should respect HtmlWebpackPlugin@inject flag', async t => {
   const compilationStats = await generate({
     context: t.context.root,
     output: {
-      path: dist,
+      path: dist
     },
     plugins: [
       new HtmlWebpackPlugin({ inject: false }),
-      new FaviconsWebpackPlugin({ logo }),
-    ],
+      new FaviconsWebpackPlugin({ logo })
+    ]
   });
 
   snapshotCompilationAssets(t, compilationStats);
@@ -45,12 +45,12 @@ test('should respect HtmlWebpackPlugin@favicons flag', async t => {
   const compilationStats = await generate({
     context: t.context.root,
     output: {
-      path: dist,
+      path: dist
     },
     plugins: [
       new HtmlWebpackPlugin({ favicons: false }),
-      new FaviconsWebpackPlugin({ logo }),
-    ],
+      new FaviconsWebpackPlugin({ logo })
+    ]
   });
 
   snapshotCompilationAssets(t, compilationStats);

@@ -14,12 +14,12 @@ test('should take the public path into account', async t => {
     context: t.context.root,
     output: {
       path: dist,
-      publicPath: '/public/path',
+      publicPath: '/public/path'
     },
     plugins: [
       new HtmlWebpackPlugin(),
-      new FaviconsWebpackPlugin({ logo }),
-    ],
+      new FaviconsWebpackPlugin({ logo })
+    ]
   });
 
   snapshotCompilationAssets(t, compilationStats);

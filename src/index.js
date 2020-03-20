@@ -11,7 +11,7 @@ const faviconCompilations = new WeakMap();
 
 class FaviconsWebpackPlugin {
   /**
-   * @param {import('./options').FaviconWebpackPlugionOptions | string} args 
+   * @param {import('./options').FaviconWebpackPlugionOptions | string} args
    */
   constructor(args) {
     /* @type {import('./options').FaviconWebpackPlugionOptions} */
@@ -23,7 +23,7 @@ class FaviconsWebpackPlugin {
       cache: true,
       inject: true,
       favicons: emptyFaviconsConfig,
-      prefix: 'assets/',
+      prefix: 'assets/'
     }, options);
   }
 
@@ -36,7 +36,7 @@ class FaviconsWebpackPlugin {
         appDescription = oracle.guessDescription(),
         version = oracle.guessVersion(),
         developerName = oracle.guessDeveloperName(),
-        developerURL = oracle.guessDeveloperURL(),
+        developerURL = oracle.guessDeveloperURL()
       } = this.options.favicons;
 
       Object.assign(this.options.favicons, {
@@ -44,10 +44,11 @@ class FaviconsWebpackPlugin {
         appDescription,
         version,
         developerName,
-        developerURL,
+        developerURL
       });
     }
 
+    /* eslint-disable no-empty */
     if (this.options.logo === undefined) {
       const defaultLogo = path.resolve(compiler.context, 'logo.png');
       try {
@@ -67,23 +68,24 @@ class FaviconsWebpackPlugin {
       const HtmlWebpackPlugin = compiler.options.plugins
         .map(({ constructor }) => constructor)
         .find(( constructor ) => constructor && constructor.name === 'HtmlWebpackPlugin');
-      
+
       if (HtmlWebpackPlugin && this.options.inject) {
-       if (!verifyHtmlWebpackPluginVersion(HtmlWebpackPlugin)) {
+        if (!verifyHtmlWebpackPluginVersion(HtmlWebpackPlugin)) {
           compilation.errors.push(new Error(
-            'FaviconsWebpackPlugin - This FaviconsWebpackPlugin version is not compatible with your current HtmlWebpackPlugin version.\n' + 
+            'FaviconsWebpackPlugin - This FaviconsWebpackPlugin version is not compatible with your current HtmlWebpackPlugin version.\n' +
             'Please upgrade to HtmlWebpackPlugin >= 4 OR downgrade to FaviconsWebpackPlugin 2.x'
           ));
+
           return;
         }
         HtmlWebpackPlugin.getHooks(compilation).alterAssetTags.tapAsync('FaviconsWebpackPlugin', (htmlPluginData, htmlWebpackPluginCallback) => {
           // Skip if a custom injectFunction returns false or if
           // the htmlWebpackPlugin optuons includes a `favicons: false` flag
-          const isInjectionAllowed = typeof this.options.inject === 'function' 
+          const isInjectionAllowed = typeof this.options.inject === 'function'
             ? this.options.inject(htmlPluginData.plugin)
             : htmlPluginData.plugin.options.favicons !== false;
           if (isInjectionAllowed === false) {
-            return htmlWebpackPluginCallback(null, htmlPluginData);;
+            return htmlWebpackPluginCallback(null, htmlPluginData);
           }
 
           faviconCompilation.then((tags) => {
@@ -92,8 +94,8 @@ class FaviconsWebpackPlugin {
               ...tags.map(tag => parse5.parseFragment(tag).childNodes[0]).map(({ tagName, attrs }) => ({
                 tagName,
                 voidTag: true,
-                attributes: attrs.reduce((obj, { name, value }) => Object.assign(obj, { [name]: value }), {}),
-              })),
+                attributes: attrs.reduce((obj, { name, value }) => Object.assign(obj, { [name]: value }), {})
+              }))
             );
 
             htmlWebpackPluginCallback(null, htmlPluginData);
@@ -143,14 +145,14 @@ class FaviconsWebpackPlugin {
         const hash = crypto.createHash('sha256').update(content.toString('utf8')).digest('hex');
         const outputPath = compilation.mainTemplate.getAssetPath(this.options.prefix, {
           hash, chunk: {
-            hash: hash
+            hash
           }
-        });        
-        const logoOutputPath = outputPath + (outputPath.substr(-1) === '/' ? '' : '/') + 'favicon' + faviconExt;
+        });
+        const logoOutputPath = `${outputPath + (outputPath.substr(-1) === '/' ? '' : '/')  }favicon${  faviconExt}`;
         compilation.assets[logoOutputPath] = {
           source: () => content,
           size: () => content.length
-        }
+        };
         resolve([
           `<link rel="icon" href="${publicPath}${logoOutputPath}">`
         ]);
@@ -176,8 +178,8 @@ class FaviconsWebpackPlugin {
     const isProductionLikeMode = compiler.options.mode === 'production' || !compiler.options.mode;
     // Read the current `mode` and `devMode` option
     const faviconDefaultMode = isProductionLikeMode ? 'webapp' : 'light';
-    const faviconMode = isProductionLikeMode ? (this.options.mode || faviconDefaultMode) : (this.options.devMode || this.options.mode || faviconDefaultMode);
-    return faviconMode;
+
+    return isProductionLikeMode ? (this.options.mode || faviconDefaultMode) : (this.options.devMode || this.options.mode || faviconDefaultMode);
   }
 }
 

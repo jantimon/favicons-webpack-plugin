@@ -13,12 +13,12 @@ test('should correctly handle an empty prefix', async t => {
   const compilationStats = await generate({
     context: t.context.root,
     output: {
-      path: dist,
+      path: dist
     },
     plugins: [
       new HtmlWebpackPlugin(),
-      new FaviconsWebpackPlugin({ logo, prefix: '' }),
-    ],
+      new FaviconsWebpackPlugin({ logo, prefix: '' })
+    ]
   });
 
   snapshotCompilationAssets(t, compilationStats);
