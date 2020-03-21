@@ -19,6 +19,5 @@ install:
 
 script:
 - travis_retry npm test
-- travis_retry npm test
 - npm run prettify
 - npm run lint
