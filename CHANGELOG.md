@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.0.0](https://github.com/jantimon/favicons-webpack-plugin/compare/v3.0.1...v4.0.0) (2020-07-27)
+
+
+### ⚠ BREAKING CHANGES
+
+* drop support for node 8
+
+### Features
+
+* upgrade favicons ([8848bc2](https://github.com/jantimon/favicons-webpack-plugin/commit/8848bc288f2b55b47317f90b1d613a22fc39f593))
+
+
+### Bug Fixes
+
+* remove duplicate test-entry in .travis.yml ([8d59acf](https://github.com/jantimon/favicons-webpack-plugin/commit/8d59acf475c1010b4f28b58fe4197a763571ab41))
+
 ### [3.0.1](https://github.com/jantimon/favicons-webpack-plugin/compare/v3.0.0...v3.0.1) (2020-01-29)
 
 
