@@ -80,8 +80,8 @@ class FaviconsWebpackPlugin {
           if (!verifyHtmlWebpackPluginVersion(HtmlWebpackPlugin)) {
             compilation.errors.push(
               new Error(
-                'FaviconsWebpackPlugin - This FaviconsWebpackPlugin version is not compatible with your current HtmlWebpackPlugin version.\n' +
-                  'Please upgrade to HtmlWebpackPlugin >= 4 OR downgrade to FaviconsWebpackPlugin 2.x'
+                `${'FaviconsWebpackPlugin - This FaviconsWebpackPlugin version is not compatible with your current HtmlWebpackPlugin version.\n' +
+                  'Please upgrade to HtmlWebpackPlugin >= 4 OR downgrade to FaviconsWebpackPlugin 2.x\n'}${getHtmlWebpackPluginVersion()}`
               )
             );
 
@@ -229,6 +229,18 @@ class FaviconsWebpackPlugin {
 function verifyHtmlWebpackPluginVersion(HtmlWebpackPlugin) {
   // Verify that this HtmlWebpackPlugin supports hooks
   return typeof HtmlWebpackPlugin.getHooks !== 'undefined';
+}
+
+/** Return the currently used html-webpack-plugin location */
+function getHtmlWebpackPluginVersion() {
+  try {
+    const location = require.resolve('html-webpack-plugin/package.json');
+    const version = require(location).version;
+
+    return `found html-webpack-plugin ${version} at ${location}`;
+  } catch (e) {
+    return 'html-webpack-plugin not found';
+  }
 }
 
 module.exports = FaviconsWebpackPlugin;
