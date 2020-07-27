@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.2.0](https://github.com/jantimon/favicons-webpack-plugin/compare/v4.1.0...v4.2.0) (2020-07-27)
+
+
+### Features
+
+* turn favicon into a transitive dependency to allow using upstream bugfixes ([eb11a83](https://github.com/jantimon/favicons-webpack-plugin/commit/eb11a831cae05abb605d5d4a877f54b236f18b3c))
+
 ## [4.1.0](https://github.com/jantimon/favicons-webpack-plugin/compare/v4.0.0...v4.1.0) (2020-07-27)
 
 
