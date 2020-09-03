@@ -1,4 +1,4 @@
-export interface FaviconWebpackPlugionOptions {
+export interface FaviconWebpackPluginOptions {
   /** our source logo - can be png or svg (required) */
   logo: string
   /** 
@@ -63,10 +63,10 @@ export interface FaviconWebpackPlugionOptions {
 }
 
 
-export type FaviconWebpackPlugionInternalOptions = Required<Omit<FaviconWebpackPlugionOptions, 
+export type FaviconWebpackPluginInternalOptions = Required<Omit<FaviconWebpackPluginOptions,
   // Optional properties after applying defaults:
   | 'mode' 
   | 'devMode'
   | 'publicPath'
   | 'outputPath'
->> & FaviconWebpackPlugionOptions
+>> & FaviconWebpackPluginOptions

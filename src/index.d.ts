@@ -1,11 +1,11 @@
 export = FaviconsWebpackPlugin;
 declare class FaviconsWebpackPlugin {
     /**
-     * @param {import('./options').FaviconWebpackPlugionOptions | string} args
+     * @param {import('./options').FaviconWebpackPluginOptions | string} args
      */
-    constructor(args: string | import("./options").FaviconWebpackPlugionOptions);
-    /** @type {import('./options').FaviconWebpackPlugionInternalOptions} */
-    options: import('./options').FaviconWebpackPlugionInternalOptions;
+    constructor(args: string | import("./options").FaviconWebpackPluginOptions);
+    /** @type {import('./options').FaviconWebpackPluginInternalOptions} */
+    options: import('./options').FaviconWebpackPluginInternalOptions;
     apply(compiler: any): void;
     /**
      * The light mode will only add a favicon

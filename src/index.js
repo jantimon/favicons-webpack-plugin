@@ -11,14 +11,14 @@ const faviconCompilations = new WeakMap();
 
 class FaviconsWebpackPlugin {
   /**
-   * @param {import('./options').FaviconWebpackPlugionOptions | string} args
+   * @param {import('./options').FaviconWebpackPluginOptions | string} args
    */
   constructor(args) {
-    /* @type {import('./options').FaviconWebpackPlugionOptions} */
+    /* @type {import('./options').FaviconWebpackPluginOptions} */
     const options = (typeof args === 'string') ? { logo: args } : args;
     /** @type {Partial<import('favicons').Configuration>} */
     const emptyFaviconsConfig = {};
-    /** @type {import('./options').FaviconWebpackPlugionInternalOptions} */
+    /** @type {import('./options').FaviconWebpackPluginInternalOptions} */
     this.options = {
       cache: true,
       inject: true,
