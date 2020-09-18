@@ -1,6 +1,6 @@
 const path = require('path');
 const findCacheDir = require('find-cache-dir');
-const SingleEntryPlugin = require('webpack/lib/SingleEntryPlugin');
+const entryPlugin = require('webpack/lib/EntryPlugin');
 
 module.exports.run = (faviconOptions, context, compilation) => {
   const {
@@ -12,7 +12,7 @@ module.exports.run = (faviconOptions, context, compilation) => {
     outputPath
   } = faviconOptions;
   // The entry file is just an empty helper
-  const filename = '[hash]';
+  const filename = '[fullhash]';
   const publicPath = getPublicPath(
     publicPathOption,
     compilation.outputOptions.publicPath
@@ -46,7 +46,7 @@ module.exports.run = (faviconOptions, context, compilation) => {
     outputPath
   })}`;
 
-  const logoCompilationEntry = new SingleEntryPlugin(
+  const logoCompilationEntry = new entryPlugin(
     context,
     `!${cacheLoader}!${faviconsLoader}!${logo}`,
     path.basename(logo)
@@ -63,7 +63,7 @@ module.exports.run = (faviconOptions, context, compilation) => {
       // Replace [hash] placeholders in filename
       const result = extractAssetFromCompilation(
         compilation,
-        compilation.mainTemplate.getAssetPath(filename, { hash, chunk })
+        compilation.getAssetPath(filename, { hash, chunk })
       );
 
       for (const { name, contents } of result.assets) {
@@ -81,10 +81,10 @@ module.exports.run = (faviconOptions, context, compilation) => {
 
 function extractAssetFromCompilation(compilation, assetPath) {
   const content = compilation.assets[assetPath].source();
-  delete compilation.assets[assetPath];
+  compilation.deleteAsset(assetPath);
 
   /* eslint-disable no-eval */
-  return eval(content);
+  return eval(content.replace(/^\/\*+\/.+$/gm, ''));
 }
 
 /**
