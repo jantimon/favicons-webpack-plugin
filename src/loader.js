@@ -26,19 +26,24 @@ module.exports = async function(content) {
     content,
     Object.assign(query.options, { path: url.resolve(path, prefix) })
   );
-  
-  // We enrich the manifest.json with custom values from options.appConfig 
+
+  // We enrich the manifest.json with custom values from options.appConfig
   // if they are not supported in the favicons plugin
   if (query.options.appConfig) {
-    const mainfestIndex = files.findIndex(({ name }) => name === 'manifest.json');
+    const mainfestIndex = files.findIndex(
+      ({ name }) => name === 'manifest.json'
+    );
     const manifestContent = JSON.parse(files[mainfestIndex].contents);
-    const newContent = Buffer.from(JSON.stringify(
-      { ...manifestContent, ...query.options.appConfig },
-      null, 4
-    ));
-   files[mainfestIndex].contents = newContent;
+    const newContent = Buffer.from(
+      JSON.stringify(
+        { ...manifestContent, ...query.options.appConfig },
+        null,
+        4
+      )
+    );
+    files[mainfestIndex].contents = newContent;
   }
-  
+
   const assets = [...images, ...files].map(({ name, contents }) => ({
     name: outputPath + name,
     contents: toBase64(contents)
