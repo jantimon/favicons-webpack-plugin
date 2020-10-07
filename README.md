@@ -180,7 +180,17 @@ plugins: [
       icons: {
         coast: false,
         yandex: false
-      }
+      },
+      appConfig: { // extra manifest properties not supported by favicons module
+        prefer_related_applications: true,
+        related_applications: [
+          {
+            platform: 'play',
+            id: 'com.google.samples.apps.iosched',
+          },
+          lang: "en-US",
+        ],
+      },
     }
   })
 ]
