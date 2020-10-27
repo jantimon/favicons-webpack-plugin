@@ -29,7 +29,7 @@ module.exports.compiler = config => {
   config.plugins
     .filter(plugin => plugin.constructor.name === 'HtmlWebpackPlugin')
     .forEach(plugin => {
-      Object.assign(plugin.options, {
+      Object.assign(plugin.userOptions, {
         meta: {},
         minify: false,
         chunks: [],
