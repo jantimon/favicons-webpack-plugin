@@ -23,7 +23,9 @@ module.exports.run = (faviconOptions, context, compilation) => {
   // This allows us to use loaders during the compilation
   const compiler = compilation.createChildCompiler('favicons-webpack-plugin', {
     filename,
-    publicPath
+    publicPath,
+    libraryTarget: 'var',
+    iife: false
   });
   compiler.context = context;
 
@@ -84,7 +86,7 @@ function extractAssetFromCompilation(compilation, assetPath) {
   compilation.deleteAsset(assetPath);
 
   /* eslint-disable no-eval */
-  return eval(content.replace(/^\/\*+\/.+$/gm, ''));
+  return eval(content);
 }
 
 /**
