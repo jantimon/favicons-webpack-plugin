@@ -55,6 +55,7 @@ class FaviconsWebpackPlugin {
         compiler.inputFileSystem.statSync(defaultLogo);
         this.options.logo = defaultLogo;
       } catch (e) {}
+      // @ts-ignore
       assert(
         typeof this.options.logo === 'string',
         'Could not find `logo.png` for the current webpack context'
@@ -179,7 +180,7 @@ class FaviconsWebpackPlugin {
             .createHash('sha256')
             .update(content.toString('utf8'))
             .digest('hex');
-          const outputPath = compilation.mainTemplate.getAssetPath(
+          const outputPath = compilation.getAssetPath(
             this.options.prefix,
             {
               hash,
