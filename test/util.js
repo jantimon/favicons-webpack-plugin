@@ -68,8 +68,7 @@ module.exports.snapshotCompilationAssets = (t, compilerStats) => {
     .map(assetName => {
       const filepath = path.resolve(distPath, assetName);
       const isTxtFile = textFiles.test(assetName);
-      // const encoding = isTxtFile ? 'utf8' : 'binary';
-      const content = fs.readFileSync(filepath, 'utf8');
+      const content = fs.readFileSync(filepath);
       const textContent = replaceHash(
         !isTxtFile ? '' : content.toString('utf8')
       );
@@ -85,7 +84,7 @@ module.exports.snapshotCompilationAssets = (t, compilerStats) => {
             ? 'EMPTY FILE'
             : isTxtFile
             ? formattedContent.replace(/\r/g, '')
-            : getFileDetails(assetName, fs.readFileSync(filepath))
+            : getFileDetails(assetName, content)
       };
     });
   t.snapshot(assetContents);
