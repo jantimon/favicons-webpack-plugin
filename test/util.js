@@ -18,7 +18,10 @@ module.exports.compiler = config => {
   config = merge(
     {
       entry: path.resolve(fixtures, 'entry.js'),
-      plugins: []
+      plugins: [],
+      output: {
+        publicPath: '/'
+      }
     },
     config
   );
@@ -50,8 +53,8 @@ module.exports.generate = config =>
   module.exports.run(module.exports.compiler(config));
 
 module.exports.snapshotCompilationAssets = (t, compilerStats) => {
-  const assets = compilerStats.compilation.assets;
-  const assetNames = Object.keys(assets).sort();
+  const assetNames = [...compilerStats.compilation.emittedAssets].sort();
+  const distPath = compilerStats.compilation.outputOptions.path;
   // Check if all files are generated correctly
   t.snapshot(assetNames.map(replaceHash));
   const htmlFiles = /\.html?$/;
@@ -63,8 +66,10 @@ module.exports.snapshotCompilationAssets = (t, compilerStats) => {
   const assetContents = assetNames
     .filter(assetName => !ignoredFiles.test(assetName))
     .map(assetName => {
+      const filepath = path.resolve(distPath, assetName);
       const isTxtFile = textFiles.test(assetName);
-      const content = assets[assetName].source();
+      // const encoding = isTxtFile ? 'utf8' : 'binary';
+      const content = fs.readFileSync(filepath, 'utf8');
       const textContent = replaceHash(
         !isTxtFile ? '' : content.toString('utf8')
       );
@@ -80,7 +85,7 @@ module.exports.snapshotCompilationAssets = (t, compilerStats) => {
             ? 'EMPTY FILE'
             : isTxtFile
             ? formattedContent.replace(/\r/g, '')
-            : getFileDetails(assetName, assets[assetName].source())
+            : getFileDetails(assetName, fs.readFileSync(filepath))
       };
     });
   t.snapshot(assetContents);
