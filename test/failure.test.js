@@ -35,7 +35,10 @@ test('should fail gracefully if the image stream is empty', async t => {
       plugins: [new FaviconsWebpackPlugin({ logo: empty })]
     });
   } catch (err) {
-    t.is(err.message, 'Invalid image buffer');
+    const errorMessage = err.message
+      .split('\n')
+      .find(errorLine => errorLine.startsWith('Error:'));
+    t.is(errorMessage, 'Error: Invalid image buffer');
   }
 });
 
@@ -50,7 +53,10 @@ test('should fail gracefully if logo is not a valid image file', async t => {
       plugins: [new FaviconsWebpackPlugin({ logo: invalid })]
     });
   } catch (err) {
-    t.is(err.message, 'Invalid image buffer');
+    const errorMessage = err.message
+      .split('\n')
+      .find(errorLine => errorLine.startsWith('Error:'));
+    t.is(errorMessage, 'Error: Invalid image buffer');
   }
 });
 
