@@ -6,7 +6,10 @@ const path = require('path');
 const child = require('./compiler');
 const crypto = require('crypto');
 const Oracle = require('./oracle');
+const Compilation = require('webpack').Compilation;
+const RawSource = require('webpack').sources.RawSource;
 
+/** @type {WeakMap<any, Promise<{tags: string[], assets: Array<{name: string, contents: Buffer | string}>}>>} */
 const faviconCompilations = new WeakMap();
 
 class FaviconsWebpackPlugin {
@@ -102,9 +105,9 @@ class FaviconsWebpackPlugin {
               }
 
               faviconCompilation
-                .then(tags => {
+                .then(faviconCompilation => {
                   htmlPluginData.assetTags.meta.push(
-                    ...tags
+                    ...faviconCompilation.tags
                       .map(tag => parse5.parseFragment(tag).childNodes[0])
                       .map(({ tagName, attrs }) => ({
                         tagName,
@@ -130,6 +133,25 @@ class FaviconsWebpackPlugin {
         faviconCompilations.set(compilation, faviconCompilation);
       }
     );
+
+    compiler.hooks.thisCompilation.tap('FaviconsWebpackPlugin', compilation => {
+      compilation.hooks.processAssets.tapPromise(
+        {
+          name: 'FaviconsWebpackPlugin',
+          stage: Compilation.PROCESS_ASSETS_STAGE_ADDITIONS
+        },
+        async () => {
+          const faviconCompilation = faviconCompilations.get(compilation);
+          if (!faviconCompilation) {
+            return;
+          }
+          const faviconAssets = (await faviconCompilation).assets;
+          faviconAssets.forEach(({ name, contents }) => {
+            compilation.emitAsset(name, new RawSource(contents, false));
+          });
+        }
+      );
+    });
 
     // Make sure that the build waits for the favicon generation to complete
     compiler.hooks.afterCompile.tapPromise(
@@ -157,6 +179,8 @@ class FaviconsWebpackPlugin {
    * The light mode will only add a favicon
    * this is very fast but also very limited
    * it is the default mode for development
+   *
+   * @returns {Promise<{tags: string[], assets: Array<{name: string, contents: Buffer | string}>}>}
    */
   generateFaviconsLight(compilation) {
     return new Promise((resolve, reject) => {
@@ -180,31 +204,34 @@ class FaviconsWebpackPlugin {
             .createHash('sha256')
             .update(content.toString('utf8'))
             .digest('hex');
-          const outputPath = compilation.getAssetPath(
-            this.options.prefix,
-            {
-              hash,
-              chunk: {
-                hash
-              }
+          const outputPath = compilation.getAssetPath(this.options.prefix, {
+            hash,
+            chunk: {
+              hash
             }
-          );
+          });
           const logoOutputPath = `${outputPath +
             (outputPath.substr(-1) === '/' ? '' : '/')}favicon${faviconExt}`;
-          compilation.assets[logoOutputPath] = {
-            source: () => content,
-            size: () => content.length
-          };
-          resolve([`<link rel="icon" href="${publicPath}${logoOutputPath}">`]);
+          resolve({
+            assets: [
+              {
+                name: logoOutputPath,
+                contents: content
+              }
+            ],
+            tags: [`<link rel="icon" href="${publicPath}${logoOutputPath}">`]
+          });
         }
       );
     });
   }
 
   /**
-   *  The webapp mode will add a variety of icons
+   * The webapp mode will add a variety of icons
    * this is not as fast as the light mode but
    * supports all common browsers and devices
+   *
+   * @returns {Promise<{tags: string[], assets: Array<{name: string, contents: Buffer | string}>}>}
    */
   generateFaviconsWebapp(compilation) {
     // Generate favicons using the npm favicons library
