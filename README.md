@@ -228,7 +228,8 @@ This behaviour can be adjusted by setting the favicon `mode` and `devMode` optio
 ## Compatibility
 
 favicons-webpack-plugin 2.x is compatible with html-webpack-plugin 3.x
-favicons-webpack-plugin 3.x is compatible with html-webpack-plugin 4.x 
+favicons-webpack-plugin 3.x - 4.x is compatible with html-webpack-plugin 4.x 
+favicons-webpack-plugin 5.x is compatible with html-webpack-plugin 5.x 
 
 ## Changelog
 
