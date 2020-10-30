@@ -130,7 +130,7 @@ module.exports.run = (faviconOptions, context, compilation) => {
 function getPublicPath(faviconsPublicPath, compilerPublicPath) {
   return faviconsPublicPath !== undefined
     ? faviconsPublicPath
-    : compilerPublicPath !== undefined
+    : compilerPublicPath !== undefined && compilerPublicPath !== 'auto'
     ? compilerPublicPath
     : '/';
 }
