@@ -30,8 +30,14 @@ class FaviconsWebpackPlugin {
       ...options
     };
   }
-
+  
   apply(compiler) {
+    compiler.hooks.initialize.tap('FaviconsWebpackPlugin', () => {
+      this.hookIntoCompiler(compiler);
+    });
+  }
+
+  hookIntoCompiler(compiler) {
     const oracle = new Oracle(compiler.context);
 
     {
