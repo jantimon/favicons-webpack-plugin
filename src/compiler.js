@@ -63,7 +63,7 @@ module.exports.run = (faviconOptions, context, compilation) => {
       // Replace [hash] placeholders in filename
       const result = extractAssetFromCompilation(
         compilation,
-        compilation.mainTemplate.getAssetPath(filename, { hash, chunk })
+        compilation.getAssetPath(filename, { hash, chunk })
       );
 
       for (const { name, contents } of result.assets) {
