@@ -134,6 +134,7 @@ plugins: [
     inject: true,
     // favicons configuration object. Support all keys of favicons (see https://github.com/haydenbleasel/favicons)
     config: {
+      loadManifestWithCredentials: true, // use crossOrigin="use-credentials" for link tag with manifest
       appName: 'Webpack App', // Your application's name. `string`
       appDescription: null, // Your application's description. `string`
       developerName: null, // Your (or your developer's) name. `string`

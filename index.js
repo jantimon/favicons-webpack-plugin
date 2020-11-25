@@ -24,6 +24,7 @@ const DEFAULT_OPTIONS = {
     start_url: '/?homescreen=1',
     version: '1.0',
     logging: false,
+    loadManifestWithCredentials: true,
     icons: {
       android: true,
       appleIcon: true,
