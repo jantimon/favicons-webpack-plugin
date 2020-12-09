@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const path = require('path');
 const findCacheDir = require('find-cache-dir');
 const SingleEntryPlugin = require('webpack/lib/SingleEntryPlugin');
@@ -68,7 +69,9 @@ module.exports.run = (faviconOptions, context, compilation) => {
 
       for (const { name, contents } of result.assets) {
         const binaryContents = Buffer.from(contents, 'base64');
-        compilation.assets[name] = {
+        const hash = crypto.createHash('md4').update(binaryContents).digest('hex');
+        const filename = `${name.replace(/(\.[\w]+)$/i, `${hash}$1`)}`;
+        compilation.assets[filename] = {
           source: () => binaryContents,
           size: () => binaryContents.length
         };
