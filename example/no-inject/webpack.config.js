@@ -11,6 +11,9 @@ module.exports = (env, args) => {
       publicPath: '/',
       filename: 'app.js'
     },
+    cache: {
+      type: 'filesystem',
+    },
     plugins: [
       new HtmlWebpackPlugin({
         filename: 'index.html',

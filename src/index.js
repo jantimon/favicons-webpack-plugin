@@ -3,13 +3,11 @@
 const assert = require('assert');
 const parse5 = require('parse5');
 const path = require('path');
-const child = require('./compiler');
-const crypto = require('crypto');
+const favicons = require('favicons');
+const { runCached } = require('./cache');
 const Oracle = require('./oracle');
-const Compilation = require('webpack').Compilation;
-const RawSource = require('webpack').sources.RawSource;
 
-/** @type {WeakMap<any, Promise<{tags: string[], assets: Array<{name: string, contents: Buffer | string}>}>>} */
+/** @type {WeakMap<any, Promise<{tags: string[], assets: Array<{name: string, contents: import('webpack').sources.RawSource}>}>>} */
 const faviconCompilations = new WeakMap();
 
 class FaviconsWebpackPlugin {
@@ -30,14 +28,22 @@ class FaviconsWebpackPlugin {
       ...options
     };
   }
-  
+
+  /**
+   * @param {import('webpack').Compiler} compiler
+   */
   apply(compiler) {
     compiler.hooks.initialize.tap('FaviconsWebpackPlugin', () => {
       this.hookIntoCompiler(compiler);
     });
   }
 
+  /**
+   * @param {import('webpack').Compiler} compiler
+   */
   hookIntoCompiler(compiler) {
+    const webpack = compiler.webpack;
+    const Compilation = webpack.Compilation;
     const oracle = new Oracle(compiler.context);
 
     {
@@ -76,12 +82,25 @@ class FaviconsWebpackPlugin {
     compiler.hooks.make.tapPromise(
       'FaviconsWebpackPlugin',
       async compilation => {
-        const faviconCompilation = this.generateFavicons(compilation);
+        const faviconCompilation = runCached(
+          this.options,
+          compiler.context,
+          compilation,
+          this,
+          this.generateFavicons.bind(this)
+        );
+
+        // Watch for changes to the logo
+        compilation.fileDependencies.add(this.options.logo);
 
         // Hook into the html-webpack-plugin processing and add the html
         const HtmlWebpackPlugin = compiler.options.plugins
           .map(({ constructor }) => constructor)
           .find(
+            /**
+             * Find only HtmlWebpkackPlugin constructors
+             * @type {(constructor: Function) => constructor is typeof import('html-webpack-plugin')}
+             */
             constructor =>
               constructor && constructor.name === 'HtmlWebpackPlugin'
           );
@@ -94,7 +113,6 @@ class FaviconsWebpackPlugin {
                   'Please upgrade to HtmlWebpackPlugin >= 4 OR downgrade to FaviconsWebpackPlugin 2.x\n'}${getHtmlWebpackPluginVersion()}`
               )
             );
-
             return;
           }
           HtmlWebpackPlugin.getHooks(compilation).alterAssetTags.tapAsync(
@@ -105,7 +123,10 @@ class FaviconsWebpackPlugin {
               const isInjectionAllowed =
                 typeof this.options.inject === 'function'
                   ? this.options.inject(htmlPluginData.plugin)
-                  : htmlPluginData.plugin.options.favicons !== false;
+                  : this.options.inject !== false &&
+                    htmlPluginData.plugin.userOptions.favicon !== false &&
+                    htmlPluginData.plugin.userOptions.favicons !== false;
+
               if (isInjectionAllowed === false) {
                 return htmlWebpackPluginCallback(null, htmlPluginData);
               }
@@ -153,7 +174,7 @@ class FaviconsWebpackPlugin {
           }
           const faviconAssets = (await faviconCompilation).assets;
           faviconAssets.forEach(({ name, contents }) => {
-            compilation.emitAsset(name, new RawSource(contents, false));
+            compilation.emitAsset(name, contents);
           });
         }
       );
@@ -171,13 +192,36 @@ class FaviconsWebpackPlugin {
     );
   }
 
-  generateFavicons(compilation) {
+  /**
+   * Generate the favicons
+   *
+   * @param {Buffer | string} logoSource
+   * @param {import('webpack').Compilation} compilation
+   * @param {string} resolvedPublicPath
+   * @param {string} outputPath
+   */
+  generateFavicons(logoSource, compilation, resolvedPublicPath, outputPath) {
     switch (this.getCurrentCompilationMode(compilation.compiler)) {
       case 'light':
-        return this.generateFaviconsLight(compilation);
+        if (!this.options.mode) {
+          compilation.logger.info(
+            'favicons-webpack-plugin - generate only a single favicon for fast compilation time in development mode. This behaviour can be changed by setting the favicon mode option.'
+          );
+        }
+        return this.generateFaviconsLight(
+          logoSource,
+          compilation,
+          resolvedPublicPath,
+          outputPath
+        );
       case 'webapp':
       default:
-        return this.generateFaviconsWebapp(compilation);
+        return this.generateFaviconsWebapp(
+          logoSource,
+          compilation,
+          resolvedPublicPath,
+          outputPath
+        );
     }
   }
 
@@ -186,50 +230,31 @@ class FaviconsWebpackPlugin {
    * this is very fast but also very limited
    * it is the default mode for development
    *
-   * @returns {Promise<{tags: string[], assets: Array<{name: string, contents: Buffer | string}>}>}
+   * @param {Buffer | string} logoSource
+   * @param {import('webpack').Compilation} compilation
+   * @param {string} resolvedPublicPath
+   * @param {string} outputPath
    */
-  generateFaviconsLight(compilation) {
-    return new Promise((resolve, reject) => {
-      const logoFileName = path.resolve(
-        compilation.compiler.context,
-        this.options.logo
-      );
-      const publicPath = child.getPublicPath(
-        this.options.publicPath,
-        compilation.outputOptions.publicPath
-      );
-      const faviconExt = path.extname(this.options.logo);
-      // Copy file to output directory
-      compilation.compiler.inputFileSystem.readFile(
-        logoFileName,
-        (err, content) => {
-          if (err) {
-            return reject(err);
-          }
-          const hash = crypto
-            .createHash('sha256')
-            .update(content.toString('utf8'))
-            .digest('hex');
-          const outputPath = compilation.getAssetPath(this.options.prefix, {
-            hash,
-            chunk: {
-              hash
-            }
-          });
-          const logoOutputPath = `${outputPath +
-            (outputPath.substr(-1) === '/' ? '' : '/')}favicon${faviconExt}`;
-          resolve({
-            assets: [
-              {
-                name: logoOutputPath,
-                contents: content
-              }
-            ],
-            tags: [`<link rel="icon" href="${publicPath}${logoOutputPath}">`]
-          });
+  async generateFaviconsLight(
+    logoSource,
+    compilation,
+    resolvedPublicPath,
+    outputPath
+  ) {
+    const faviconExt = path.extname(this.options.logo);
+    const faviconName = '/favicon' + faviconExt;
+    const RawSource = compilation.compiler.webpack.sources.RawSource;
+    return {
+      assets: [
+        {
+          name: path.join(outputPath, faviconName),
+          contents: new RawSource(logoSource, false)
         }
-      );
-    });
+      ],
+      tags: [
+        `<link rel="icon" href="${path.join(resolvedPublicPath, faviconName)}">`
+      ]
+    };
   }
 
   /**
@@ -237,11 +262,30 @@ class FaviconsWebpackPlugin {
    * this is not as fast as the light mode but
    * supports all common browsers and devices
    *
-   * @returns {Promise<{tags: string[], assets: Array<{name: string, contents: Buffer | string}>}>}
+   * @param {Buffer | string} logoSource
+   * @param {import('webpack').Compilation} compilation
+   * @param {string} resolvedPublicPath
+   * @param {string} outputPath
    */
-  generateFaviconsWebapp(compilation) {
+  async generateFaviconsWebapp(
+    logoSource,
+    compilation,
+    resolvedPublicPath,
+    outputPath
+  ) {
+    const RawSource = compilation.compiler.webpack.sources.RawSource;
     // Generate favicons using the npm favicons library
-    return child.run(this.options, compilation.compiler.context, compilation);
+    const { html: tags, images, files } = await favicons(
+      logoSource,
+      Object.assign({}, this.options.favicons, {
+        path: resolvedPublicPath
+      })
+    );
+    const assets = [...images, ...files].map(({ name, contents }) => ({
+      name: outputPath ? path.join(outputPath, name) : name,
+      contents: new RawSource(contents, false)
+    }));
+    return { assets, tags };
   }
 
   /**
