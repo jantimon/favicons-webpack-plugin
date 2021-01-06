@@ -11,8 +11,10 @@ module.exports.expected = path.resolve(fixtures, 'expected');
 module.exports.logo = path.resolve(fixtures, 'logo.png');
 module.exports.empty = path.resolve(fixtures, 'empty.png');
 module.exports.invalid = path.resolve(fixtures, 'invalid.png');
+/** the size of the webpack cache without favicons */
+module.exports.cacheBaseSize = 60000;
 
-module.exports.mkdir = () => fs.mkdtemp(path.join(os.tmpdir(), 'WWP'));
+module.exports.mkdir = () => fs.mkdtemp(path.join(os.tmpdir(), 'Favicons'));
 
 module.exports.compiler = config => {
   config = merge(
@@ -21,6 +23,9 @@ module.exports.compiler = config => {
       plugins: [],
       output: {
         publicPath: '/'
+      },
+      infrastructureLogging: {
+        level: 'info'
       }
     },
     config
@@ -45,7 +50,7 @@ module.exports.run = compiler =>
     compiler.run((err, stats) =>
       err || stats.hasErrors()
         ? reject(err || stats.toJson().errors)
-        : resolve(stats)
+        : compiler.close(() => (err ? reject(err) : resolve(stats)))
     );
   });
 

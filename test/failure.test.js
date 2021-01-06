@@ -20,7 +20,7 @@ test('should fail gracefully if path to logo is wrong', async t => {
       plugins: [new FaviconsWebpackPlugin({ logo })]
     });
   } catch (err) {
-    t.is(err.message, `Can't resolve '${logo}' in '${t.context.root}'`);
+    t.is(err.message, `ENOENT: no such file or directory, open '${logo}'`);
   }
 });
 
@@ -35,10 +35,8 @@ test('should fail gracefully if the image stream is empty', async t => {
       plugins: [new FaviconsWebpackPlugin({ logo: empty })]
     });
   } catch (err) {
-    const errorMessage = err.message
-      .split('\n')
-      .find(errorLine => errorLine.startsWith('Error:'));
-    t.is(errorMessage, 'Error: Invalid image buffer');
+    const errorMessage = err.message;
+    t.is(errorMessage, 'Invalid image buffer');
   }
 });
 
@@ -53,10 +51,8 @@ test('should fail gracefully if logo is not a valid image file', async t => {
       plugins: [new FaviconsWebpackPlugin({ logo: invalid })]
     });
   } catch (err) {
-    const errorMessage = err.message
-      .split('\n')
-      .find(errorLine => errorLine.startsWith('Error:'));
-    t.is(errorMessage, 'Error: Invalid image buffer');
+    const errorMessage = err.message;
+    t.is(errorMessage, 'Invalid image buffer');
   }
 });
 

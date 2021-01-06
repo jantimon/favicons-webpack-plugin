@@ -2,5 +2,5 @@
 /.nyc_output/
 /.vscode/
 /example/**/public/
-**/.wwp-cache/
+**/.cache/
 **/node_modules/
