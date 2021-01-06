@@ -6,9 +6,9 @@ Leverages on [favicons](https://github.com/haydenbleasel/favicons) to automatica
 
 ## Installation
 
-Install the plugin with npm:
+Install the plugin and [favicons](https://github.com/haydenbleasel/favicons) with npm:
 ```shell
-$ npm install --save-dev favicons-webpack-plugin
+$ npm install --save-dev favicons favicons-webpack-plugin
 ```
 
 ## Zero Config Usage
