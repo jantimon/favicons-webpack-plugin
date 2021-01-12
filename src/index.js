@@ -3,7 +3,6 @@
 const assert = require('assert');
 const parse5 = require('parse5');
 const path = require('path');
-const favicons = require('favicons');
 const { runCached } = require('./cache');
 const Oracle = require('./oracle');
 
@@ -110,7 +109,7 @@ class FaviconsWebpackPlugin {
             compilation.errors.push(
               new Error(
                 `${'FaviconsWebpackPlugin - This FaviconsWebpackPlugin version is not compatible with your current HtmlWebpackPlugin version.\n' +
-                  'Please upgrade to HtmlWebpackPlugin >= 4 OR downgrade to FaviconsWebpackPlugin 2.x\n'}${getHtmlWebpackPluginVersion()}`
+                  'Please upgrade to HtmlWebpackPlugin >= 5 OR downgrade to FaviconsWebpackPlugin 2.x\n'}${getHtmlWebpackPluginVersion()}`
               )
             );
             return;
@@ -274,6 +273,7 @@ class FaviconsWebpackPlugin {
     outputPath
   ) {
     const RawSource = compilation.compiler.webpack.sources.RawSource;
+    const favicons = loadFaviconsLibrary();
     // Generate favicons using the npm favicons library
     const { html: tags, images, files } = await favicons(
       logoSource,
@@ -304,9 +304,13 @@ class FaviconsWebpackPlugin {
   }
 }
 
-function verifyHtmlWebpackPluginVersion(HtmlWebpackPlugin) {
+/**
+ * Verify that the html-webpack-plugin is compatible
+ * @param {typeof import('html-webpack-plugin')} htmlWebpackPlugin
+ */
+function verifyHtmlWebpackPluginVersion(htmlWebpackPlugin) {
   // Verify that this HtmlWebpackPlugin supports hooks
-  return typeof HtmlWebpackPlugin.getHooks !== 'undefined';
+  return htmlWebpackPlugin.version >= 5;
 }
 
 /** Return the currently used html-webpack-plugin location */
@@ -318,6 +322,23 @@ function getHtmlWebpackPluginVersion() {
     return `found html-webpack-plugin ${version} at ${location}`;
   } catch (e) {
     return 'html-webpack-plugin not found';
+  }
+}
+
+/**
+ * Try to load favicon for the full favicon generation
+ *
+ * As favicon turned from a direct dependency to a peerDependency a detailed error message is shown
+ * to resolve the breaking change
+ */
+function loadFaviconsLibrary() {
+  try {
+    return require('favicons');
+  } catch (e) {
+    throw new Error(
+      'Could not find the npm peerDependency "favicons".\nPlease run:\nnpm i favicons\n - or -\nyarn add favicons\n\n' +
+        String(e)
+    );
   }
 }
 
