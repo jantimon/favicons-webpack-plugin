@@ -20,7 +20,7 @@ const {
   getContentHash
 } = require('./hash');
 
-/** @type {WeakMap<any, Snapshot>} */
+/** @type {WeakMap<any, Promise<Snapshot>>} */
 const snapshots = new WeakMap();
 /** @type {WeakMap<Snapshot, Promise<FaviconsCompilationResult>>} */
 const faviconCache = new WeakMap();
@@ -225,22 +225,25 @@ async function runWithFileCache(
  * Returns true if the files inside this snapshot
  * have not been changed
  *
- * @param {Snapshot} snapshot
+ * @param {Promise<Snapshot>} snapshotPromise
  * @param {WebpackCompilation} mainCompilation
  * @returns {Promise<boolean>}
  */
-function isSnapShotValid(snapshot, mainCompilation) {
-  return new Promise((resolve, reject) => {
-    mainCompilation.fileSystemInfo.checkSnapshotValid(
-      snapshot,
-      (err, isValid) => {
-        if (err) {
-          reject(err);
-        }
-        resolve(Boolean(isValid));
-      }
-    );
-  });
+function isSnapShotValid(snapshotPromise, mainCompilation) {
+  return snapshotPromise.then(
+    snapshot =>
+      new Promise((resolve, reject) => {
+        mainCompilation.fileSystemInfo.checkSnapshotValid(
+          snapshot,
+          (err, isValid) => {
+            if (err) {
+              reject(err);
+            }
+            resolve(Boolean(isValid));
+          }
+        );
+      })
+  );
 }
 
 module.exports = { runCached };
