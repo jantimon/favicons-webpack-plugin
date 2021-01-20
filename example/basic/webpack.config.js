@@ -10,8 +10,7 @@ module.exports = (env, args) => {
     entry: './src/app.js',
     output: {
       path: resolve(__dirname, 'public'),
-      publicPath: '/',
-      filename: 'app.js'
+      filename: 'app.js',
     },
     plugins: [
       new HtmlWebpackPlugin({

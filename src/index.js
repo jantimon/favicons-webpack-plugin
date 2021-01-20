@@ -5,6 +5,7 @@ const parse5 = require('parse5');
 const path = require('path');
 const { runCached } = require('./cache');
 const Oracle = require('./oracle');
+const url = require('url');
 
 /** @type {WeakMap<any, Promise<{tags: string[], assets: Array<{name: string, contents: import('webpack').sources.RawSource}>}>>} */
 const faviconCompilations = new WeakMap();
@@ -107,11 +108,12 @@ class FaviconsWebpackPlugin {
         if (HtmlWebpackPlugin && this.options.inject) {
           if (!verifyHtmlWebpackPluginVersion(HtmlWebpackPlugin)) {
             compilation.errors.push(
-              new Error(
+              new compiler.webpack.WebpackError(
                 `${'FaviconsWebpackPlugin - This FaviconsWebpackPlugin version is not compatible with your current HtmlWebpackPlugin version.\n' +
                   'Please upgrade to HtmlWebpackPlugin >= 5 OR downgrade to FaviconsWebpackPlugin 2.x\n'}${getHtmlWebpackPluginVersion()}`
               )
             );
+
             return;
           }
           HtmlWebpackPlugin.getHooks(compilation).alterAssetTags.tapAsync(
@@ -132,18 +134,60 @@ class FaviconsWebpackPlugin {
 
               faviconCompilation
                 .then(faviconCompilation => {
+                  // faviconCompilation.publicPath and htmlPluginData.publicPath can be:
+                  // absolute:  http://somewhere.com/app1/
+                  // absolute:  /demo/app1/
+                  // relative:  my/app/
+                  const publicPathFromHtml = url.resolve(
+                    htmlPluginData.publicPath,
+                    faviconCompilation.publicPath
+                  );
+
+                  // Prefix links to icons
+                  const pathReplacer =
+                    !this.options.favicons.path ||
+                    this.getCurrentCompilationMode(compiler) === 'light'
+                      ? /** @param {string} url */ url =>
+                          typeof url === 'string'
+                            ? publicPathFromHtml + url
+                            : url
+                      : /** @param {string} url */ url => url;
+
                   htmlPluginData.assetTags.meta.push(
                     ...faviconCompilation.tags
                       .map(tag => parse5.parseFragment(tag).childNodes[0])
-                      .map(({ tagName, attrs }) => ({
-                        tagName,
-                        voidTag: true,
-                        attributes: attrs.reduce(
-                          (obj, { name, value }) =>
-                            Object.assign(obj, { [name]: value }),
-                          {}
-                        )
-                      }))
+                      .map(({ tagName, attrs }) => {
+                        const htmlTag = {
+                          tagName,
+                          voidTag: true,
+                          meta: { plugin: 'favicons-webpack-plugin' },
+                          attributes: attrs.reduce(
+                            (obj, { name, value }) =>
+                              Object.assign(obj, { [name]: value }),
+                            {}
+                          )
+                        };
+                        // Prefix link tags
+                        if (typeof htmlTag.attributes.href === 'string') {
+                          htmlTag.attributes.href = pathReplacer(
+                            htmlTag.attributes.href
+                          );
+                        }
+                        // Prefix meta tags
+                        if (
+                          htmlTag.tagName === 'meta' &&
+                          [
+                            'msapplication-TileImage',
+                            'msapplication-config'
+                          ].includes(htmlTag.attributes.name)
+                        ) {
+                          htmlTag.attributes.content = pathReplacer(
+                            htmlTag.attributes.content
+                          );
+                        }
+
+                        return htmlTag;
+                      })
                   );
 
                   htmlWebpackPluginCallback(null, htmlPluginData);
@@ -207,6 +251,7 @@ class FaviconsWebpackPlugin {
             'favicons-webpack-plugin - generate only a single favicon for fast compilation time in development mode. This behaviour can be changed by setting the favicon mode option.'
           );
         }
+
         return this.generateFaviconsLight(
           logoSource,
           compilation,
@@ -241,18 +286,18 @@ class FaviconsWebpackPlugin {
     outputPath
   ) {
     const faviconExt = path.extname(this.options.logo);
-    const faviconName = '/favicon' + faviconExt;
+    const faviconName = `favicon${faviconExt}`;
     const RawSource = compilation.compiler.webpack.sources.RawSource;
+
     return {
+      publicPath: resolvedPublicPath,
       assets: [
         {
           name: path.join(outputPath, faviconName),
           contents: new RawSource(logoSource, false)
         }
       ],
-      tags: [
-        `<link rel="icon" href="${path.join(resolvedPublicPath, faviconName)}">`
-      ]
+      tags: [`<link rel="icon" href="${faviconName}">`]
     };
   }
 
@@ -275,17 +320,19 @@ class FaviconsWebpackPlugin {
     const RawSource = compilation.compiler.webpack.sources.RawSource;
     const favicons = loadFaviconsLibrary();
     // Generate favicons using the npm favicons library
-    const { html: tags, images, files } = await favicons(
-      logoSource,
-      Object.assign({}, this.options.favicons, {
-        path: resolvedPublicPath
-      })
-    );
+    const { html: tags, images, files } = await favicons(logoSource, {
+      // Generate all assets relative to the root directory
+      // to allow relative manifests and to set the final public path
+      // once it has been provided by the html-webpack-plugin
+      path: '',
+      ...this.options.favicons
+    });
     const assets = [...images, ...files].map(({ name, contents }) => ({
       name: outputPath ? path.join(outputPath, name) : name,
       contents: new RawSource(contents, false)
     }));
-    return { assets, tags };
+
+    return { assets, tags, publicPath: resolvedPublicPath };
   }
 
   /**
@@ -336,8 +383,9 @@ function loadFaviconsLibrary() {
     return require('favicons');
   } catch (e) {
     throw new Error(
-      'Could not find the npm peerDependency "favicons".\nPlease run:\nnpm i favicons\n - or -\nyarn add favicons\n\n' +
-        String(e)
+      `Could not find the npm peerDependency "favicons".\nPlease run:\nnpm i favicons\n - or -\nyarn add favicons\n\n${String(
+        e
+      )}`
     );
   }
 }

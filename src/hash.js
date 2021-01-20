@@ -1,4 +1,4 @@
-/// @ts-check
+// / @ts-check
 
 // Import types
 /** @typedef {import("webpack").Compilation} WebpackCompilation */
@@ -16,16 +16,14 @@ const url = require('url');
 function resolvePublicPath(compilation, publicPath, assetPath) {
   const publicPathString =
     publicPath && typeof publicPath === 'function'
-      ? compilation.getAssetPath(
-          compilation.outputOptions.publicPath || 'auto',
-          { hash: compilation.hash }
-        )
+      ? compilation.getAssetPath(publicPath, { hash: compilation.hash })
       : publicPath;
 
   const fullAssetPath = url.resolve(
-    appendSlash(publicPathString || 'auto'),
+    appendSlash(publicPathString || ''),
     assetPath
   );
+
   return fullAssetPath;
 }
 
@@ -52,7 +50,7 @@ function replaceContentHash(compilation, assetPath, hash) {
  * @param {string} url
  */
 function appendSlash(url) {
-  return url && url.length && url.substr(-1, 1) !== '/' ? url + '/' : url;
+  return url && url.length && url.substr(-1, 1) !== '/' ? `${url}/` : url;
 }
 
 /**

@@ -4,17 +4,17 @@ const fs = require('fs-extra');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const FaviconsWebpackPlugin = require('../');
 
-const { logo, mkdir, generate, snapshotCompilationAssets } = require('./util');
+const { logo, generate, mkdir, snapshotCompilationAssets } = require('./util');
 
 test.beforeEach(async t => (t.context.root = await mkdir()));
 
-test('should work if manual set to light mode', async t => {
+test('should take the public path into account', async t => {
   const dist = path.join(t.context.root, 'dist');
   const compilationStats = await generate({
     context: t.context.root,
     output: {
       path: dist,
-      publicPath: '/'
+      publicPath: '/public/path'
     },
     plugins: [
       new HtmlWebpackPlugin(),
@@ -25,16 +25,33 @@ test('should work if manual set to light mode', async t => {
   snapshotCompilationAssets(t, compilationStats);
 });
 
-test('should automatically pick up the dev mode from webpack', async t => {
+test('should work with an empty public path', async t => {
   const dist = path.join(t.context.root, 'dist');
   const compilationStats = await generate({
-    mode: 'development',
     context: t.context.root,
     output: {
-      path: dist,
-      publicPath: '/'
+      path: dist
     },
-    plugins: [new HtmlWebpackPlugin(), new FaviconsWebpackPlugin({ logo })]
+    plugins: [
+      new HtmlWebpackPlugin(),
+      new FaviconsWebpackPlugin({ logo, mode: 'light' })
+    ]
+  });
+
+  snapshotCompilationAssets(t, compilationStats);
+});
+
+test('should work with an empty public path and a nested html file', async t => {
+  const dist = path.join(t.context.root, 'dist');
+  const compilationStats = await generate({
+    context: t.context.root,
+    output: {
+      path: dist
+    },
+    plugins: [
+      new HtmlWebpackPlugin({ filename: 'demo/index.html' }),
+      new FaviconsWebpackPlugin({ logo, mode: 'light' })
+    ]
   });
 
   snapshotCompilationAssets(t, compilationStats);

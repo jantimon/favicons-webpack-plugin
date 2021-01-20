@@ -1,11 +1,12 @@
-/// @ts-check
+// / @ts-check
 
 // Import types
 /** @typedef {ReturnType<import("webpack").Compiler['getCache']>} WebpackCacheFacade */
 /** @typedef {import("webpack").Compilation} WebpackCompilation */
-/** @typedef {any} Snapshot */
+/** @typedef {Parameters<WebpackCompilation['fileSystemInfo']['checkSnapshotValid']>[0]} Snapshot */
 
-/** @typedef {{
+/** @typedef {{,
+  publicPath: string,
   tags: string[], 
   assets: Array<{
     name: string, 
@@ -22,7 +23,7 @@ const {
 
 /** @type {WeakMap<any, Promise<Snapshot>>} */
 const snapshots = new WeakMap();
-/** @type {WeakMap<Snapshot, Promise<FaviconsCompilationResult>>} */
+/** @type {WeakMap<Promise<Snapshot>, Promise<FaviconsCompilationResult>>} */
 const faviconCache = new WeakMap();
 
 /**
@@ -61,6 +62,7 @@ function runCached(
       // and try again
       if (!isValid) {
         faviconCache.delete(latestSnapShot);
+
         return runCached(
           faviconOptions,
           context,
@@ -69,6 +71,7 @@ function runCached(
           generator
         );
       }
+
       // If the cache is valid return the result directly from cache
       return cachedFavicons;
     });
@@ -76,17 +79,15 @@ function runCached(
 
   // Store a snapshot of the filesystem
   // to find out if the logo was changed
-  snapshots.set(
-    pluginInstance,
-    createSnapshot(
-      {
-        fileDependencies: [logo],
-        contextDependencies: [],
-        missingDependencies: []
-      },
-      compilation
-    )
+  const newSnapShot = createSnapshot(
+    {
+      fileDependencies: [logo],
+      contextDependencies: [],
+      missingDependencies: []
+    },
+    compilation
   );
+  snapshots.set(pluginInstance, newSnapShot);
 
   // Start generating the favicons
   const faviconsGenerationsPromise = runWithFileCache(
@@ -97,10 +98,7 @@ function runCached(
   );
 
   // Store the promise of the favicon compilation in cache
-  faviconCache.set(
-    snapshots.get(pluginInstance) || latestSnapShot,
-    faviconsGenerationsPromise
-  );
+  faviconCache.set(newSnapShot, faviconsGenerationsPromise);
 
   return faviconsGenerationsPromise;
 }
@@ -120,8 +118,8 @@ function createSnapshot(fileDependencies, mainCompilation) {
       fileDependencies.missingDependencies,
       {},
       (err, snapshot) => {
-        if (err) {
-          return reject(err);
+        if (err || !snapshot) {
+          return reject(err || new Error('Could not create Snapshot'));
         }
         resolve(snapshot);
       }
@@ -165,7 +163,10 @@ async function runWithFileCache(
     )
   );
 
-  const compilationOutputPath = compilation.outputOptions.path || '';
+  const compilationOutputPath =
+    compilation.outputOptions.path === 'auto'
+      ? ''
+      : compilation.outputOptions.path || '';
   /**
    * the relative output path to the folder where the favicon files should be generated to
    * it might include tokens like [fullhash] or [contenthash]
@@ -184,16 +185,19 @@ async function runWithFileCache(
       relativeOutputPath,
       logoContentHash
     );
+    const webpackPublicPath =
+      compilation.outputOptions.publicPath === 'auto'
+        ? ''
+        : compilation.outputOptions.publicPath;
     const resolvedPublicPath = replaceContentHash(
       compilation,
       resolvePublicPath(
         compilation,
-        faviconOptions.publicPath || compilation.outputOptions.publicPath,
+        faviconOptions.publicPath || webpackPublicPath,
         faviconOptions.prefix
       ),
       logoContentHash
     );
-
     return generator(logoSource, compilation, resolvedPublicPath, outputPath);
   };
 
@@ -211,6 +215,7 @@ async function runWithFileCache(
     // Recompile filesystem cache if the logo source changes:
     logoContentHash
   ].join('\n');
+
   // Use the webpack cache which supports filesystem caching to improve build speed
   // See also https://webpack.js.org/configuration/other-options/#cache
   // Create one cache for every output target

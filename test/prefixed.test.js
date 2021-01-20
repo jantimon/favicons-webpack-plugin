@@ -13,13 +13,14 @@ test('should allow configuring the output prefix', async t => {
   const compilationStats = await generate({
     context: t.context.root,
     output: {
-      path: dist
+      path: dist,
+      publicPath: '/'
     },
     plugins: [
       new HtmlWebpackPlugin(),
       new FaviconsWebpackPlugin({
         logo,
-        prefix: 'custom/prefix/[contenthash:8]'
+        prefix: 'custom/prefix/[contenthash:8]/'
       })
     ]
   });
@@ -32,13 +33,14 @@ test('should allow configuring the output prefix for light mode', async t => {
   const compilationStats = await generate({
     context: t.context.root,
     output: {
-      path: dist
+      path: dist,
+      publicPath: '/'
     },
     plugins: [
       new HtmlWebpackPlugin(),
       new FaviconsWebpackPlugin({
         logo,
-        prefix: 'custom/prefix/[contenthash:8]',
+        prefix: 'custom/prefix/[contenthash:8]/',
         mode: 'light'
       })
     ]
@@ -52,13 +54,14 @@ test('should allow configuring the output prefix with a fullhash', async t => {
   const compilationStats = await generate({
     context: t.context.root,
     output: {
-      path: dist
+      path: dist,
+      publicPath: '/'
     },
     plugins: [
       new HtmlWebpackPlugin(),
       new FaviconsWebpackPlugin({
         logo,
-        prefix: 'custom/prefix/[fullhash:8]'
+        prefix: 'custom/prefix/[fullhash:8]/'
       })
     ]
   });
@@ -71,13 +74,14 @@ test('should allow configuring the output prefix for light mode with a fullhash'
   const compilationStats = await generate({
     context: t.context.root,
     output: {
-      path: dist
+      path: dist,
+      publicPath: '/'
     },
     plugins: [
       new HtmlWebpackPlugin(),
       new FaviconsWebpackPlugin({
         logo,
-        prefix: 'custom/prefix/[fullhash:8]',
+        prefix: 'custom/prefix/[fullhash:8]/',
         mode: 'light'
       })
     ]
