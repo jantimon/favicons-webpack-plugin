@@ -13,7 +13,8 @@ test('should correctly handle an empty prefix', async t => {
   const compilationStats = await generate({
     context: t.context.root,
     output: {
-      path: dist
+      path: dist,
+      publicPath: '/'
     },
     plugins: [
       new HtmlWebpackPlugin(),

@@ -18,7 +18,8 @@ test('should work without configuration', async t => {
     mode: 'development',
     context: t.context.root,
     output: {
-      path: dist
+      path: dist,
+      publicPath: '/'
     },
     plugins: [new HtmlWebpackPlugin(), new FaviconsWebpackPlugin()]
   });

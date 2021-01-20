@@ -21,9 +21,7 @@ module.exports.compiler = config => {
     {
       entry: path.resolve(fixtures, 'entry.js'),
       plugins: [],
-      output: {
-        publicPath: '/'
-      },
+      output: {},
       infrastructureLogging: {
         level: 'info'
       }

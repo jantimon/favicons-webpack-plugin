@@ -49,6 +49,12 @@ export interface FaviconWebpackPlugionOptions {
    */
   devMode?: 'light' | 'webapp',
   /**
+   * Web app manifests are part of a collection of web technologies called progressive web apps (PWAs), 
+   * which are websites that can be installed to a device’s homescreen without an app store.
+   * @see https://developer.mozilla.org/en-US/docs/Web/Manifest
+   */
+  manifest?: string | (() => void)
+  /**
    * Prefix path for generated assets
    */
   prefix?: string, 
