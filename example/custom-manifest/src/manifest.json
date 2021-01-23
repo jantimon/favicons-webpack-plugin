@@ -1,0 +1,11 @@
+{
+  "name": "FaviconsDemo",
+  "short_name": "FaviconsDemo",
+  "description": "Just a demo",
+  "dir": "auto",
+  "lang": "en",
+  "display": "standalone",
+  "background_color": "#fff",
+  "theme_color": "#fff",
+  "orientation": null
+}

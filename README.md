@@ -225,6 +225,22 @@ If the webpack mode is set to `production` the favicons mode will use `webapp`.
 
 This behaviour can be adjusted by setting the favicon `mode` and `devMode` options.
 
+### Custom manifests
+
+The manifest options allows to overwrite values of the generated manifest.json with own values
+
+```javascript
+const FaviconsWebpackPlugin = require('favicons-webpack-plugin')
+
+plugins: [
+  new FaviconsWebpackPlugin({
+    logo: './src/logo.png',
+    mode: 'webapp',
+    manifest: './src/manigest.json'
+  })
+]
+```
+
 ## Compatibility
 
 favicons-webpack-plugin 2.x is compatible with html-webpack-plugin 3.x  

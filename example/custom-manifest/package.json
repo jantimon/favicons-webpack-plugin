@@ -1,0 +1,10 @@
+{
+  "name": "webapp-example",
+  "version": "1.0.0",
+  "description": "Demo of webpapp webpack plugin",
+  "scripts": {
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT"
+}
