@@ -6,6 +6,7 @@ const path = require('path');
 const { runCached } = require('./cache');
 const Oracle = require('./oracle');
 const url = require('url');
+const { resolvePublicPath, replaceContentHash } = require('./hash');
 
 /** @type {WeakMap<any, Promise<{tags: string[], assets: Array<{name: string, contents: import('webpack').sources.RawSource}>}>>} */
 const faviconCompilations = new WeakMap();
@@ -24,6 +25,7 @@ class FaviconsWebpackPlugin {
       cache: true,
       inject: true,
       favicons: emptyFaviconsConfig,
+      manifest: {},
       prefix: 'assets/',
       ...options
     };
@@ -83,11 +85,32 @@ class FaviconsWebpackPlugin {
       'FaviconsWebpackPlugin',
       async compilation => {
         const faviconCompilation = runCached(
-          this.options,
-          compiler.context,
-          compilation,
+          [
+            this.options.logo,
+            typeof this.options.manifest === 'string'
+              ? this.options.manifest
+              : ''
+          ],
           this,
-          this.generateFavicons.bind(this)
+          this.options.cache,
+          compilation,
+          // Options which enforce a new recompilation
+          [
+            JSON.stringify(this.options.publicPath),
+            JSON.stringify(this.options.mode),
+            // Recompile filesystem cache if the user change the favicon options
+            JSON.stringify(this.options.favicons)
+          ],
+          // Recompile filesystem cache if the logo source based path change:
+          ([logo]) =>
+            getRelativeOutputPath(logo.hash, compilation, this.options),
+          ([logo, manifest], getRelativeOutputPath) =>
+            this.generateFavicons(
+              logo,
+              manifest.content,
+              compilation,
+              getRelativeOutputPath
+            )
         );
 
         // Watch for changes to the logo
@@ -238,12 +261,17 @@ class FaviconsWebpackPlugin {
   /**
    * Generate the favicons
    *
-   * @param {Buffer | string} logoSource
+   * @param {{content: Buffer | string, hash: string}} logo
+   * @param {Buffer | string} manifest
    * @param {import('webpack').Compilation} compilation
-   * @param {string} resolvedPublicPath
    * @param {string} outputPath
    */
-  generateFavicons(logoSource, compilation, resolvedPublicPath, outputPath) {
+  generateFavicons(logo, manifest, compilation, outputPath) {
+    const resolvedPublicPath = getResolvedPublicPath(
+      logo.hash,
+      compilation,
+      this.options
+    );
     switch (this.getCurrentCompilationMode(compilation.compiler)) {
       case 'light':
         if (!this.options.mode) {
@@ -253,7 +281,7 @@ class FaviconsWebpackPlugin {
         }
 
         return this.generateFaviconsLight(
-          logoSource,
+          logo.content,
           compilation,
           resolvedPublicPath,
           outputPath
@@ -261,7 +289,8 @@ class FaviconsWebpackPlugin {
       case 'webapp':
       default:
         return this.generateFaviconsWebapp(
-          logoSource,
+          logo.content,
+          manifest ? JSON.parse(manifest.toString()) : this.options.manifest,
           compilation,
           resolvedPublicPath,
           outputPath
@@ -307,12 +336,14 @@ class FaviconsWebpackPlugin {
    * supports all common browsers and devices
    *
    * @param {Buffer | string} logoSource
+   * @param {{[key: string]: any}} baseManifest
    * @param {import('webpack').Compilation} compilation
    * @param {string} resolvedPublicPath
    * @param {string} outputPath
    */
   async generateFaviconsWebapp(
     logoSource,
+    baseManifest,
     compilation,
     resolvedPublicPath,
     outputPath
@@ -327,7 +358,23 @@ class FaviconsWebpackPlugin {
       path: '',
       ...this.options.favicons
     });
-    const assets = [...images, ...files].map(({ name, contents }) => ({
+
+    const modifiedFiles = files.map(file => {
+      if (file.name.endsWith('manifest.json')) {
+        const generatedManifest = JSON.parse(file.contents.toString('utf-8'));
+        return {
+          ...file,
+          contents: JSON.stringify(
+            mergeManifests(generatedManifest, baseManifest),
+            null,
+            2
+          )
+        };
+      }
+      return file;
+    });
+
+    const assets = [...images, ...modifiedFiles].map(({ name, contents }) => ({
       name: outputPath ? path.join(outputPath, name) : name,
       contents: new RawSource(contents, false)
     }));
@@ -349,6 +396,79 @@ class FaviconsWebpackPlugin {
       ? this.options.mode || faviconDefaultMode
       : this.options.devMode || this.options.mode || faviconDefaultMode;
   }
+}
+
+/**
+ * Get the filepath relative to the output directory
+ * where the logos should be placed
+ *
+ * @param {string} logoContentHash
+ * @param {import('webpack').Compilation} compilation
+ * @param {import('./options').FaviconWebpackPlugionInternalOptions} faviconOptions
+ */
+function getRelativeOutputPath(logoContentHash, compilation, faviconOptions) {
+  const compilationOutputPath =
+    compilation.outputOptions.path === 'auto'
+      ? ''
+      : compilation.outputOptions.path || '';
+  /**
+   * the relative output path to the folder where the favicon files should be generated to
+   * it might include tokens like [fullhash] or [contenthash]
+   */
+  const relativeOutputPath = faviconOptions.outputPath
+    ? path.relative(
+        compilationOutputPath,
+        path.resolve(compilationOutputPath, faviconOptions.outputPath)
+      )
+    : faviconOptions.prefix;
+
+  return replaceContentHash(compilation, relativeOutputPath, logoContentHash);
+}
+
+/**
+ *
+ * @param {string} logoContentHash
+ * @param {import('webpack').Compilation} compilation
+ * @param {import('./options').FaviconWebpackPlugionInternalOptions} faviconOptions
+ */
+function getResolvedPublicPath(logoContentHash, compilation, faviconOptions) {
+  const webpackPublicPath =
+    compilation.outputOptions.publicPath === 'auto'
+      ? ''
+      : compilation.outputOptions.publicPath;
+
+  return replaceContentHash(
+    compilation,
+    resolvePublicPath(
+      compilation,
+      faviconOptions.publicPath || webpackPublicPath,
+      faviconOptions.prefix
+    ),
+    logoContentHash
+  );
+}
+
+/**
+ * Merge two manifest.json files
+ *
+ * @param {{[key: string]: any}} manifest1
+ * @param {{[key: string]: any}} manifest2
+ */
+function mergeManifests(manifest1, manifest2) {
+  const mergedManifest = { ...manifest1 };
+  Object.keys(manifest2).forEach(key => {
+    if (Array.isArray(mergedManifest[key]) && Array.isArray(manifest2[key])) {
+      mergedManifest[key] = mergedManifest[key].concat(manifest2[key]);
+      return;
+    }
+    mergedManifest[key] = manifest2[key];
+  });
+  Object.keys(mergedManifest).forEach(key => {
+    if (mergedManifest[key] === null) {
+      delete mergedManifest[key];
+    }
+  });
+  return mergedManifest;
 }
 
 /**
