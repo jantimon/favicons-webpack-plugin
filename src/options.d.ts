@@ -35,7 +35,7 @@ export interface FaviconWebpackPlugionOptions {
    *     this mode has a quite slow compilation but wide browser support
    *     by default this mode is used for production
    */
-  mode?: 'light' | 'webapp',
+  mode?: 'light' | 'webapp' | 'auto',
   /**
    * Favicon generation modes used during development  
    * - `light`  

@@ -7,6 +7,7 @@
 
 const path = require('path');
 const { getContentHash } = require('./hash');
+const { webpackLogger } = require('./logger');
 
 /** @type {WeakMap<any, Promise<Snapshot>>} */
 const snapshots = new WeakMap();
@@ -38,6 +39,7 @@ function runCached(
   idGenerator,
   generator
 ) {
+  const logger = webpackLogger(compilation);
   const latestSnapShot = snapshots.get(pluginInstance);
   /** @type {Promise<TResult> | undefined} */
   const cachedFavicons = latestSnapShot && faviconCache.get(latestSnapShot);
@@ -69,13 +71,14 @@ function runCached(
   // to find out if the logo was changed
   const newSnapShot = createSnapshot(
     {
-      fileDependencies: files,
+      fileDependencies: files.filter(Boolean),
       contextDependencies: [],
       missingDependencies: []
     },
     compilation
   );
   snapshots.set(pluginInstance, newSnapShot);
+
   // Start generating the favicons
   const faviconsGenerationsPromise = useWebpackCache
     ? runWithFileCache(files, compilation, idGenerator, eTags, generator)
