@@ -10,7 +10,7 @@ const url = require('url');
  * Replaces [contenthash] and [fullhash] inside the given publicPath and assetPath
  *
  * @param {WebpackCompilation} compilation
- * @param {undefined | string | Function} publicPath
+ * @param {undefined | string | ((...args:any[]) => string)} publicPath
  * @param {string} assetPath
  */
 function resolvePublicPath(compilation, publicPath, assetPath) {

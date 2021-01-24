@@ -1,6 +1,6 @@
 {
   "name": "favicons-webpack-plugin",
-  "version": "5.0.0-alpha.9",
+  "version": "5.0.0-alpha.10",
   "description": "Let webpack generate all your favicons and icons for you",
   "main": "src/index.js",
   "files": [

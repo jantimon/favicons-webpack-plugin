@@ -68,8 +68,6 @@ which defaults to `modules: ["node_modules"]`.
 
 In combination with [html-webpack-plugin](https://github.com/jantimon/html-webpack-plugin) it will also inject the necessary html for you:
 
-> **Note**: `html-webpack-plugin` _must_ come before `favicons-webpack-plugin` in the plugins array.
-
 ```html
 <link rel="apple-touch-icon" sizes="57x57" href="/assets/apple-touch-icon-57x57.png">
 <link rel="apple-touch-icon" sizes="60x60" href="/assets/apple-touch-icon-60x60.png">
@@ -169,7 +167,7 @@ const FaviconsWebpackPlugin = require('favicons-webpack-plugin')
 plugins: [
   new FaviconsWebpackPlugin({
     logo: './src/logo.png', // svg works too!
-    mode: 'webapp', // optional can be 'webapp' or 'light' - 'webapp' by default
+    mode: 'webapp', // optional can be 'webapp', 'light' or 'auto' - 'auto' by default
     devMode: 'webapp', // optional can be 'webapp' or 'light' - 'light' by default 
     favicons: {
       appName: 'my-app',
@@ -220,11 +218,11 @@ plugins: [
 
 Modes allow you to choose a very fast simplified favicon compilation or a production ready favicon compilation
 
-By default this mode is controlled by webpack  
-If the webpack mode is set to `development` the favicons mode will use `light`.  
-If the webpack mode is set to `production` the favicons mode will use `webapp`.
+By default or if the favicons mode option is set to `auto` the favicon compilation depends on the webpack mode:  
+If the webpack mode is set to `development` the favicons mode will use a quick `light` favicons build.  
+If the webpack mode is set to `production` the favicons mode will use a full `webapp` favicons build.
 
-This behaviour can be adjusted by setting the favicon `mode` and `devMode` options.
+This behaviour can be adjusted by setting the favicons `mode` and `devMode` options.
 
 ### Custom manifests
 

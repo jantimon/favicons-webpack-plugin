@@ -7,6 +7,7 @@ const { runCached } = require('./cache');
 const Oracle = require('./oracle');
 const url = require('url');
 const { resolvePublicPath, replaceContentHash } = require('./hash');
+const { webpackLogger } = require('./logger');
 
 /** @type {WeakMap<any, Promise<{tags: string[], assets: Array<{name: string, contents: import('webpack').sources.RawSource}>}>>} */
 const faviconCompilations = new WeakMap();
@@ -115,6 +116,11 @@ class FaviconsWebpackPlugin {
 
         // Watch for changes to the logo
         compilation.fileDependencies.add(this.options.logo);
+
+        // Watch for changes to the base manifest.json
+        if (typeof this.options.manifest === 'string') {
+          compilation.fileDependencies.add(this.options.manifest);
+        }
 
         // Hook into the html-webpack-plugin processing and add the html
         const HtmlWebpackPlugin = compiler.options.plugins
@@ -275,8 +281,8 @@ class FaviconsWebpackPlugin {
     switch (this.getCurrentCompilationMode(compilation.compiler)) {
       case 'light':
         if (!this.options.mode) {
-          compilation.logger.info(
-            'favicons-webpack-plugin - generate only a single favicon for fast compilation time in development mode. This behaviour can be changed by setting the favicon mode option.'
+          webpackLogger(compilation).info(
+            'generate only a single favicon for fast compilation time in development mode. This behaviour can be changed by setting the favicon mode option.'
           );
         }
 
@@ -288,6 +294,8 @@ class FaviconsWebpackPlugin {
         );
       case 'webapp':
       default:
+        webpackLogger(compilation).log('generate favicons');
+
         return this.generateFaviconsWebapp(
           logo.content,
           manifest ? JSON.parse(manifest.toString()) : this.options.manifest,
@@ -392,9 +400,11 @@ class FaviconsWebpackPlugin {
     // Read the current `mode` and `devMode` option
     const faviconDefaultMode = isProductionLikeMode ? 'webapp' : 'light';
 
+    const mode = this.options.mode === 'auto' ? undefined : this.options.mode;
+
     return isProductionLikeMode
-      ? this.options.mode || faviconDefaultMode
-      : this.options.devMode || this.options.mode || faviconDefaultMode;
+      ? mode || faviconDefaultMode
+      : this.options.devMode || mode || faviconDefaultMode;
   }
 }
 
