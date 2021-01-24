@@ -1,4 +1,4 @@
-// / @ts-check
+// @ts-check
 
 // Import types
 /** @typedef {import("webpack").Compilation} WebpackCompilation */
@@ -55,9 +55,12 @@ function appendSlash(url) {
 
 /**
  * Returns the content hash for the given file content
- * @param {Buffer|string} file
+ * @param {Buffer | string | undefined} file
  */
 function getContentHash(file) {
+  if (!file) {
+    return '';
+  }
   return crypto
     .createHash('sha256')
     .update(file.toString('utf8'))

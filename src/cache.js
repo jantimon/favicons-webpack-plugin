@@ -1,29 +1,16 @@
-// / @ts-check
+// @ts-check
 
 // Import types
 /** @typedef {ReturnType<import("webpack").Compiler['getCache']>} WebpackCacheFacade */
 /** @typedef {import("webpack").Compilation} WebpackCompilation */
 /** @typedef {Parameters<WebpackCompilation['fileSystemInfo']['checkSnapshotValid']>[0]} Snapshot */
 
-/** @typedef {{,
-  publicPath: string,
-  tags: string[], 
-  assets: Array<{
-    name: string, 
-    contents: import('webpack').sources.RawSource
-  }>
-}} FaviconsCompilationResult */
-
 const path = require('path');
-const {
-  replaceContentHash,
-  resolvePublicPath,
-  getContentHash
-} = require('./hash');
+const { getContentHash } = require('./hash');
 
 /** @type {WeakMap<any, Promise<Snapshot>>} */
 const snapshots = new WeakMap();
-/** @type {WeakMap<Promise<Snapshot>, Promise<FaviconsCompilationResult>>} */
+/** @type {WeakMap<Promise<Snapshot>, Promise<any>>} */
 const faviconCache = new WeakMap();
 
 /**
@@ -52,6 +39,7 @@ function runCached(
   generator
 ) {
   const latestSnapShot = snapshots.get(pluginInstance);
+  /** @type {Promise<TResult> | undefined} */
   const cachedFavicons = latestSnapShot && faviconCache.get(latestSnapShot);
 
   if (latestSnapShot && cachedFavicons) {
@@ -64,9 +52,10 @@ function runCached(
         return runCached(
           files,
           pluginInstance,
+          useWebpackCache,
           compilation,
-          idGenerator,
           eTags,
+          idGenerator,
           generator
         );
       }
