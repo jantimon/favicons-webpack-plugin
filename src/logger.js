@@ -12,6 +12,6 @@
  * @param {WebpackCompilation} compilation
  */
 const webpackLogger = compilation =>
-  compilation.compiler.getInfrastructureLogger('favicons-webpack-plugin');
+  compilation.getLogger('favicons-webpack-plugin');
 
 module.exports = { webpackLogger };

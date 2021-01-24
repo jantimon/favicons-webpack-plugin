@@ -78,6 +78,12 @@ class FaviconsWebpackPlugin {
         typeof this.options.logo === 'string',
         'Could not find `logo.png` for the current webpack context'
       );
+    } else {
+      this.options.logo = path.resolve(compiler.context, this.options.logo);
+    }
+
+    if (typeof this.options.manifest === 'string') {
+      this.options.manifest = path.resolve(compiler.context, this.options.manifest);
     }
 
     // Hook into the webpack compilation

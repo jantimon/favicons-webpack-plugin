@@ -20,7 +20,7 @@ const faviconCache = new WeakMap();
  *
  * @template TResult
  *
- * @param {string[]} files
+ * @param {string[]} absoluteFilePaths - file paths used used by the generator 
  * @param {any} pluginInstance - the plugin instance to use as cache key
  * @param {boolean} useWebpackCache - Support webpack built in cache
  * @param {WebpackCompilation} compilation - the current webpack compilation
@@ -31,7 +31,7 @@ const faviconCache = new WeakMap();
  * @returns {Promise<TResult>}
  */
 function runCached(
-  files,
+  absoluteFilePaths,
   pluginInstance,
   useWebpackCache,
   compilation,
@@ -52,7 +52,7 @@ function runCached(
         faviconCache.delete(latestSnapShot);
 
         return runCached(
-          files,
+          absoluteFilePaths,
           pluginInstance,
           useWebpackCache,
           compilation,
@@ -71,7 +71,7 @@ function runCached(
   // to find out if the logo was changed
   const newSnapShot = createSnapshot(
     {
-      fileDependencies: files.filter(Boolean),
+      fileDependencies: absoluteFilePaths.filter(Boolean),
       contextDependencies: [],
       missingDependencies: []
     },
@@ -81,8 +81,8 @@ function runCached(
 
   // Start generating the favicons
   const faviconsGenerationsPromise = useWebpackCache
-    ? runWithFileCache(files, compilation, idGenerator, eTags, generator)
-    : readFiles(files, compilation).then(fileContents =>
+    ? runWithFileCache(absoluteFilePaths, compilation, idGenerator, eTags, generator)
+    : readFiles(absoluteFilePaths, compilation).then(fileContents =>
         generator(fileContents, idGenerator(fileContents))
       );
 
@@ -153,24 +153,24 @@ async function runWithFileCache(
 /**
  * readFiles and get content hashes
  *
- * @param {string[]} files
+ * @param {string[]} absoluteFilePaths
  * @param {WebpackCompilation} compilation
  * @returns {Promise<{filePath: string, hash: string, content: Buffer}[]>}
  */
-function readFiles(files, compilation) {
+function readFiles(absoluteFilePaths, compilation) {
   return Promise.all(
-    files.map(filePath =>
-      !filePath
-        ? { filePath, hash: '', content: '' }
+    absoluteFilePaths.map(absoluteFilePath =>
+      !absoluteFilePath
+        ? { filePath: absoluteFilePath, hash: '', content: '' }
         : new Promise((resolve, reject) =>
             compilation.inputFileSystem.readFile(
-              path.resolve(compilation.compiler.context, filePath),
+              path.resolve(compilation.compiler.context, absoluteFilePath),
               (error, fileBuffer) => {
                 if (error) {
                   reject(error);
                 } else {
                   resolve({
-                    filePath,
+                    filePath: absoluteFilePath,
                     hash: getContentHash(fileBuffer),
                     content: fileBuffer
                   });
