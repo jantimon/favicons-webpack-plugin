@@ -82,7 +82,10 @@ class FaviconsWebpackPlugin {
     }
 
     if (typeof this.options.manifest === 'string') {
-      this.options.manifest = path.resolve(compiler.context, this.options.manifest);
+      this.options.manifest = path.resolve(
+        compiler.context,
+        this.options.manifest
+      );
     }
 
     // Hook into the webpack compilation
@@ -273,16 +276,22 @@ class FaviconsWebpackPlugin {
    * Generate the favicons
    *
    * @param {{content: Buffer | string, hash: string}} logo
-   * @param {Buffer | string} manifest
+   * @param {Buffer | string} baseManifest - the content of the file from options.manifest
    * @param {import('webpack').Compilation} compilation
    * @param {string} outputPath
    */
-  generateFavicons(logo, manifest, compilation, outputPath) {
+  generateFavicons(logo, baseManifest, compilation, outputPath) {
     const resolvedPublicPath = getResolvedPublicPath(
       logo.hash,
       compilation,
       this.options
     );
+    /** @type {{[key: string]: any}} - the parsed manifest from options.manifest */
+    const parsedBaseManifest =
+      typeof this.options.manifest === 'string'
+        ? JSON.parse(baseManifest.toString() || '{}')
+        : this.options.manifest || {};
+
     switch (this.getCurrentCompilationMode(compilation.compiler)) {
       case 'light':
         if (!this.options.mode) {
@@ -293,6 +302,7 @@ class FaviconsWebpackPlugin {
 
         return this.generateFaviconsLight(
           logo.content,
+          parsedBaseManifest,
           compilation,
           resolvedPublicPath,
           outputPath
@@ -303,7 +313,7 @@ class FaviconsWebpackPlugin {
 
         return this.generateFaviconsWebapp(
           logo.content,
-          manifest ? JSON.parse(manifest.toString()) : this.options.manifest,
+          parsedBaseManifest,
           compilation,
           resolvedPublicPath,
           outputPath
@@ -317,12 +327,14 @@ class FaviconsWebpackPlugin {
    * it is the default mode for development
    *
    * @param {Buffer | string} logoSource
+   * @param {{[key: string]: any}} baseManifest
    * @param {import('webpack').Compilation} compilation
    * @param {string} resolvedPublicPath
    * @param {string} outputPath
    */
   async generateFaviconsLight(
     logoSource,
+    baseManifest,
     compilation,
     resolvedPublicPath,
     outputPath
@@ -331,15 +343,34 @@ class FaviconsWebpackPlugin {
     const faviconName = `favicon${faviconExt}`;
     const RawSource = compilation.compiler.webpack.sources.RawSource;
 
+    const tags = [`<link rel="icon" href="${faviconName}">`];
+    const assets = [
+      {
+        name: path.join(outputPath, faviconName),
+        contents: new RawSource(logoSource, false)
+      }
+    ];
+
+    // If the manifest is not empty add it also to the light mode
+    if (Object.keys(baseManifest).length > 0) {
+      tags.push('<link rel="manifest" href="manifest.json">');
+      assets.push({
+        name: path.join(outputPath, 'manifest.json'),
+        contents: new RawSource(
+          JSON.stringify(mergeManifests(baseManifest, {
+            icons: [{
+              src: faviconName
+            }]
+          }), null, 2),
+          false
+        )
+      });
+    }
+
     return {
       publicPath: resolvedPublicPath,
-      assets: [
-        {
-          name: path.join(outputPath, faviconName),
-          contents: new RawSource(logoSource, false)
-        }
-      ],
-      tags: [`<link rel="icon" href="${faviconName}">`]
+      assets,
+      tags
     };
   }
 
