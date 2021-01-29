@@ -9,9 +9,6 @@ const url = require('url');
 const { resolvePublicPath, replaceContentHash } = require('./hash');
 const { webpackLogger } = require('./logger');
 
-/** @type {WeakMap<any, Promise<{tags: string[], assets: Array<{name: string, contents: import('webpack').sources.RawSource}>}>>} */
-const faviconCompilations = new WeakMap();
-
 class FaviconsWebpackPlugin {
   /**
    * @param {import('./options').FaviconWebpackPlugionOptions | string} args
@@ -48,6 +45,8 @@ class FaviconsWebpackPlugin {
     const webpack = compiler.webpack;
     const Compilation = webpack.Compilation;
     const oracle = new Oracle(compiler.context);
+    /** @type {WeakMap<any, Promise<{tags: string[], assets: Array<{name: string, contents: import('webpack').sources.RawSource}>}>>} */
+    const faviconCompilations = new WeakMap();
 
     {
       const {

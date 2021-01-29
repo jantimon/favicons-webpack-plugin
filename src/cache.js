@@ -39,8 +39,8 @@ function runCached(
   idGenerator,
   generator
 ) {
-  const logger = webpackLogger(compilation);
   const latestSnapShot = snapshots.get(pluginInstance);
+
   /** @type {Promise<TResult> | undefined} */
   const cachedFavicons = latestSnapShot && faviconCache.get(latestSnapShot);
 
