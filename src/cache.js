@@ -20,7 +20,7 @@ const faviconCache = new WeakMap();
  *
  * @template TResult
  *
- * @param {string[]} absoluteFilePaths - file paths used used by the generator 
+ * @param {string[]} absoluteFilePaths - file paths used used by the generator
  * @param {any} pluginInstance - the plugin instance to use as cache key
  * @param {boolean} useWebpackCache - Support webpack built in cache
  * @param {WebpackCompilation} compilation - the current webpack compilation
@@ -81,7 +81,13 @@ function runCached(
 
   // Start generating the favicons
   const faviconsGenerationsPromise = useWebpackCache
-    ? runWithFileCache(absoluteFilePaths, compilation, idGenerator, eTags, generator)
+    ? runWithFileCache(
+        absoluteFilePaths,
+        compilation,
+        idGenerator,
+        eTags,
+        generator
+      )
     : readFiles(absoluteFilePaths, compilation).then(fileContents =>
         generator(fileContents, idGenerator(fileContents))
       );
