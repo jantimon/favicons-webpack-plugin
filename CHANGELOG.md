@@ -2,6 +2,34 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.0.0](https://github.com/jantimon/favicons-webpack-plugin/compare/v4.2.0...v5.0.0) (2021-02-03)
+
+
+### ⚠ BREAKING CHANGES
+
+* file based cache will only work if you configure webpacks filesystem cache
+* favicons needs to be installed separately
+
+### Features
+
+* add manifest option ([e2928c4](https://github.com/jantimon/favicons-webpack-plugin/commit/e2928c48f8366e6f332c972e0db5d726718138fb))
+* add support for webpack 5 publicPath 'auto' and relative favicons ([7293186](https://github.com/jantimon/favicons-webpack-plugin/commit/7293186bc6887352a3d31c80f4671c10734a44fb))
+* generate custom manifest in light mode ([db677fc](https://github.com/jantimon/favicons-webpack-plugin/commit/db677fc8d054e2307d85ae5e45f4803ae1de34dd))
+* turn favicons into a peer dependency ([8141094](https://github.com/jantimon/favicons-webpack-plugin/commit/81410947ff6ee5907708e5e10fb02c493dcb0804))
+* use the processAssets webpack api to add assets ([d15d92f](https://github.com/jantimon/favicons-webpack-plugin/commit/d15d92fe7f39ea78d2d27306aac1bf2808faad4d))
+* use webpack 5 cache system and remove child compilation ([c1dc12c](https://github.com/jantimon/favicons-webpack-plugin/commit/c1dc12c1b630415bb731528fc7fe7428e68e5d82))
+
+
+### Bug Fixes
+
+* add support for content hash for light and webapp mode ([8d4cead](https://github.com/jantimon/favicons-webpack-plugin/commit/8d4ceadad1955743ee667ca38e02039e50f40076))
+* add support for webpack@5 'auto' publicPath ([30c0d35](https://github.com/jantimon/favicons-webpack-plugin/commit/30c0d35f15094baf0fac8f8b235e786f0b465c02))
+* allow compiling multiple icon sets ([03c3514](https://github.com/jantimon/favicons-webpack-plugin/commit/03c351434600c5f8eded4757f3efa9f728cd0de1))
+* extract the cache ([17721f0](https://github.com/jantimon/favicons-webpack-plugin/commit/17721f0860fcdc7dafa3aa1d25ffe66974b42b46))
+* prevent recompilations ([af5897a](https://github.com/jantimon/favicons-webpack-plugin/commit/af5897a1098490dbdb3de27ad0d3ae283cf6b0c9))
+* resolve correct result if filesnapshot is out of date ([98e27b5](https://github.com/jantimon/favicons-webpack-plugin/commit/98e27b5b06ab88ce048d91e21ea62edf55753c27))
+* track the base manifest file only if specified ([04ca36a](https://github.com/jantimon/favicons-webpack-plugin/commit/04ca36a0bb688134ed7b46515089451ecf219041))
+
 ## [4.2.0](https://github.com/jantimon/favicons-webpack-plugin/compare/v4.1.0...v4.2.0) (2020-07-27)
 
 
