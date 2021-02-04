@@ -357,11 +357,17 @@ class FaviconsWebpackPlugin {
       assets.push({
         name: path.join(outputPath, 'manifest.json'),
         contents: new RawSource(
-          JSON.stringify(mergeManifests(baseManifest, {
-            icons: [{
-              src: faviconName
-            }]
-          }), null, 2),
+          JSON.stringify(
+            mergeManifests(baseManifest, {
+              icons: [
+                {
+                  src: faviconName
+                }
+              ]
+            }),
+            null,
+            2
+          ),
           false
         )
       });
@@ -406,6 +412,7 @@ class FaviconsWebpackPlugin {
     const modifiedFiles = files.map(file => {
       if (file.name.endsWith('manifest.json')) {
         const generatedManifest = JSON.parse(file.contents.toString('utf-8'));
+
         return {
           ...file,
           contents: JSON.stringify(
@@ -415,6 +422,7 @@ class FaviconsWebpackPlugin {
           )
         };
       }
+
       return file;
     });
 
@@ -505,6 +513,7 @@ function mergeManifests(manifest1, manifest2) {
   Object.keys(manifest2).forEach(key => {
     if (Array.isArray(mergedManifest[key]) && Array.isArray(manifest2[key])) {
       mergedManifest[key] = mergedManifest[key].concat(manifest2[key]);
+
       return;
     }
     mergedManifest[key] = manifest2[key];
@@ -514,6 +523,7 @@ function mergeManifests(manifest1, manifest2) {
       delete mergedManifest[key];
     }
   });
+
   return mergedManifest;
 }
 
