@@ -7,7 +7,6 @@
 
 const path = require('path');
 const { getContentHash } = require('./hash');
-const { webpackLogger } = require('./logger');
 
 /** @type {WeakMap<any, Promise<Snapshot>>} */
 const snapshots = new WeakMap();
@@ -151,6 +150,7 @@ async function runWithFileCache(
   // Cache invalidation token
   const eTag = [...eTags, fileSources.map(({ hash }) => hash)].join(' ');
   const cacheId = idGenerator(fileSources);
+
   return webpackCache.providePromise(cacheId, eTag, () =>
     generator(fileSources, cacheId)
   );

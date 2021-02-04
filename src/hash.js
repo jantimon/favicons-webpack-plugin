@@ -61,6 +61,7 @@ function getContentHash(file) {
   if (!file) {
     return '';
   }
+
   return crypto
     .createHash('sha256')
     .update(file.toString('utf8'))
