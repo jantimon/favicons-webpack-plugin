@@ -1,7 +1,7 @@
 const test = require('ava');
 const FaviconsWebpackPlugin = require('../');
 
-const { logo } = require('./util');
+const { logo } = require('./_util');
 
 test('should take a string as argument', t => {
   const plugin = new FaviconsWebpackPlugin(logo);

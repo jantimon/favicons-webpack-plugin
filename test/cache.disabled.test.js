@@ -5,7 +5,7 @@ const FaviconsWebpackPlugin = require('../');
 
 const getFolderSize = require('util').promisify(require('get-folder-size'));
 
-const { logo, mkdir, generate, cacheBaseSize } = require('./util');
+const { logo, mkdir, generate, cacheBaseSize } = require('./_util');
 
 test.beforeEach(async t => (t.context.root = await mkdir()));
 
