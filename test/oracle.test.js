@@ -4,7 +4,7 @@ const fs = require('fs-extra');
 const parseAuthor = require('parse-author');
 const FaviconsWebpackPlugin = require('../src');
 
-const { logo, mkdir, compiler } = require('./util');
+const { logo, mkdir, compiler } = require('./_util');
 
 test.beforeEach(async t => (t.context.root = await mkdir()));
 

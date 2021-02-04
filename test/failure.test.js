@@ -3,7 +3,7 @@ const path = require('path');
 const fs = require('fs-extra');
 const FaviconsWebpackPlugin = require('../');
 
-const { empty, invalid, generate, mkdir } = require('./util');
+const { empty, invalid, generate, mkdir } = require('./_util');
 
 test.beforeEach(async t => (t.context.root = await mkdir()));
 
