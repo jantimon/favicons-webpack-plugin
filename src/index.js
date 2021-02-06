@@ -8,6 +8,7 @@ const Oracle = require('./oracle');
 const url = require('url');
 const { resolvePublicPath, replaceContentHash } = require('./hash');
 const { webpackLogger } = require('./logger');
+const runtimeLoader = require('./runtime-loader');
 
 class FaviconsWebpackPlugin {
   /**
@@ -66,6 +67,9 @@ class FaviconsWebpackPlugin {
       });
     }
 
+    // Add a lower to add support for `import tags from 'favicons-webpack-plugin/runtime/tags'`
+    compiler.options.module.rules.push(runtimeLoader.moduleRuleConfig);
+
     if (this.options.logo === undefined) {
       const defaultLogo = path.resolve(compiler.context, 'logo.png');
       try {
@@ -93,6 +97,7 @@ class FaviconsWebpackPlugin {
     compiler.hooks.make.tapPromise(
       'FaviconsWebpackPlugin',
       async compilation => {
+
         const faviconCompilation = runCached(
           [
             this.options.logo,
@@ -121,6 +126,14 @@ class FaviconsWebpackPlugin {
               getRelativeOutputPath
             )
         );
+
+        // Allow runtime-loader to access the compilation
+        const tagsFilePath = require.resolve('../runtime/tags.js');
+        compiler.webpack.NormalModule.getCompilationHooks(compilation).loader.tap('FaviconsWebpackPlugin', (loaderContext, normalModule) => {
+          if (normalModule.resource === tagsFilePath) {
+            runtimeLoader.contextMap.set(loaderContext, faviconCompilation);
+          }          
+        });
 
         // Watch for changes to the logo
         compilation.fileDependencies.add(this.options.logo);
