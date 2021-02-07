@@ -20,6 +20,14 @@ module.exports = (env, args) => {
         template: './src/index.html',
       }),
       new FaviconsWebpackPlugin('./src/favicon.png'),
+      new FaviconsWebpackPlugin({
+        logo: './src/favicon.png',
+        manifest: {
+          "name": "Runtime Loader Example",
+        },
+        prefix: 'favicons/[contenthash]/' ,
+        inject: false
+      }),
     ],
     stats: "errors-only"
   };

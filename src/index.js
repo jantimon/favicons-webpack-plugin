@@ -9,6 +9,7 @@ const url = require('url');
 const { resolvePublicPath, replaceContentHash } = require('./hash');
 const { webpackLogger } = require('./logger');
 const runtimeLoader = require('./runtime-loader');
+const attachedCompilers = new WeakSet();
 
 class FaviconsWebpackPlugin {
   /**
@@ -45,6 +46,7 @@ class FaviconsWebpackPlugin {
   hookIntoCompiler(compiler) {
     const webpack = compiler.webpack;
     const Compilation = webpack.Compilation;
+    const NormalModule = webpack.NormalModule;
     const oracle = new Oracle(compiler.context);
     /** @type {WeakMap<any, Promise<{tags: string[], assets: Array<{name: string, contents: import('webpack').sources.RawSource}>}>>} */
     const faviconCompilations = new WeakMap();
@@ -67,8 +69,11 @@ class FaviconsWebpackPlugin {
       });
     }
 
-    // Add a lower to add support for `import tags from 'favicons-webpack-plugin/runtime/tags'`
-    compiler.options.module.rules.push(runtimeLoader.moduleRuleConfig);
+    // Add one loader to add support for `import tags from 'favicons-webpack-plugin/runtime/tags'`
+    if (!attachedCompilers.has(compiler)) {
+      attachedCompilers.add(compiler);
+      compiler.options.module.rules.push(runtimeLoader.moduleRuleConfig);
+    }
 
     if (this.options.logo === undefined) {
       const defaultLogo = path.resolve(compiler.context, 'logo.png');
@@ -97,7 +102,6 @@ class FaviconsWebpackPlugin {
     compiler.hooks.make.tapPromise(
       'FaviconsWebpackPlugin',
       async compilation => {
-
         const faviconCompilation = runCached(
           [
             this.options.logo,
@@ -127,13 +131,21 @@ class FaviconsWebpackPlugin {
             )
         );
 
-        // Allow runtime-loader to access the compilation
+        // Inject favicons information into runtime tags
+        // to allow `import tags from 'favicons-webpack-plugin/runtime/tags'`
         const tagsFilePath = require.resolve('../runtime/tags.js');
-        compiler.webpack.NormalModule.getCompilationHooks(compilation).loader.tap('FaviconsWebpackPlugin', (loaderContext, normalModule) => {
-          if (normalModule.resource === tagsFilePath) {
-            runtimeLoader.contextMap.set(loaderContext, faviconCompilation);
-          }          
-        });
+        const normalModuleHooks = NormalModule.getCompilationHooks(compilation);
+        normalModuleHooks.loader.tap(
+          'FaviconsWebpackPlugin',
+          (loaderContext, normalModule) => {
+            if (normalModule.resource === tagsFilePath) {
+              const faviconCompilations =
+                runtimeLoader.contextMap.get(loaderContext) || new Set();
+              faviconCompilations.add(faviconCompilation);
+              runtimeLoader.contextMap.set(loaderContext, faviconCompilations);
+            }
+          }
+        );
 
         // Watch for changes to the logo
         compilation.fileDependencies.add(this.options.logo);
@@ -204,41 +216,28 @@ class FaviconsWebpackPlugin {
                       : /** @param {string} url */ url => url;
 
                   htmlPluginData.assetTags.meta.push(
-                    ...faviconCompilation.tags
-                      .filter(tag => tag && tag.length)
-                      .map(tag => parse5.parseFragment(tag).childNodes[0])
-                      .map(({ tagName, attrs }) => {
-                        const htmlTag = {
-                          tagName,
-                          voidTag: true,
-                          meta: { plugin: 'favicons-webpack-plugin' },
-                          attributes: attrs.reduce(
-                            (obj, { name, value }) =>
-                              Object.assign(obj, { [name]: value }),
-                            {}
-                          )
-                        };
-                        // Prefix link tags
-                        if (typeof htmlTag.attributes.href === 'string') {
-                          htmlTag.attributes.href = pathReplacer(
-                            htmlTag.attributes.href
-                          );
-                        }
-                        // Prefix meta tags
-                        if (
-                          htmlTag.tagName === 'meta' &&
-                          [
-                            'msapplication-TileImage',
-                            'msapplication-config'
-                          ].includes(htmlTag.attributes.name)
-                        ) {
-                          htmlTag.attributes.content = pathReplacer(
-                            htmlTag.attributes.content
-                          );
-                        }
+                    ...faviconCompilation.tags.map(htmlTag => {
+                      // Prefix link tags
+                      if (typeof htmlTag.attributes.href === 'string') {
+                        htmlTag.attributes.href = pathReplacer(
+                          htmlTag.attributes.href
+                        );
+                      }
+                      // Prefix meta tags
+                      if (
+                        htmlTag.tagName === 'meta' &&
+                        [
+                          'msapplication-TileImage',
+                          'msapplication-config'
+                        ].includes(htmlTag.attributes.name)
+                      ) {
+                        htmlTag.attributes.content = pathReplacer(
+                          htmlTag.attributes.content
+                        );
+                      }
 
-                        return htmlTag;
-                      })
+                      return htmlTag;
+                    })
                   );
 
                   htmlWebpackPluginCallback(null, htmlPluginData);
@@ -357,7 +356,19 @@ class FaviconsWebpackPlugin {
     const faviconName = `favicon${faviconExt}`;
     const RawSource = compilation.compiler.webpack.sources.RawSource;
 
-    const tags = [`<link rel="icon" href="${faviconName}">`];
+    /** @type {{tagName: string, voidTag: boolean, meta: any, attributes: {[key:string]: string}}[]} */
+    const tags = [
+      {
+        tagName: 'link',
+        voidTag: true,
+        meta: { plugin: 'favicons-webpack-plugin' },
+        attributes: {
+          rel: 'icon',
+          href: faviconName
+        }
+      }
+    ];
+
     const assets = [
       {
         name: path.join(outputPath, faviconName),
@@ -367,7 +378,15 @@ class FaviconsWebpackPlugin {
 
     // If the manifest is not empty add it also to the light mode
     if (Object.keys(baseManifest).length > 0) {
-      tags.push('<link rel="manifest" href="manifest.json">');
+      tags.push({
+        tagName: 'link',
+        voidTag: true,
+        meta: { plugin: 'favicons-webpack-plugin' },
+        attributes: {
+          rel: 'manifest',
+          href: 'manifest.json'
+        }
+      });
       assets.push({
         name: path.join(outputPath, 'manifest.json'),
         contents: new RawSource(
@@ -415,7 +434,7 @@ class FaviconsWebpackPlugin {
     const RawSource = compilation.compiler.webpack.sources.RawSource;
     const favicons = loadFaviconsLibrary();
     // Generate favicons using the npm favicons library
-    const { html: tags, images, files } = await favicons(logoSource, {
+    const { html, images, files } = await favicons(logoSource, {
       // Generate all assets relative to the root directory
       // to allow relative manifests and to set the final public path
       // once it has been provided by the html-webpack-plugin
@@ -444,6 +463,19 @@ class FaviconsWebpackPlugin {
       name: outputPath ? path.join(outputPath, name) : name,
       contents: new RawSource(contents, false)
     }));
+
+    /** @type {{tagName: string, voidTag: boolean, meta: any, attributes: {[key:string]: string}}[]} */
+    const tags = html
+      .map(tag => parse5.parseFragment(tag).childNodes[0])
+      .map(({ tagName, attrs }) => ({
+        tagName,
+        voidTag: true,
+        meta: { plugin: 'favicons-webpack-plugin' },
+        attributes: attrs.reduce(
+          (obj, { name, value }) => Object.assign(obj, { [name]: value }),
+          {}
+        )
+      }));
 
     return { assets, tags, publicPath: resolvedPublicPath };
   }
