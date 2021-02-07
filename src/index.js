@@ -1,5 +1,4 @@
 // @ts-check
-
 const assert = require('assert');
 const parse5 = require('parse5');
 const path = require('path');
@@ -9,7 +8,21 @@ const url = require('url');
 const { resolvePublicPath, replaceContentHash } = require('./hash');
 const { webpackLogger } = require('./logger');
 const runtimeLoader = require('./runtime-loader');
-const attachedCompilers = new WeakSet();
+
+/** 
+ * @type {WeakSet<import('webpack').Compiler>}
+ * Static set to track if a compiler has already a FaviconWebpackPlugin instance attached 
+ */
+const attachedWebpackCompilers = new WeakSet();
+
+/** 
+ * @typedef {{
+    tags: import('./html-tags').HtmlTagObject[], 
+    publicPath: string,
+    assets: Array<{name: string, contents: import('webpack').sources.RawSource }>,
+    dependencies: string[],
+  }} FaviconCompilationResult 
+ */
 
 class FaviconsWebpackPlugin {
   /**
@@ -36,11 +49,28 @@ class FaviconsWebpackPlugin {
    */
   apply(compiler) {
     compiler.hooks.initialize.tap('FaviconsWebpackPlugin', () => {
+      if (!attachedWebpackCompilers.has(compiler)) {
+        attachedWebpackCompilers.add(compiler);
+        this.hookIntoCompilerOnce(compiler);
+      }
       this.hookIntoCompiler(compiler);
     });
   }
 
   /**
+   * This hook is only executed once per compiler no matter how many
+   * FaviconsWebpackPlugins will be attached
+   * 
+   * @param {import('webpack').Compiler} compiler
+   */
+  hookIntoCompilerOnce(compiler) {
+    // Add one loader to add support for `import { tags ] from 'favicons-webpack-plugin/runtime/tags'`
+    compiler.options.module.rules.push(runtimeLoader.moduleRuleConfig);
+  }
+
+  /**
+   * This hook is executed once per FaviconsWebpackPlugin instance
+   * 
    * @param {import('webpack').Compiler} compiler
    */
   hookIntoCompiler(compiler) {
@@ -48,7 +78,7 @@ class FaviconsWebpackPlugin {
     const Compilation = webpack.Compilation;
     const NormalModule = webpack.NormalModule;
     const oracle = new Oracle(compiler.context);
-    /** @type {WeakMap<any, Promise<{tags: string[], assets: Array<{name: string, contents: import('webpack').sources.RawSource}>}>>} */
+    /** @type {WeakMap<any, Promise<FaviconCompilationResult>>}>>} */
     const faviconCompilations = new WeakMap();
 
     {
@@ -67,12 +97,6 @@ class FaviconsWebpackPlugin {
         developerName,
         developerURL
       });
-    }
-
-    // Add one loader to add support for `import tags from 'favicons-webpack-plugin/runtime/tags'`
-    if (!attachedCompilers.has(compiler)) {
-      attachedCompilers.add(compiler);
-      compiler.options.module.rules.push(runtimeLoader.moduleRuleConfig);
     }
 
     if (this.options.logo === undefined) {
@@ -132,7 +156,7 @@ class FaviconsWebpackPlugin {
         );
 
         // Inject favicons information into runtime tags
-        // to allow `import tags from 'favicons-webpack-plugin/runtime/tags'`
+        // to allow `import { tags ] from 'favicons-webpack-plugin/runtime/tags'`
         const tagsFilePath = require.resolve('../runtime/tags.js');
         const normalModuleHooks = NormalModule.getCompilationHooks(compilation);
         normalModuleHooks.loader.tap(
@@ -292,8 +316,9 @@ class FaviconsWebpackPlugin {
    * @param {Buffer | string} baseManifest - the content of the file from options.manifest
    * @param {import('webpack').Compilation} compilation
    * @param {string} outputPath
+   * @returns {Promise<FaviconCompilationResult>}
    */
-  generateFavicons(logo, baseManifest, compilation, outputPath) {
+  async generateFavicons(logo, baseManifest, compilation, outputPath) {
     const resolvedPublicPath = getResolvedPublicPath(
       logo.hash,
       compilation,
@@ -305,6 +330,9 @@ class FaviconsWebpackPlugin {
         ? JSON.parse(baseManifest.toString() || '{}')
         : this.options.manifest || {};
 
+    // File dependencies
+    const dependencies = (this.options.manifest === 'string' ? [this.options.manifest] : []).concat(this.options.logo);
+
     switch (this.getCurrentCompilationMode(compilation.compiler)) {
       case 'light':
         if (!this.options.mode) {
@@ -312,25 +340,25 @@ class FaviconsWebpackPlugin {
             'generate only a single favicon for fast compilation time in development mode. This behaviour can be changed by setting the favicon mode option.'
           );
         }
-
-        return this.generateFaviconsLight(
+        const lightFaviconsCompilation = await this.generateFaviconsLight(
           logo.content,
           parsedBaseManifest,
           compilation,
           resolvedPublicPath,
-          outputPath
+          outputPath,
         );
+        return {...lightFaviconsCompilation, dependencies};
       case 'webapp':
       default:
         webpackLogger(compilation).log('generate favicons');
-
-        return this.generateFaviconsWebapp(
+          const webappFaviconsCompilation = await this.generateFaviconsWebapp(
           logo.content,
           parsedBaseManifest,
           compilation,
           resolvedPublicPath,
-          outputPath
+          outputPath,
         );
+        return {...webappFaviconsCompilation, dependencies};
     }
   }
 
