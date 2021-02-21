@@ -1,11 +1,5 @@
 blank_issues_enabled: false
 contact_links:
-  - name: Bug Report
-    url: https://github.com/jantimon/favicons-webpack-plugin/issues/new?assignees=&labels=&template=bug_report.md
-    about: Create a 🕷 report to help us improve
-  - name: Feature Request
-    url: https://github.com/jantimon/favicons-webpack-plugin/issues/new?assignees=&labels=&template=feature_request.md
-    about: Suggest an idea 💡 for this project
   - name: Open Collective
     url: https://opencollective.com/html-webpack-plugin/donate
     about: Want to give something back? Please consider supporting us via Open Collective.
