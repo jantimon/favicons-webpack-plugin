@@ -192,6 +192,7 @@ class FaviconsWebpackPlugin {
 
                   htmlPluginData.assetTags.meta.push(
                     ...faviconCompilation.tags
+                      .filter(tag => tag && tag.length)
                       .map(tag => parse5.parseFragment(tag).childNodes[0])
                       .map(({ tagName, attrs }) => {
                         const htmlTag = {
