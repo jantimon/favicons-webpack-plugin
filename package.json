@@ -65,7 +65,7 @@
     "webpack-merge": "^4.2.2"
   },
   "dependencies": {
-    "@types/favicons": "5.5.0",
+    "@types/favicons": "6.2.0",
     "find-root": "^1.1.0",
     "parse-author": "^2.0.0",
     "parse5": "^6.0.1"
