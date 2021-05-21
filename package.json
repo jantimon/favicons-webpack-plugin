@@ -78,7 +78,7 @@
     "webpack": "^4.0.0"
   },
   "optionalDependencies": {
-    "html-webpack-plugin": ">=4.0.0 || ^4.0.0-beta.11"
+    "html-webpack-plugin": "^4.3.0"
   },
   "config": {
     "commitizen": {
