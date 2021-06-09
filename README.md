@@ -235,7 +235,7 @@ plugins: [
   new FaviconsWebpackPlugin({
     logo: './src/logo.png',
     mode: 'webapp',
-    manifest: './src/manigest.json'
+    manifest: './src/manifest.json'
   })
 ]
 ```
