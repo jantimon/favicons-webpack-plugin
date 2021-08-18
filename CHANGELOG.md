@@ -23,6 +23,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 * file based cache will only work if you configure webpacks filesystem cache
 * favicons needs to be installed separately
+* drop `webpack@4` support
 
 ### Features
 
