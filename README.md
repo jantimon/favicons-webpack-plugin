@@ -42,7 +42,7 @@ plugins: [
 ```
 
 The default configuration will automatically generate webapp manifest files along with
-[44 different icon formats](https://github.com/jantimon/favicons-webpack-plugin/tree/master/test/fixtures/expected/default)
+[57 different icon formats](https://github.com/itgalaxy/favicons/blob/master/src/config/icons.json)
 as appropriate for iOS devices, Android devices, Windows Phone and various desktop browsers out of your single `logo.png`.
 
 > **Tip:** You might want to [fine tune](#advanced-usage) what vendors to support.
