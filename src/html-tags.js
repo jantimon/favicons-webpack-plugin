@@ -21,27 +21,22 @@
  */
 function htmlTagObjectToString(tagDefinition, xhtml) {
   const attributes = Object.keys(tagDefinition.attributes || {})
-    .filter(function(attributeName) {
+    .filter(attributeName => {
       return tagDefinition.attributes[attributeName] !== false;
     })
-    .map(function(attributeName) {
+    .map(attributeName => {
       if (tagDefinition.attributes[attributeName] === true) {
-        return xhtml
-          ? attributeName + '="' + attributeName + '"'
-          : attributeName;
+        return xhtml ? `${attributeName}="${attributeName}"` : attributeName;
       }
-      return (
-        attributeName + '="' + tagDefinition.attributes[attributeName] + '"'
-      );
+
+      return `${attributeName}="${tagDefinition.attributes[attributeName]}"`;
     });
-  return (
-    '<' +
-    [tagDefinition.tagName].concat(attributes).join(' ') +
-    (tagDefinition.voidTag && xhtml ? '/' : '') +
-    '>' +
-    (tagDefinition.innerHTML || '') +
-    (tagDefinition.voidTag ? '' : '</' + tagDefinition.tagName + '>')
-  );
+
+  return `<${[tagDefinition.tagName].concat(attributes).join(' ')}${
+    tagDefinition.voidTag && xhtml ? '/' : ''
+  }>${tagDefinition.innerHTML || ''}${
+    tagDefinition.voidTag ? '' : `</${tagDefinition.tagName}>`
+  }`;
 }
 
 module.exports = { htmlTagObjectToString };
