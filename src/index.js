@@ -229,40 +229,50 @@ class FaviconsWebpackPlugin {
                     faviconCompilation.publicPath
                   );
 
-                  // Prefix links to icons
-                  const pathReplacer =
+                  const needsPrefix =
                     !this.options.favicons.path ||
-                    this.getCurrentCompilationMode(compiler) === 'light'
-                      ? /** @param {string} url */ url =>
-                          typeof url === 'string'
-                            ? publicPathFromHtml + url
-                            : url
-                      : /** @param {string} url */ url => url;
+                    this.getCurrentCompilationMode(compiler) === 'light';
+
+                  /**
+                   * @param {import('./html-tags').HtmlTagObject} tag
+                   * @param {string} key
+                   * @param {boolean} [condition]
+                   * @returns {import('./html-tags').HtmlTagObject}
+                   */
+                  const prefixAttribute = (tag, key, condition = true) => {
+                    if (!needsPrefix) return tag;
+                    if (!condition) return tag;
+
+                    const value = tag.attributes[key];
+                    if (typeof value !== 'string') return tag;
+
+                    return {
+                      ...tag,
+                      attributes: {
+                        ...tag.attributes,
+                        [key]: publicPathFromHtml + value
+                      }
+                    };
+                  };
 
                   htmlPluginData.assetTags.meta.push(
-                    ...faviconCompilation.tags
-                      .map(htmlTag => {
-                        // Prefix link tags
-                        if (typeof htmlTag.attributes.href === 'string') {
-                          htmlTag.attributes.href = pathReplacer(
-                            htmlTag.attributes.href
-                          );
-                        }
-                        // Prefix meta tags
-                        if (
-                          htmlTag.tagName === 'meta' &&
+                    ...faviconCompilation.tags.map(htmlTag => {
+                      // Prefix link tags
+                      htmlTag = prefixAttribute(htmlTag, 'href');
+
+                      // Prefix meta tags
+                      htmlTag = prefixAttribute(
+                        htmlTag,
+                        'content',
+                        htmlTag.tagName === 'meta' &&
                           [
                             'msapplication-TileImage',
                             'msapplication-config'
                           ].includes(htmlTag.attributes.name)
-                        ) {
-                          htmlTag.attributes.content = pathReplacer(
-                            htmlTag.attributes.content
-                          );
-                        }
+                      );
 
-                        return htmlTag;
-                      })
+                      return htmlTag;
+                    })
                   );
 
                   htmlWebpackPluginCallback(null, htmlPluginData);
