@@ -35,7 +35,7 @@ export interface FaviconWebpackPlugionOptions {
    *     this mode has a quite slow compilation but wide browser support
    *     by default this mode is used for production
    */
-  mode?: 'light' | 'webapp',
+  mode?: 'light' | 'webapp' | 'auto',
   /**
    * Favicon generation modes used during development  
    * - `light`  
@@ -48,6 +48,14 @@ export interface FaviconWebpackPlugionOptions {
    *     by default this mode is used for production
    */
   devMode?: 'light' | 'webapp',
+  /**
+   * Web app manifests are part of a collection of web technologies called progressive web apps (PWAs), 
+   * which are websites that can be installed to a device’s homescreen without an app store.
+   * @see https://developer.mozilla.org/en-US/docs/Web/Manifest
+   * 
+   * The manifest option allows to provide a filepath to a base manifest.json file or a base manifest configuration
+   */
+  manifest?: string | { [key: string]: any }
   /**
    * Prefix path for generated assets
    */

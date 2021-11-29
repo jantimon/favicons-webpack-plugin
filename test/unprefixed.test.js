@@ -4,7 +4,7 @@ const fs = require('fs-extra');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const FaviconsWebpackPlugin = require('../');
 
-const { logo, generate, mkdir, snapshotCompilationAssets } = require('./util');
+const { logo, generate, mkdir, snapshotCompilationAssets } = require('./_util');
 
 test.beforeEach(async t => (t.context.root = await mkdir()));
 
@@ -13,7 +13,8 @@ test('should correctly handle an empty prefix', async t => {
   const compilationStats = await generate({
     context: t.context.root,
     output: {
-      path: dist
+      path: dist,
+      publicPath: '/'
     },
     plugins: [
       new HtmlWebpackPlugin(),

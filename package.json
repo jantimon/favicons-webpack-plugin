@@ -1,6 +1,6 @@
 {
   "name": "favicons-webpack-plugin",
-  "version": "4.2.0",
+  "version": "5.0.2",
   "description": "Let webpack generate all your favicons and icons for you",
   "main": "src/index.js",
   "files": [
@@ -10,7 +10,7 @@
     "commit": "git-cz",
     "update-snapshots": "ava -u test/*.test.js",
     "declarations": "node_modules/.bin/tsc --declaration --allowJs src/index.js",
-    "test": "ava test/*.test.js",
+    "test": "ava --timeout 10m --fail-fast",
     "prettify:fix": "prettier --write src/*.js test/*.js",
     "prettify": "prettier --check src/*.js test/*.js",
     "lint:fix": "eslint src/*.js test/*.js --fix",
@@ -45,37 +45,34 @@
   },
   "homepage": "https://github.com/jantimon/favicons-webpack-plugin",
   "devDependencies": {
-    "ava": "^2.4.0",
-    "commitizen": "4.0.3",
+    "ava": "3.14.0",
+    "commitizen": "^4.2.3",
     "cz-conventional-changelog": "3.0.2",
     "diffable-html": "4.0.0",
     "eslint": "^6.8.0",
+    "favicons": "^6.2.0",
     "fs-extra": "^8.1.0",
-    "html-webpack-plugin": "4.3.0",
+    "get-folder-size": "2.0.1",
+    "html-webpack-plugin": "^4.3.0",
     "image-size": "0.8.3",
     "nyc": "^15.0.0",
     "prettier": "1.19.1",
-    "standard-version": "8.0.2",
-    "typescript": "3.7.4",
-    "webpack": "^4.35.0",
-    "webpack-cli": "^3.3.10",
-    "webpack-dev-server": "^3.10.1",
+    "standard-version": "9.1.1",
+    "typescript": "4.1.5",
+    "webpack": "^4.46.0",
+    "webpack-cli": "4.3.1",
+    "webpack-dev-server": "3.11.1",
     "webpack-merge": "^4.2.2"
   },
   "dependencies": {
     "@types/favicons": "5.5.0",
-    "cache-loader": "^4.1.0",
-    "camelcase": "^5.3.1",
-    "favicons": "^6.2.0",
-    "find-cache-dir": "^3.2.0",
     "find-root": "^1.1.0",
-    "loader-utils": "^1.2.3",
     "parse-author": "^2.0.0",
-    "parse5": "^5.1.0",
-    "tapable": "^1.1.3"
+    "parse5": "^6.0.1"
   },
   "peerDependencies": {
-    "webpack": "^4.0.0"
+    "webpack": "^4.46.0",
+    "favicons": ">= 6.2.0"
   },
   "optionalDependencies": {
     "html-webpack-plugin": "^4.3.0"
@@ -86,6 +83,6 @@
     }
   },
   "engines": {
-    "node": ">=8.9.4"
+    "node": ">=10.13.0"
   }
 }

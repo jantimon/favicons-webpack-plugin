@@ -4,7 +4,7 @@ const fs = require('fs-extra');
 const parseAuthor = require('parse-author');
 const FaviconsWebpackPlugin = require('../src');
 
-const { logo, mkdir, compiler } = require('./util');
+const { logo, mkdir, compiler } = require('./_util');
 
 test.beforeEach(async t => (t.context.root = await mkdir()));
 
@@ -29,7 +29,7 @@ test('should infer missing information from the nearest parent package.json', as
 
   {
     const plugin = new FaviconsWebpackPlugin(logo);
-    plugin.apply(compiler({ context }));
+    plugin.hookIntoCompiler(compiler({ context }));
 
     t.is(plugin.options.favicons.appName, pkg.name);
     t.is(plugin.options.favicons.version, pkg.version);
@@ -42,7 +42,7 @@ test('should infer missing information from the nearest parent package.json', as
 
   {
     const plugin = new FaviconsWebpackPlugin(logo);
-    plugin.apply(compiler({ context }));
+    plugin.hookIntoCompiler(compiler({ context }));
 
     t.is(plugin.options.favicons.appName, undefined);
     t.is(plugin.options.favicons.version, undefined);
@@ -60,11 +60,7 @@ test('should parse author string from package.json', async t => {
   });
 
   const plugin = new FaviconsWebpackPlugin(logo);
-  plugin.apply(
-    compiler({
-      context: t.context.root
-    })
-  );
+  plugin.hookIntoCompiler(compiler({ context: t.context.root }));
 
   t.is(plugin.options.favicons.developerName, parseAuthor(pkg.author).name);
   t.is(plugin.options.favicons.developerURL, parseAuthor(pkg.author).url);

@@ -1,0 +1,11 @@
+{
+  "name": "FaviconsDemo",
+  "short_name": "FaviconsDemo",
+  "description": "A manifest used for unit-testing",
+  "dir": "auto",
+  "lang": "en",
+  "display": "standalone",
+  "background_color": "#fff",
+  "theme_color": "#fff",
+  "orientation": null
+}
