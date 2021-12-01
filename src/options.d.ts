@@ -6,6 +6,7 @@ export interface FaviconWebpackPlugionOptions {
    *  Note: disabling caching may increase build times considerably
    */
   cache?: boolean, 
+  cache?: boolean | string,
   /**
    * 
    * Inject html links/metadata (requires html-webpack-plugin).
