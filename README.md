@@ -116,8 +116,10 @@ plugins: [
   new FaviconsWebpackPlugin({
     // Your source logo (required)
     logo: './src/logo.png',
-    // Enable caching and optionally specify the path to store cached data
-    // Note: disabling caching may increase build times considerably
+    // Allow caching the assets across webpack builds. By default this will use
+    // webpack's cache configuration, but can be set to false to disable caching.
+    // Note: disabling caching may increase build times considerably.
+    // For more information, see: https://webpack.js.org/configuration/cache/
     cache: true,
     // Override the publicPath option usually read from webpack configuration
     publicPath: '/static',
