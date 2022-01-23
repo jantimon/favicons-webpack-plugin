@@ -51,6 +51,7 @@
     "diffable-html": "4.0.0",
     "eslint": "^6.8.0",
     "favicons": "^6.2.0",
+    "favicons-webpack-plugin": "file:./",
     "fs-extra": "^8.1.0",
     "get-folder-size": "2.0.1",
     "html-webpack-plugin": "5.2.0",

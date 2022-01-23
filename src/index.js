@@ -1,5 +1,4 @@
 // @ts-check
-
 const assert = require('assert');
 const parse5 = require('parse5');
 const path = require('path');
@@ -8,6 +7,22 @@ const Oracle = require('./oracle');
 const url = require('url');
 const { resolvePublicPath, replaceContentHash } = require('./hash');
 const { webpackLogger } = require('./logger');
+const runtimeLoader = require('./runtime-loader');
+
+/**
+ * @type {WeakSet<import('webpack').Compiler>}
+ * Static set to track if a compiler has already a FaviconWebpackPlugin instance attached
+ */
+const attachedWebpackCompilers = new WeakSet();
+
+/**
+ * @typedef {{
+    tags: import('./html-tags').HtmlTagObject[],
+    publicPath: string,
+    assets: Array<{name: string, contents: import('webpack').sources.RawSource }>,
+    dependencies: string[],
+  }} FaviconCompilationResult
+ */
 
 class FaviconsWebpackPlugin {
   /**
@@ -34,18 +49,36 @@ class FaviconsWebpackPlugin {
    */
   apply(compiler) {
     compiler.hooks.initialize.tap('FaviconsWebpackPlugin', () => {
+      if (!attachedWebpackCompilers.has(compiler)) {
+        attachedWebpackCompilers.add(compiler);
+        this.hookIntoCompilerOnce(compiler);
+      }
       this.hookIntoCompiler(compiler);
     });
   }
 
   /**
+   * This hook is only executed once per compiler no matter how many
+   * FaviconsWebpackPlugins will be attached
+   *
+   * @param {import('webpack').Compiler} compiler
+   */
+  hookIntoCompilerOnce(compiler) {
+    // Add one loader to add support for `import { tags ] from 'favicons-webpack-plugin/runtime/tags'`
+    compiler.options.module.rules.push(runtimeLoader.moduleRuleConfig);
+  }
+
+  /**
+   * This hook is executed once per FaviconsWebpackPlugin instance
+   *
    * @param {import('webpack').Compiler} compiler
    */
   hookIntoCompiler(compiler) {
     const webpack = compiler.webpack;
     const Compilation = webpack.Compilation;
+    const NormalModule = webpack.NormalModule;
     const oracle = new Oracle(compiler.context);
-    /** @type {WeakMap<any, Promise<{tags: string[], assets: Array<{name: string, contents: import('webpack').sources.RawSource}>}>>} */
+    /** @type {WeakMap<any, Promise<FaviconCompilationResult>>}>>} */
     const faviconCompilations = new WeakMap();
 
     {
@@ -122,6 +155,22 @@ class FaviconsWebpackPlugin {
             )
         );
 
+        // Inject favicons information into runtime tags
+        // to allow `import { tags ] from 'favicons-webpack-plugin/runtime/tags'`
+        const tagsFilePath = require.resolve('../runtime/tags.js');
+        const normalModuleHooks = NormalModule.getCompilationHooks(compilation);
+        normalModuleHooks.loader.tap(
+          'FaviconsWebpackPlugin',
+          (loaderContext, normalModule) => {
+            if (normalModule.resource === tagsFilePath) {
+              const faviconCompilations =
+                runtimeLoader.contextMap.get(loaderContext) || new Set();
+              faviconCompilations.add(faviconCompilation);
+              runtimeLoader.contextMap.set(loaderContext, faviconCompilations);
+            }
+          }
+        );
+
         // Watch for changes to the logo
         compilation.fileDependencies.add(this.options.logo);
 
@@ -180,52 +229,50 @@ class FaviconsWebpackPlugin {
                     faviconCompilation.publicPath
                   );
 
-                  // Prefix links to icons
-                  const pathReplacer =
+                  const needsPrefix =
                     !this.options.favicons.path ||
-                    this.getCurrentCompilationMode(compiler) === 'light'
-                      ? /** @param {string} url */ url =>
-                          typeof url === 'string'
-                            ? publicPathFromHtml + url
-                            : url
-                      : /** @param {string} url */ url => url;
+                    this.getCurrentCompilationMode(compiler) === 'light';
+
+                  /**
+                   * @param {import('./html-tags').HtmlTagObject} tag
+                   * @param {string} key
+                   * @param {boolean} [condition]
+                   * @returns {import('./html-tags').HtmlTagObject}
+                   */
+                  const prefixAttribute = (tag, key, condition = true) => {
+                    if (!needsPrefix) return tag;
+                    if (!condition) return tag;
+
+                    const value = tag.attributes[key];
+                    if (typeof value !== 'string') return tag;
+
+                    return {
+                      ...tag,
+                      attributes: {
+                        ...tag.attributes,
+                        [key]: publicPathFromHtml + value
+                      }
+                    };
+                  };
 
                   htmlPluginData.assetTags.meta.push(
-                    ...faviconCompilation.tags
-                      .filter(tag => tag && tag.length)
-                      .map(tag => parse5.parseFragment(tag).childNodes[0])
-                      .map(({ tagName, attrs }) => {
-                        const htmlTag = {
-                          tagName,
-                          voidTag: true,
-                          meta: { plugin: 'favicons-webpack-plugin' },
-                          attributes: attrs.reduce(
-                            (obj, { name, value }) =>
-                              Object.assign(obj, { [name]: value }),
-                            {}
-                          )
-                        };
-                        // Prefix link tags
-                        if (typeof htmlTag.attributes.href === 'string') {
-                          htmlTag.attributes.href = pathReplacer(
-                            htmlTag.attributes.href
-                          );
-                        }
-                        // Prefix meta tags
-                        if (
-                          htmlTag.tagName === 'meta' &&
+                    ...faviconCompilation.tags.map(htmlTag => {
+                      // Prefix link tags
+                      htmlTag = prefixAttribute(htmlTag, 'href');
+
+                      // Prefix meta tags
+                      htmlTag = prefixAttribute(
+                        htmlTag,
+                        'content',
+                        htmlTag.tagName === 'meta' &&
                           [
                             'msapplication-TileImage',
                             'msapplication-config'
                           ].includes(htmlTag.attributes.name)
-                        ) {
-                          htmlTag.attributes.content = pathReplacer(
-                            htmlTag.attributes.content
-                          );
-                        }
+                      );
 
-                        return htmlTag;
-                      })
+                      return htmlTag;
+                    })
                   );
 
                   htmlWebpackPluginCallback(null, htmlPluginData);
@@ -280,8 +327,9 @@ class FaviconsWebpackPlugin {
    * @param {Buffer | string} baseManifest - the content of the file from options.manifest
    * @param {import('webpack').Compilation} compilation
    * @param {string} outputPath
+   * @returns {Promise<FaviconCompilationResult>}
    */
-  generateFavicons(logo, baseManifest, compilation, outputPath) {
+  async generateFavicons(logo, baseManifest, compilation, outputPath) {
     const resolvedPublicPath = getResolvedPublicPath(
       logo.hash,
       compilation,
@@ -293,32 +341,42 @@ class FaviconsWebpackPlugin {
         ? JSON.parse(baseManifest.toString() || '{}')
         : this.options.manifest || {};
 
+    // File dependencies
+    const dependencies = (this.options.manifest === 'string'
+      ? [this.options.manifest]
+      : []
+    ).concat(this.options.logo);
+
     switch (this.getCurrentCompilationMode(compilation.compiler)) {
-      case 'light':
+      case 'light': {
         if (!this.options.mode) {
           webpackLogger(compilation).info(
             'generate only a single favicon for fast compilation time in development mode. This behaviour can be changed by setting the favicon mode option.'
           );
         }
-
-        return this.generateFaviconsLight(
+        const lightFaviconsCompilation = await this.generateFaviconsLight(
           logo.content,
           parsedBaseManifest,
           compilation,
           resolvedPublicPath,
           outputPath
         );
+
+        return { ...lightFaviconsCompilation, dependencies };
+      }
       case 'webapp':
-      default:
+      default: {
         webpackLogger(compilation).log('generate favicons');
-
-        return this.generateFaviconsWebapp(
+        const webappFaviconsCompilation = await this.generateFaviconsWebapp(
           logo.content,
           parsedBaseManifest,
           compilation,
           resolvedPublicPath,
           outputPath
         );
+
+        return { ...webappFaviconsCompilation, dependencies };
+      }
     }
   }
 
@@ -344,7 +402,19 @@ class FaviconsWebpackPlugin {
     const faviconName = `favicon${faviconExt}`;
     const RawSource = compilation.compiler.webpack.sources.RawSource;
 
-    const tags = [`<link rel="icon" href="${faviconName}">`];
+    /** @type {{tagName: string, voidTag: boolean, meta: any, attributes: {[key:string]: string}}[]} */
+    const tags = [
+      {
+        tagName: 'link',
+        voidTag: true,
+        meta: { plugin: 'favicons-webpack-plugin' },
+        attributes: {
+          rel: 'icon',
+          href: faviconName
+        }
+      }
+    ];
+
     const assets = [
       {
         name: path.join(outputPath, faviconName),
@@ -354,7 +424,15 @@ class FaviconsWebpackPlugin {
 
     // If the manifest is not empty add it also to the light mode
     if (Object.keys(baseManifest).length > 0) {
-      tags.push('<link rel="manifest" href="manifest.json">');
+      tags.push({
+        tagName: 'link',
+        voidTag: true,
+        meta: { plugin: 'favicons-webpack-plugin' },
+        attributes: {
+          rel: 'manifest',
+          href: 'manifest.json'
+        }
+      });
       assets.push({
         name: path.join(outputPath, 'manifest.json'),
         contents: new RawSource(
@@ -402,7 +480,7 @@ class FaviconsWebpackPlugin {
     const RawSource = compilation.compiler.webpack.sources.RawSource;
     const favicons = loadFaviconsLibrary();
     // Generate favicons using the npm favicons library
-    const { html: tags, images, files } = await favicons(logoSource, {
+    const { html, images, files } = await favicons(logoSource, {
       // Generate all assets relative to the root directory
       // to allow relative manifests and to set the final public path
       // once it has been provided by the html-webpack-plugin
@@ -431,6 +509,20 @@ class FaviconsWebpackPlugin {
       name: outputPath ? path.join(outputPath, name) : name,
       contents: new RawSource(contents, false)
     }));
+
+    /** @type {{tagName: string, voidTag: boolean, meta: any, attributes: {[key:string]: string}}[]} */
+    const tags = html
+      .filter(tag => tag && tag.length)
+      .map(tag => parse5.parseFragment(tag).childNodes[0])
+      .map(({ tagName, attrs }) => ({
+        tagName,
+        voidTag: true,
+        meta: { plugin: 'favicons-webpack-plugin' },
+        attributes: attrs.reduce(
+          (obj, { name, value }) => Object.assign(obj, { [name]: value }),
+          {}
+        )
+      }));
 
     return { assets, tags, publicPath: resolvedPublicPath };
   }
