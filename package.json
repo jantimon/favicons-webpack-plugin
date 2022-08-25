@@ -50,7 +50,7 @@
     "cz-conventional-changelog": "3.0.2",
     "diffable-html": "4.0.0",
     "eslint": "^6.8.0",
-    "favicons": "^6.2.0",
+    "favicons": "^7.0.0",
     "fs-extra": "^8.1.0",
     "get-folder-size": "2.0.1",
     "html-webpack-plugin": "5.2.0",
@@ -72,7 +72,7 @@
   },
   "peerDependencies": {
     "webpack": "^5.0.0",
-    "favicons": ">= 6.2.0"
+    "favicons": "^7.0.0"
   },
   "optionalDependencies": {
     "html-webpack-plugin": ">=5.0.0"

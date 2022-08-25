@@ -400,7 +400,7 @@ class FaviconsWebpackPlugin {
     outputPath
   ) {
     const RawSource = compilation.compiler.webpack.sources.RawSource;
-    const favicons = loadFaviconsLibrary();
+    const { favicons } = loadFaviconsLibrary();
     // Generate favicons using the npm favicons library
     const { html: tags, images, files } = await favicons(logoSource, {
       // Generate all assets relative to the root directory
