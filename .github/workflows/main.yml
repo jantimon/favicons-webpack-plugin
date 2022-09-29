@@ -1,5 +1,5 @@
 name: CI
-on: [push]
+on: [push, pull_request]
 jobs:
   build:
     name: test Node ${{ matrix.node }} Webpack ${{ matrix.webpack }} ${{ matrix.os }}
@@ -8,7 +8,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        node: ['10.x', '12.x', '14.x']
+        node: ['14.x', '16.x', '18.x']
         os: [ubuntu-latest, windows-latest, macOS-latest]
         webpack: ['5']
 
@@ -26,9 +26,9 @@ jobs:
 
       - name: Install Dependencies
         run: npm install --ignore-scripts --force --legacy-peer-deps
-      
+
       - name: Install Sharp
-        run: npm install sharp --force --legacy-peer-deps 
+        run: npm install sharp --force --legacy-peer-deps
 
       - name: Install Webpack ${{ matrix.webpack }}
         run: npm install --ignore-scripts --force --legacy-peer-deps webpack@${{ matrix.webpack }}
@@ -40,4 +40,4 @@ jobs:
         run: npm run lint
 
       - name: Test
-        run: npm test || npm test || npm test
+        run: npm test
