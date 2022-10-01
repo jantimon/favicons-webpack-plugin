@@ -45,7 +45,7 @@
   },
   "homepage": "https://github.com/jantimon/favicons-webpack-plugin",
   "devDependencies": {
-    "ava": "3.14.0",
+    "ava": "4.3.3",
     "commitizen": "^4.2.5",
     "cz-conventional-changelog": "^3.3.0",
     "diffable-html": "^5.0.0",
