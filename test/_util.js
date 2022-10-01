@@ -2,7 +2,7 @@ const os = require('os');
 const path = require('path');
 const fs = require('fs-extra');
 const webpack = require('webpack');
-const merge = require('webpack-merge');
+const { merge } = require('webpack-merge');
 const sizeOf = require('image-size');
 const formatHtml = require('diffable-html');
 
