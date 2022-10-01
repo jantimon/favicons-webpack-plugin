@@ -39,9 +39,9 @@ function replaceContentHash(compilation, assetPath, hash) {
     hash: compilation.hash || hash,
     chunk: {
       id: '1',
-      hash
+      hash,
     },
-    contentHash: hash
+    contentHash: hash,
   });
 }
 

@@ -5,19 +5,19 @@ const FaviconsWebpackPlugin = require('../');
 
 const { logo, generate, mkdir, snapshotCompilationAssets } = require('./_util');
 
-test.beforeEach(async t => (t.context.root = await mkdir()));
+test.beforeEach(async (t) => (t.context.root = await mkdir()));
 
-test('should generate the expected default result', async t => {
+test('should generate the expected default result', async (t) => {
   const dist = path.join(t.context.root, 'dist');
   const compilationStats = await generate({
     context: t.context.root,
     output: {
-      path: dist
+      path: dist,
     },
-    plugins: [new FaviconsWebpackPlugin({ logo })]
+    plugins: [new FaviconsWebpackPlugin({ logo })],
   });
 
   snapshotCompilationAssets(t, compilationStats);
 });
 
-test.afterEach(t => fs.remove(t.context.root));
+test.afterEach((t) => fs.remove(t.context.root));

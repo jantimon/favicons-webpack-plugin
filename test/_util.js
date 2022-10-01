@@ -16,34 +16,34 @@ module.exports.cacheBaseSize = 60000;
 
 module.exports.mkdir = () => fs.mkdtemp(path.join(os.tmpdir(), 'Favicons'));
 
-module.exports.compiler = config => {
+module.exports.compiler = (config) => {
   config = merge(
     {
       entry: path.resolve(fixtures, 'entry.js'),
       plugins: [],
       output: {},
       infrastructureLogging: {
-        level: 'info'
-      }
+        level: 'info',
+      },
     },
     config
   );
 
   config.plugins
-    .filter(plugin => plugin.constructor.name === 'HtmlWebpackPlugin')
-    .forEach(plugin => {
+    .filter((plugin) => plugin.constructor.name === 'HtmlWebpackPlugin')
+    .forEach((plugin) => {
       Object.assign(plugin.userOptions, {
         meta: {},
         minify: false,
         chunks: [],
-        template: path.resolve(fixtures, 'index.html')
+        template: path.resolve(fixtures, 'index.html'),
       });
     });
 
   return webpack(config);
 };
 
-module.exports.run = compiler =>
+module.exports.run = (compiler) =>
   new Promise((resolve, reject) => {
     compiler.run((err, stats) =>
       err || stats.hasErrors()
@@ -52,7 +52,7 @@ module.exports.run = compiler =>
     );
   });
 
-module.exports.generate = config =>
+module.exports.generate = (config) =>
   module.exports.run(module.exports.compiler(config));
 
 module.exports.snapshotCompilationAssets = (t, compilerStats) => {
@@ -60,7 +60,7 @@ module.exports.snapshotCompilationAssets = (t, compilerStats) => {
   const distPath = compilerStats.compilation.outputOptions.path;
   // Check if all files are generated correctly
   t.snapshot(
-    assetNames.map(assetName => replaceHash(replaceBackSlashes(assetName)))
+    assetNames.map((assetName) => replaceHash(replaceBackSlashes(assetName)))
   );
   const htmlFiles = /\.html?$/;
   const textFiles = /\.(json|html?|webapp|xml)$/;
@@ -69,8 +69,8 @@ module.exports.snapshotCompilationAssets = (t, compilerStats) => {
   const ignoredFiles = /\.(js|css)$/;
   // Transform assets into a comparable view
   const assetContents = assetNames
-    .filter(assetName => !ignoredFiles.test(assetName))
-    .map(assetName => {
+    .filter((assetName) => !ignoredFiles.test(assetName))
+    .map((assetName) => {
       const filepath = path.resolve(distPath, assetName);
       const isTxtFile = textFiles.test(assetName);
       const content = fs.readFileSync(filepath);
@@ -89,7 +89,7 @@ module.exports.snapshotCompilationAssets = (t, compilerStats) => {
             ? 'EMPTY FILE'
             : isTxtFile
             ? formattedContent.replace(/\r/g, '')
-            : getFileDetails(assetName, content)
+            : getFileDetails(assetName, content),
       };
     });
   t.snapshot(assetContents);

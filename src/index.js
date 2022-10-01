@@ -15,7 +15,7 @@ class FaviconsWebpackPlugin {
    */
   constructor(args) {
     /* @type {import('./options').FaviconWebpackPlugionOptions} */
-    const options = (typeof args === 'string') ? { logo: args } : args;
+    const options = typeof args === 'string' ? { logo: args } : args;
     /** @type {Partial<import('favicons').Configuration>} */
     const emptyFaviconsConfig = {};
     /** @type {import('./options').FaviconWebpackPlugionInternalOptions} */
@@ -25,7 +25,7 @@ class FaviconsWebpackPlugin {
       favicons: emptyFaviconsConfig,
       manifest: {},
       prefix: 'assets/',
-      ...options
+      ...options,
     };
   }
 
@@ -54,7 +54,7 @@ class FaviconsWebpackPlugin {
         appDescription = oracle.guessDescription(),
         version = oracle.guessVersion(),
         developerName = oracle.guessDeveloperName(),
-        developerURL = oracle.guessDeveloperURL()
+        developerURL = oracle.guessDeveloperURL(),
       } = this.options.favicons;
 
       Object.assign(this.options.favicons, {
@@ -62,7 +62,7 @@ class FaviconsWebpackPlugin {
         appDescription,
         version,
         developerName,
-        developerURL
+        developerURL,
       });
     }
 
@@ -92,13 +92,13 @@ class FaviconsWebpackPlugin {
     // to start the favicon generation
     compiler.hooks.make.tapPromise(
       'FaviconsWebpackPlugin',
-      async compilation => {
+      async (compilation) => {
         const faviconCompilation = runCached(
           [
             this.options.logo,
             typeof this.options.manifest === 'string'
               ? this.options.manifest
-              : ''
+              : '',
           ],
           this,
           this.options.cache,
@@ -108,7 +108,7 @@ class FaviconsWebpackPlugin {
             JSON.stringify(this.options.publicPath),
             JSON.stringify(this.options.mode),
             // Recompile filesystem cache if the user change the favicon options
-            JSON.stringify(this.options.favicons)
+            JSON.stringify(this.options.favicons),
           ],
           // Recompile filesystem cache if the logo source based path change:
           ([logo]) =>
@@ -138,7 +138,7 @@ class FaviconsWebpackPlugin {
              * Find only HtmlWebpkackPlugin constructors
              * @type {(constructor: Function) => constructor is typeof import('html-webpack-plugin')}
              */
-            constructor =>
+            (constructor) =>
               constructor && constructor.name === 'HtmlWebpackPlugin'
           );
 
@@ -146,8 +146,10 @@ class FaviconsWebpackPlugin {
           if (!verifyHtmlWebpackPluginVersion(HtmlWebpackPlugin)) {
             compilation.errors.push(
               new compiler.webpack.WebpackError(
-                `${'FaviconsWebpackPlugin - This FaviconsWebpackPlugin version is not compatible with your current HtmlWebpackPlugin version.\n' +
-                  'Please upgrade to HtmlWebpackPlugin >= 5 OR downgrade to FaviconsWebpackPlugin 2.x\n'}${getHtmlWebpackPluginVersion()}`
+                `${
+                  'FaviconsWebpackPlugin - This FaviconsWebpackPlugin version is not compatible with your current HtmlWebpackPlugin version.\n' +
+                  'Please upgrade to HtmlWebpackPlugin >= 5 OR downgrade to FaviconsWebpackPlugin 2.x\n'
+                }${getHtmlWebpackPluginVersion()}`
               )
             );
 
@@ -170,7 +172,7 @@ class FaviconsWebpackPlugin {
               }
 
               faviconCompilation
-                .then(faviconCompilation => {
+                .then((faviconCompilation) => {
                   // faviconCompilation.publicPath and htmlPluginData.publicPath can be:
                   // absolute:  http://somewhere.com/app1/
                   // absolute:  /demo/app1/
@@ -184,16 +186,16 @@ class FaviconsWebpackPlugin {
                   const pathReplacer =
                     !this.options.favicons.path ||
                     this.getCurrentCompilationMode(compiler) === 'light'
-                      ? /** @param {string} url */ url =>
+                      ? /** @param {string} url */ (url) =>
                           typeof url === 'string'
                             ? publicPathFromHtml + url
                             : url
-                      : /** @param {string} url */ url => url;
+                      : /** @param {string} url */ (url) => url;
 
                   htmlPluginData.assetTags.meta.push(
                     ...faviconCompilation.tags
-                      .filter(tag => tag && tag.length)
-                      .map(tag => parse5.parseFragment(tag).childNodes[0])
+                      .filter((tag) => tag && tag.length)
+                      .map((tag) => parse5.parseFragment(tag).childNodes[0])
                       .map(({ tagName, attrs }) => {
                         const htmlTag = {
                           tagName,
@@ -203,7 +205,7 @@ class FaviconsWebpackPlugin {
                             (obj, { name, value }) =>
                               Object.assign(obj, { [name]: value }),
                             {}
-                          )
+                          ),
                         };
                         // Prefix link tags
                         if (typeof htmlTag.attributes.href === 'string') {
@@ -216,7 +218,7 @@ class FaviconsWebpackPlugin {
                           htmlTag.tagName === 'meta' &&
                           [
                             'msapplication-TileImage',
-                            'msapplication-config'
+                            'msapplication-config',
                           ].includes(htmlTag.attributes.name)
                         ) {
                           htmlTag.attributes.content = pathReplacer(
@@ -242,29 +244,32 @@ class FaviconsWebpackPlugin {
       }
     );
 
-    compiler.hooks.thisCompilation.tap('FaviconsWebpackPlugin', compilation => {
-      compilation.hooks.processAssets.tapPromise(
-        {
-          name: 'FaviconsWebpackPlugin',
-          stage: Compilation.PROCESS_ASSETS_STAGE_ADDITIONS
-        },
-        async () => {
-          const faviconCompilation = faviconCompilations.get(compilation);
-          if (!faviconCompilation) {
-            return;
+    compiler.hooks.thisCompilation.tap(
+      'FaviconsWebpackPlugin',
+      (compilation) => {
+        compilation.hooks.processAssets.tapPromise(
+          {
+            name: 'FaviconsWebpackPlugin',
+            stage: Compilation.PROCESS_ASSETS_STAGE_ADDITIONS,
+          },
+          async () => {
+            const faviconCompilation = faviconCompilations.get(compilation);
+            if (!faviconCompilation) {
+              return;
+            }
+            const faviconAssets = (await faviconCompilation).assets;
+            faviconAssets.forEach(({ name, contents }) => {
+              compilation.emitAsset(name, contents);
+            });
           }
-          const faviconAssets = (await faviconCompilation).assets;
-          faviconAssets.forEach(({ name, contents }) => {
-            compilation.emitAsset(name, contents);
-          });
-        }
-      );
-    });
+        );
+      }
+    );
 
     // Make sure that the build waits for the favicon generation to complete
     compiler.hooks.afterCompile.tapPromise(
       'FaviconsWebpackPlugin',
-      async compilation => {
+      async (compilation) => {
         const faviconCompilation =
           faviconCompilations.get(compilation) || Promise.resolve();
         faviconCompilations.delete(compilation);
@@ -348,8 +353,8 @@ class FaviconsWebpackPlugin {
     const assets = [
       {
         name: path.join(outputPath, faviconName),
-        contents: new RawSource(logoSource, false)
-      }
+        contents: new RawSource(logoSource, false),
+      },
     ];
 
     // If the manifest is not empty add it also to the light mode
@@ -362,22 +367,22 @@ class FaviconsWebpackPlugin {
             mergeManifests(baseManifest, {
               icons: [
                 {
-                  src: faviconName
-                }
-              ]
+                  src: faviconName,
+                },
+              ],
             }),
             null,
             2
           ),
           false
-        )
+        ),
       });
     }
 
     return {
       publicPath: resolvedPublicPath,
       assets,
-      tags
+      tags,
     };
   }
 
@@ -402,15 +407,19 @@ class FaviconsWebpackPlugin {
     const RawSource = compilation.compiler.webpack.sources.RawSource;
     const { favicons } = loadFaviconsLibrary();
     // Generate favicons using the npm favicons library
-    const { html: tags, images, files } = await favicons(logoSource, {
+    const {
+      html: tags,
+      images,
+      files,
+    } = await favicons(logoSource, {
       // Generate all assets relative to the root directory
       // to allow relative manifests and to set the final public path
       // once it has been provided by the html-webpack-plugin
       path: '',
-      ...this.options.favicons
+      ...this.options.favicons,
     });
 
-    const modifiedFiles = files.map(file => {
+    const modifiedFiles = files.map((file) => {
       if (file.name.endsWith('manifest.json')) {
         const generatedManifest = JSON.parse(file.contents.toString('utf-8'));
 
@@ -420,7 +429,7 @@ class FaviconsWebpackPlugin {
             mergeManifests(generatedManifest, baseManifest),
             null,
             2
-          )
+          ),
         };
       }
 
@@ -429,7 +438,7 @@ class FaviconsWebpackPlugin {
 
     const assets = [...images, ...modifiedFiles].map(({ name, contents }) => ({
       name: outputPath ? path.join(outputPath, name) : name,
-      contents: new RawSource(contents, false)
+      contents: new RawSource(contents, false),
     }));
 
     return { assets, tags, publicPath: resolvedPublicPath };
@@ -511,7 +520,7 @@ function getResolvedPublicPath(logoContentHash, compilation, faviconOptions) {
  */
 function mergeManifests(manifest1, manifest2) {
   const mergedManifest = { ...manifest1 };
-  Object.keys(manifest2).forEach(key => {
+  Object.keys(manifest2).forEach((key) => {
     if (Array.isArray(mergedManifest[key]) && Array.isArray(manifest2[key])) {
       mergedManifest[key] = mergedManifest[key].concat(manifest2[key]);
 
@@ -519,7 +528,7 @@ function mergeManifests(manifest1, manifest2) {
     }
     mergedManifest[key] = manifest2[key];
   });
-  Object.keys(mergedManifest).forEach(key => {
+  Object.keys(mergedManifest).forEach((key) => {
     if (mergedManifest[key] === null) {
       delete mergedManifest[key];
     }

@@ -6,30 +6,30 @@ const FaviconsWebpackPlugin = require('../');
 
 const { logo, mkdir, generate, snapshotCompilationAssets } = require('./_util');
 
-test.beforeEach(async t => (t.context.root = await mkdir()));
+test.beforeEach(async (t) => (t.context.root = await mkdir()));
 
-test('should allow handling multiple html-webpack-plugin', async t => {
+test('should allow handling multiple html-webpack-plugin', async (t) => {
   const dist = path.join(t.context.root, 'dist');
   const compilationStats = await generate({
     context: t.context.root,
     output: {
-      path: dist
+      path: dist,
     },
     plugins: [
       new HtmlWebpackPlugin({
-        filename: 'a.html'
+        filename: 'a.html',
       }),
       new HtmlWebpackPlugin({
-        filename: 'b.html'
+        filename: 'b.html',
       }),
       new FaviconsWebpackPlugin({
         logo,
-        inject: htmlPlugin => htmlPlugin.options.filename === 'a.html'
-      })
-    ]
+        inject: (htmlPlugin) => htmlPlugin.options.filename === 'a.html',
+      }),
+    ],
   });
 
   snapshotCompilationAssets(t, compilationStats);
 });
 
-test.afterEach(t => fs.remove(t.context.root));
+test.afterEach((t) => fs.remove(t.context.root));

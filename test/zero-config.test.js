@@ -6,9 +6,9 @@ const FaviconsWebpackPlugin = require('../');
 
 const { logo, mkdir, generate, snapshotCompilationAssets } = require('./_util');
 
-test.beforeEach(async t => (t.context.root = await mkdir()));
+test.beforeEach(async (t) => (t.context.root = await mkdir()));
 
-test('should work without configuration', async t => {
+test('should work without configuration', async (t) => {
   const dist = path.join(t.context.root, 'dist');
   fs.writeFileSync(
     path.join(t.context.root, 'logo.png'),
@@ -19,12 +19,12 @@ test('should work without configuration', async t => {
     context: t.context.root,
     output: {
       path: dist,
-      publicPath: '/'
+      publicPath: '/',
     },
-    plugins: [new HtmlWebpackPlugin(), new FaviconsWebpackPlugin()]
+    plugins: [new HtmlWebpackPlugin(), new FaviconsWebpackPlugin()],
   });
 
   snapshotCompilationAssets(t, compilationStats);
 });
 
-test.afterEach(t => fs.remove(t.context.root));
+test.afterEach((t) => fs.remove(t.context.root));

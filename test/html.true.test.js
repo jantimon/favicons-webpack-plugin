@@ -6,35 +6,35 @@ const FaviconsWebpackPlugin = require('../');
 
 const { logo, mkdir, generate, snapshotCompilationAssets } = require('./_util');
 
-test.beforeEach(async t => (t.context.root = await mkdir()));
+test.beforeEach(async (t) => (t.context.root = await mkdir()));
 
-test('should work together with the html-webpack-plugin', async t => {
+test('should work together with the html-webpack-plugin', async (t) => {
   const dist = path.join(t.context.root, 'dist');
   const compilationStats = await generate({
     context: t.context.root,
     output: {
-      path: dist
+      path: dist,
     },
-    plugins: [new HtmlWebpackPlugin(), new FaviconsWebpackPlugin({ logo })]
+    plugins: [new HtmlWebpackPlugin(), new FaviconsWebpackPlugin({ logo })],
   });
 
   snapshotCompilationAssets(t, compilationStats);
 });
 
-test('should work together with the html-webpack-plugin with no <head></head> tags', async t => {
+test('should work together with the html-webpack-plugin with no <head></head> tags', async (t) => {
   const dist = path.join(t.context.root, 'dist');
   const compilationStats = await generate({
     context: t.context.root,
     output: {
-      path: dist
+      path: dist,
     },
     plugins: [
       new HtmlWebpackPlugin({ templateContent: '' }),
-      new FaviconsWebpackPlugin({ logo })
-    ]
+      new FaviconsWebpackPlugin({ logo }),
+    ],
   });
 
   snapshotCompilationAssets(t, compilationStats);
 });
 
-test.afterEach(t => fs.remove(t.context.root));
+test.afterEach((t) => fs.remove(t.context.root));

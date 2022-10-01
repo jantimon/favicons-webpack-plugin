@@ -31,7 +31,6 @@
         "no-new-require": "error",
         "quotes": ["error", "single"],
         "spaced-comment": ["error", "always"],
-        "comma-dangle": ["error", "never"],
         "no-empty": ["error", {"allowEmptyCatch": true}],
         "no-constant-condition": ["error", {"checkLoops": false}],
         "array-callback-return": "error",

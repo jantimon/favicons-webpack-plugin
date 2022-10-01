@@ -42,7 +42,7 @@ module.exports = class Oracle {
       ? {
           name: this.pkg.author.name,
           email: this.pkg.author.email,
-          url: this.pkg.author.url
+          url: this.pkg.author.url,
         }
       : {};
   }

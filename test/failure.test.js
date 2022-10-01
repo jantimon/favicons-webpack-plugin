@@ -5,9 +5,9 @@ const FaviconsWebpackPlugin = require('../');
 
 const { empty, invalid, generate, mkdir } = require('./_util');
 
-test.beforeEach(async t => (t.context.root = await mkdir()));
+test.beforeEach(async (t) => (t.context.root = await mkdir()));
 
-test('should fail gracefully if path to logo is wrong', async t => {
+test('should fail gracefully if path to logo is wrong', async (t) => {
   const dist = path.join(t.context.root, 'dist');
   const logo = path.join(t.context.root, 'missing.png');
 
@@ -15,24 +15,24 @@ test('should fail gracefully if path to logo is wrong', async t => {
     await generate({
       context: t.context.root,
       output: {
-        path: dist
+        path: dist,
       },
-      plugins: [new FaviconsWebpackPlugin({ logo })]
+      plugins: [new FaviconsWebpackPlugin({ logo })],
     });
   } catch (err) {
     t.is(err.message, `ENOENT: no such file or directory, open '${logo}'`);
   }
 });
 
-test('should fail gracefully if the image stream is empty', async t => {
+test('should fail gracefully if the image stream is empty', async (t) => {
   const dist = path.join(t.context.root, 'dist');
   try {
     await generate({
       context: t.context.root,
       output: {
-        path: dist
+        path: dist,
       },
-      plugins: [new FaviconsWebpackPlugin({ logo: empty })]
+      plugins: [new FaviconsWebpackPlugin({ logo: empty })],
     });
   } catch (err) {
     const errorMessage = err.message;
@@ -40,15 +40,15 @@ test('should fail gracefully if the image stream is empty', async t => {
   }
 });
 
-test('should fail gracefully if logo is not a valid image file', async t => {
+test('should fail gracefully if logo is not a valid image file', async (t) => {
   const dist = path.join(t.context.root, 'dist');
   try {
     await generate({
       context: t.context.root,
       output: {
-        path: dist
+        path: dist,
       },
-      plugins: [new FaviconsWebpackPlugin({ logo: invalid })]
+      plugins: [new FaviconsWebpackPlugin({ logo: invalid })],
     });
   } catch (err) {
     const errorMessage = err.message;
@@ -56,4 +56,4 @@ test('should fail gracefully if logo is not a valid image file', async t => {
   }
 });
 
-test.afterEach(t => fs.remove(t.context.root));
+test.afterEach((t) => fs.remove(t.context.root));

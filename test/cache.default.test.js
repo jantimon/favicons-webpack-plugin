@@ -7,22 +7,22 @@ const FaviconsWebpackPlugin = require('../');
 
 const { logo, mkdir, generate, cacheBaseSize } = require('./_util');
 
-test.beforeEach(async t => (t.context.root = await mkdir()));
+test.beforeEach(async (t) => (t.context.root = await mkdir()));
 
-test('should allow configuring cache directory', async t => {
+test('should allow configuring cache directory', async (t) => {
   const dist = path.join(t.context.root, 'dist');
   const cache = path.join(t.context.root, '.cache');
 
   await generate({
     context: t.context.root,
     output: {
-      path: dist
+      path: dist,
     },
     cache: {
       type: 'filesystem',
-      cacheDirectory: cache
+      cacheDirectory: cache,
     },
-    plugins: [new FaviconsWebpackPlugin({ logo, mode: 'webapp' })]
+    plugins: [new FaviconsWebpackPlugin({ logo, mode: 'webapp' })],
   });
 
   t.truthy(fs.existsSync(cache));
@@ -30,20 +30,20 @@ test('should allow configuring cache directory', async t => {
   t.truthy((await getFolderSize(cache)) > cacheBaseSize);
 });
 
-test('should allow configuring cache directory for light mode', async t => {
+test('should allow configuring cache directory for light mode', async (t) => {
   const dist = path.join(t.context.root, 'dist');
   const cache = path.join(t.context.root, '.cache');
 
   await generate({
     context: t.context.root,
     output: {
-      path: dist
+      path: dist,
     },
     cache: {
       type: 'filesystem',
-      cacheDirectory: cache
+      cacheDirectory: cache,
     },
-    plugins: [new FaviconsWebpackPlugin({ logo, mode: 'light' })]
+    plugins: [new FaviconsWebpackPlugin({ logo, mode: 'light' })],
   });
 
   t.truthy(fs.existsSync(cache));
@@ -51,4 +51,4 @@ test('should allow configuring cache directory for light mode', async t => {
   t.truthy((await getFolderSize(cache)) > cacheBaseSize);
 });
 
-test.afterEach(t => fs.remove(t.context.root));
+test.afterEach((t) => fs.remove(t.context.root));

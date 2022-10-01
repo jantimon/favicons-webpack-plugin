@@ -44,7 +44,7 @@ function runCached(
   const cachedFavicons = latestSnapShot && faviconCache.get(latestSnapShot);
 
   if (latestSnapShot && cachedFavicons) {
-    return isSnapShotValid(latestSnapShot, compilation).then(isValid => {
+    return isSnapShotValid(latestSnapShot, compilation).then((isValid) => {
       // If the source files have changed clear all caches
       // and try again
       if (!isValid) {
@@ -72,7 +72,7 @@ function runCached(
     {
       fileDependencies: absoluteFilePaths.filter(Boolean),
       contextDependencies: [],
-      missingDependencies: []
+      missingDependencies: [],
     },
     compilation
   );
@@ -87,7 +87,7 @@ function runCached(
         eTags,
         generator
       )
-    : readFiles(absoluteFilePaths, compilation).then(fileContents =>
+    : readFiles(absoluteFilePaths, compilation).then((fileContents) =>
         generator(fileContents, idGenerator(fileContents))
       );
 
@@ -165,7 +165,7 @@ async function runWithFileCache(
  */
 function readFiles(absoluteFilePaths, compilation) {
   return Promise.all(
-    absoluteFilePaths.map(absoluteFilePath =>
+    absoluteFilePaths.map((absoluteFilePath) =>
       !absoluteFilePath
         ? { filePath: absoluteFilePath, hash: '', content: '' }
         : new Promise((resolve, reject) =>
@@ -178,7 +178,7 @@ function readFiles(absoluteFilePaths, compilation) {
                   resolve({
                     filePath: absoluteFilePath,
                     hash: getContentHash(fileBuffer),
-                    content: fileBuffer
+                    content: fileBuffer,
                   });
                 }
               }
@@ -198,7 +198,7 @@ function readFiles(absoluteFilePaths, compilation) {
  */
 function isSnapShotValid(snapshotPromise, mainCompilation) {
   return snapshotPromise.then(
-    snapshot =>
+    (snapshot) =>
       new Promise((resolve, reject) => {
         mainCompilation.fileSystemInfo.checkSnapshotValid(
           snapshot,
