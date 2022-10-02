@@ -8,13 +8,13 @@
   ],
   "scripts": {
     "commit": "git-cz",
-    "update-snapshots": "ava --timeout 10m --no-worker-threads -u test/*.test.js",
+    "update-snapshots": "ava --timeout 10m --no-worker-threads -u \"test/*.test.{js,mjs}\"",
     "declarations": "node_modules/.bin/tsc --declaration --allowJs src/index.js",
     "test": "ava --timeout 10m --no-worker-threads --fail-fast",
-    "prettify:fix": "prettier --write src/*.js test/*.js",
-    "prettify": "prettier --check src/*.js test/*.js",
-    "lint:fix": "eslint src/*.js test/*.js --fix",
-    "lint": "eslint src/*.js test/*.js",
+    "prettify:fix": "prettier --write \"src/*.{js,mjs}\" \"test/*.{js,mjs}\"",
+    "prettify": "prettier --check \"src/*.{js,mjs}\" \"test/*.{js,mjs}\"",
+    "lint:fix": "eslint \"src/*.{js,mjs}\" \"test/*.{js,mjs}\" --fix",
+    "lint": "eslint \"src/*.{js,mjs}\" \"test/*.{js,mjs}\"",
     "coverage": "nyc npm test",
     "release": "standard-version"
   },
