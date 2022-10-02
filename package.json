@@ -74,7 +74,7 @@
     "webpack": "^5.0.0"
   },
   "optionalDependencies": {
-    "html-webpack-plugin": ">=5.0.0"
+    "html-webpack-plugin": "^5.5.0"
   },
   "config": {
     "commitizen": {
@@ -82,6 +82,6 @@
     }
   },
   "engines": {
-    "node": ">=10.13.0"
+    "node": ">=14"
   }
 }
