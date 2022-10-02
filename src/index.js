@@ -16,7 +16,7 @@ class FaviconsWebpackPlugin {
   constructor(args) {
     /* @type {import('./options').FaviconWebpackPlugionOptions} */
     const options = typeof args === 'string' ? { logo: args } : args;
-    /** @type {Partial<import('favicons').Configuration>} */
+    /** @type {Partial<import('favicons').FaviconOptions>} */
     const emptyFaviconsConfig = {};
     /** @type {import('./options').FaviconWebpackPlugionInternalOptions} */
     this.options = {
@@ -421,7 +421,7 @@ class FaviconsWebpackPlugin {
 
     const modifiedFiles = files.map((file) => {
       if (file.name.endsWith('manifest.json')) {
-        const generatedManifest = JSON.parse(file.contents.toString('utf-8'));
+        const generatedManifest = JSON.parse(file.contents);
 
         return {
           ...file,

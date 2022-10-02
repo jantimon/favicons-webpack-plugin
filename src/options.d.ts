@@ -23,7 +23,7 @@ export interface FaviconWebpackPlugionOptions {
    * Favicons configuration option 
    * @see https://github.com/itgalaxy/favicons
    */
-  favicons?: Partial<import('favicons').Configuration>,
+  favicons?: Partial<import('favicons').FaviconOptions>,
   /**
    * Favicon generation modes
    * - `light`  

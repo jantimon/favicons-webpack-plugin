@@ -1,7 +1,6 @@
 // @ts-check
 
 // Import types
-/** @typedef {ReturnType<import("webpack").Compiler['getCache']>} WebpackCacheFacade */
 /** @typedef {import("webpack").Compilation} WebpackCompilation */
 /** @typedef {Parameters<WebpackCompilation['fileSystemInfo']['checkSnapshotValid']>[0]} Snapshot */
 
