@@ -1,12 +1,12 @@
 Favicons Webpack Plugin
 ========================================
-[![npm version](https://badge.fury.io/js/favicons-webpack-plugin.svg)](http://badge.fury.io/js/favicons-webpack-plugin) [![Dependency Status](https://david-dm.org/jantimon/favicons-webpack-plugin.svg)](https://david-dm.org/jantimon/favicons-webpack-plugin) [![CI](https://github.com/jantimon/favicons-webpack-plugin/workflows/CI/badge.svg)](https://github.com/jantimon/favicons-webpack-plugin/actions?query=workflow%3ACI) [![js-semistandard-style](https://img.shields.io/badge/code%20style-semistandard-brightgreen.svg?style=flat-square)](https://github.com/Flet/semistandard)
+[![npm version](https://badge.fury.io/js/favicons-webpack-plugin.svg)](http://badge.fury.io/js/favicons-webpack-plugin) [![CI](https://github.com/jantimon/favicons-webpack-plugin/workflows/CI/badge.svg)](https://github.com/jantimon/favicons-webpack-plugin/actions?query=workflow%3ACI) [![js-semistandard-style](https://img.shields.io/badge/code%20style-semistandard-brightgreen.svg?style=flat-square)](https://github.com/Flet/semistandard)
 
-Leverages on [favicons](https://github.com/haydenbleasel/favicons) to automatically generate your favicons for you.
+Leverages on [favicons](https://github.com/itgalaxy/favicons) to automatically generate your favicons for you.
 
 ## Installation
 
-Install the plugin and [favicons](https://github.com/haydenbleasel/favicons) with npm:
+Install the plugin and [favicons](https://github.com/itgalaxy/favicons) with npm:
 ```shell
 $ npm install --save-dev favicons favicons-webpack-plugin
 ```
@@ -26,7 +26,9 @@ plugins: [
 ]
 ```
 
-## Basic Usage [<svg alt="codesandbox" xmlns="http://www.w3.org/2000/svg" width="16" height="18"><path d="M7.219 15.877V9.394l-5.73-3.208v3.696l2.624 1.48v2.78l3.106 1.735zm1.488.038l3.163-1.773v-2.845l2.642-1.49V6.16l-5.805 3.26v6.496zm5.041-11l-3.05-1.72-2.68 1.512L5.32 3.193 2.241 4.937l5.744 3.215 5.763-3.237zM0 13.513V4.53L8 0l8 4.511V13.5l-8.001 4.484L0 13.513z" fill="currentColor"/></svg>](https://codesandbox.io/s/favicons-webpack-plugin-demo-uh195?file=/webpack.config.js)
+## Basic Usage
+
+[Demo](https://codesandbox.io/s/favicons-webpack-plugin-demo-uh195?file=/webpack.config.js)
 
 
 Add the plugin to your webpack config as follows:
@@ -149,7 +151,7 @@ plugins: [
 ```
 
 To fine tune what icons/metadata is generated, refer to
-[favicons' documentation](https://github.com/haydenbleasel/favicons#usage).
+[favicons' documentation](https://github.com/itgalaxy/favicons#usage).
 
 The options specified under `favicons:` are handed over as is to [favicons],
 except that if `appName`, `appDescription`, `version`, `developerName` or
@@ -188,7 +190,7 @@ plugins: [
 ```
 
 To fine tune what icons/metadata is generated, refer to
-[favicons' documentation](https://github.com/haydenbleasel/favicons#usage).
+[favicons' documentation](https://github.com/itgalaxy/favicons#usage).
 
 #### Handling Multiple HTML Files
 
@@ -263,4 +265,4 @@ tests.
 
 This project is licensed under [MIT](https://github.com/jantimon/favicons-webpack-plugin/blob/master/LICENSE).
 
-[favicons]: https://github.com/haydenbleasel/favicons
+[favicons]: https://github.com/itgalaxy/favicons

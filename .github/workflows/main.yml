@@ -2,7 +2,7 @@ name: CI
 on: [push, pull_request]
 jobs:
   build:
-    name: test Node ${{ matrix.node }} Webpack ${{ matrix.webpack }} ${{ matrix.os }}
+    name: test Node ${{ matrix.node }} ${{ matrix.os }}
     timeout-minutes: 25
 
     runs-on: ${{ matrix.os }}
@@ -10,7 +10,6 @@ jobs:
       matrix:
         node: ['14.x', '16.x', '18.x']
         os: [ubuntu-latest, windows-latest, macOS-latest]
-        webpack: ['5']
 
     steps:
       - name: LF
@@ -25,13 +24,7 @@ jobs:
           node-version: ${{ matrix.node }}
 
       - name: Install Dependencies
-        run: npm install --ignore-scripts --force --legacy-peer-deps
-
-      - name: Install Sharp
-        run: npm install sharp --force --legacy-peer-deps
-
-      - name: Install Webpack ${{ matrix.webpack }}
-        run: npm install --ignore-scripts --force --legacy-peer-deps webpack@${{ matrix.webpack }}
+        run: npm ci
 
       - name: Check Prettier
         run: npm run prettify
