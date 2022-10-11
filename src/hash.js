@@ -55,17 +55,19 @@ function appendSlash(url) {
 
 /**
  * Returns the content hash for the given file content
- * @param {Buffer | string | undefined} file
+ * @param {...(Buffer | string | undefined)} files
  */
-function getContentHash(file) {
-  if (!file) {
-    return '';
+function getContentHash(...files) {
+  const hash = crypto.createHash('sha256');
+  let count = 0;
+  for (const file of files) {
+    if (file) {
+      hash.update(file.toString('utf8'));
+      count += 1;
+    }
   }
 
-  return crypto
-    .createHash('sha256')
-    .update(file.toString('utf8'))
-    .digest('hex');
+  return count > 0 ? hash.digest('hex') : '';
 }
 
 module.exports = { getContentHash, resolvePublicPath, replaceContentHash };
