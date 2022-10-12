@@ -7,6 +7,28 @@
 const path = require('path');
 const { getContentHash } = require('./hash');
 
+/**
+ * Executes asynchronous function with a callback-style calling convention and returns a promise.
+ *
+ * @template T, E
+ *
+ * @param {(cb: (error: E, result: T) => void) => void} func
+ * @returns {Promise<T, E>}
+ */
+function asPromise(func) {
+  return new Promise((resolve, reject) => {
+    /** @type {(error: E, result: T) => void} */
+    const cb = (err, result) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(result);
+      }
+    };
+    func(cb);
+  });
+}
+
 /** @type {WeakMap<any, Promise<Snapshot>>} */
 const snapshots = new WeakMap();
 /** @type {WeakMap<Promise<Snapshot>, Promise<any>>} */
@@ -102,22 +124,23 @@ function runCached(
  * @param {WebpackCompilation} mainCompilation
  * @returns {Promise<Snapshot>}
  */
-function createSnapshot(fileDependencies, mainCompilation) {
-  return new Promise((resolve, reject) => {
+async function createSnapshot(fileDependencies, mainCompilation) {
+  const snapshot = await asPromise((cb) =>
     mainCompilation.fileSystemInfo.createSnapshot(
       new Date().getTime(),
       fileDependencies.fileDependencies,
       fileDependencies.contextDependencies,
       fileDependencies.missingDependencies,
       {},
-      (err, snapshot) => {
-        if (err || !snapshot) {
-          return reject(err || new Error('Could not create Snapshot'));
-        }
-        resolve(snapshot);
-      }
-    );
-  });
+      cb
+    )
+  );
+
+  if (!snapshot) {
+    throw new Error('Could not create Snapshot');
+  }
+
+  return snapshot;
 }
 
 /**
@@ -164,26 +187,24 @@ async function runWithFileCache(
  */
 function readFiles(absoluteFilePaths, compilation) {
   return Promise.all(
-    absoluteFilePaths.map((absoluteFilePath) =>
-      !absoluteFilePath
-        ? { filePath: absoluteFilePath, hash: '', content: '' }
-        : new Promise((resolve, reject) =>
-            compilation.inputFileSystem.readFile(
-              path.resolve(compilation.compiler.context, absoluteFilePath),
-              (error, fileBuffer) => {
-                if (error) {
-                  reject(error);
-                } else {
-                  resolve({
-                    filePath: absoluteFilePath,
-                    hash: getContentHash(fileBuffer),
-                    content: fileBuffer,
-                  });
-                }
-              }
-            )
-          )
-    )
+    absoluteFilePaths.map(async (absoluteFilePath) => {
+      if (!absoluteFilePath) {
+        return { filePath: absoluteFilePath, hash: '', content: '' };
+      }
+
+      const content = await asPromise((cb) =>
+        compilation.inputFileSystem.readFile(
+          path.resolve(compilation.compiler.context, absoluteFilePath),
+          cb
+        )
+      );
+
+      return {
+        filePath: absoluteFilePath,
+        hash: getContentHash(content),
+        content,
+      };
+    })
   );
 }
 
@@ -195,21 +216,13 @@ function readFiles(absoluteFilePaths, compilation) {
  * @param {WebpackCompilation} mainCompilation
  * @returns {Promise<boolean>}
  */
-function isSnapShotValid(snapshotPromise, mainCompilation) {
-  return snapshotPromise.then(
-    (snapshot) =>
-      new Promise((resolve, reject) => {
-        mainCompilation.fileSystemInfo.checkSnapshotValid(
-          snapshot,
-          (err, isValid) => {
-            if (err) {
-              reject(err);
-            }
-            resolve(Boolean(isValid));
-          }
-        );
-      })
+async function isSnapShotValid(snapshotPromise, mainCompilation) {
+  const snapshot = await snapshotPromise;
+  const isValid = await asPromise((cb) =>
+    mainCompilation.fileSystemInfo.checkSnapshotValid(snapshot, cb)
   );
+
+  return Boolean(isValid);
 }
 
 module.exports = { runCached };
