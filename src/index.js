@@ -6,7 +6,11 @@ const path = require('path');
 const { runCached } = require('./cache');
 const Oracle = require('./oracle');
 const url = require('url');
-const { resolvePublicPath, replaceContentHash } = require('./hash');
+const {
+  resolvePublicPath,
+  replaceContentHash,
+  getContentHash,
+} = require('./hash');
 const { webpackLogger } = require('./logger');
 
 class FaviconsWebpackPlugin {
@@ -117,11 +121,11 @@ class FaviconsWebpackPlugin {
           // Recompile filesystem cache if any source based path change:
           (fileSources) =>
             getRelativeOutputPath(
-              fileSources[0].hash,
+              getContentHash(...fileSources.map((s) => s.content)),
               compilation,
               this.options
             ),
-          (fileSources, relativeOutputPath) => {
+          (fileSources, outputPath) => {
             const logoFileSources = fileSources.slice(
               0,
               this.options.logo.length
@@ -132,7 +136,7 @@ class FaviconsWebpackPlugin {
               logoFileSources,
               manifestFileSource.content,
               compilation,
-              relativeOutputPath
+              outputPath
             );
           }
         );
@@ -305,7 +309,7 @@ class FaviconsWebpackPlugin {
    */
   generateFavicons(logoFileSources, baseManifest, compilation, outputPath) {
     const resolvedPublicPath = getResolvedPublicPath(
-      logoFileSources[0].hash,
+      getContentHash(...logoFileSources.map((s) => s.content)),
       compilation,
       this.options
     );
