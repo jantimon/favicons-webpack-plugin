@@ -14,6 +14,7 @@ const __dirname = path.dirname(__filename);
 export const fixtures = path.resolve(__dirname, 'fixtures');
 export const expected = path.resolve(fixtures, 'expected');
 export const logo = path.resolve(fixtures, 'logo.png');
+export const logoMaskable = path.resolve(fixtures, 'logo-maskable.png');
 export const empty = path.resolve(fixtures, 'empty.png');
 export const invalid = path.resolve(fixtures, 'invalid.png');
 /** the size of the webpack cache without favicons */

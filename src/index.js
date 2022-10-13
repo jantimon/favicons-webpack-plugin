@@ -89,6 +89,24 @@ class FaviconsWebpackPlugin {
       this.options.logo = [path.resolve(compiler.context, this.options.logo)];
     }
 
+    if (this.options.logoMaskable !== undefined) {
+      if (typeof this.options.logoMaskable === 'string') {
+        this.options.logoMaskable = [this.options.logoMaskable];
+      }
+
+      // @ts-ignore
+      assert(
+        this.options.logoMaskable instanceof Array,
+        'options.logoMaskable must be string or array '
+      );
+
+      this.options.logoMaskable = this.options.logoMaskable.map(
+        (logoMaskable) => path.resolve(compiler.context, logoMaskable)
+      );
+    } else {
+      this.options.logoMaskable = [];
+    }
+
     if (typeof this.options.manifest === 'string') {
       this.options.manifest = path.resolve(
         compiler.context,
@@ -101,12 +119,16 @@ class FaviconsWebpackPlugin {
     compiler.hooks.make.tapPromise(
       'FaviconsWebpackPlugin',
       async (compilation) => {
+        const manifestAbsoluteFilePath =
+          typeof this.options.manifest === 'string'
+            ? this.options.manifest
+            : '';
+
         const faviconCompilation = runCached(
           [
             ...this.options.logo,
-            typeof this.options.manifest === 'string'
-              ? this.options.manifest
-              : '',
+            ...this.options.logoMaskable,
+            manifestAbsoluteFilePath,
           ],
           this,
           this.options.cache,
@@ -130,10 +152,20 @@ class FaviconsWebpackPlugin {
               0,
               this.options.logo.length
             );
-            const manifestFileSource = fileSources[this.options.logo.length];
+
+            const logoMaskableFileSources = fileSources.slice(
+              this.options.logo.length,
+              this.options.logo.length + this.options.logoMaskable.length
+            );
+
+            const manifestFileSource =
+              fileSources[
+                this.options.logo.length + this.options.logoMaskable.length
+              ];
 
             return this.generateFavicons(
               logoFileSources,
+              logoMaskableFileSources,
               manifestFileSource.content,
               compilation,
               outputPath
@@ -144,6 +176,10 @@ class FaviconsWebpackPlugin {
         // Watch for changes to the logo
         for (const logo of this.options.logo) {
           compilation.fileDependencies.add(logo);
+        }
+
+        for (const logoMaskable of this.options.logoMaskable) {
+          compilation.fileDependencies.add(logoMaskable);
         }
 
         // Watch for changes to the base manifest.json
@@ -303,17 +339,31 @@ class FaviconsWebpackPlugin {
    * Generate the favicons
    *
    * @param {{content: Buffer | string, hash: string}[]} logoFileSources
+   * @param {{content: Buffer | string, hash: string}[]} logoMaskableFileSources
    * @param {Buffer | string} baseManifest - the content of the file from options.manifest
    * @param {import('webpack').Compilation} compilation
    * @param {string} outputPath
    */
-  generateFavicons(logoFileSources, baseManifest, compilation, outputPath) {
+  generateFavicons(
+    logoFileSources,
+    logoMaskableFileSources,
+    baseManifest,
+    compilation,
+    outputPath
+  ) {
     const logoFileSourceContents = logoFileSources.map(
       (source) => source.content
     );
 
+    const logoMaskableFileSourceContents = logoMaskableFileSources.map(
+      (source) => source.content
+    );
+
     const resolvedPublicPath = getResolvedPublicPath(
-      getContentHash(...logoFileSourceContents),
+      getContentHash(
+        ...logoFileSourceContents,
+        ...logoMaskableFileSourceContents
+      ),
       compilation,
       this.options
     );
@@ -334,6 +384,7 @@ class FaviconsWebpackPlugin {
 
         return this.generateFaviconsLight(
           logoFileSourceContents,
+          logoMaskableFileSourceContents,
           parsedBaseManifest,
           compilation,
           resolvedPublicPath,
@@ -345,6 +396,7 @@ class FaviconsWebpackPlugin {
 
         return this.generateFaviconsWebapp(
           logoFileSourceContents,
+          logoMaskableFileSourceContents,
           parsedBaseManifest,
           compilation,
           resolvedPublicPath,
@@ -359,6 +411,7 @@ class FaviconsWebpackPlugin {
    * it is the default mode for development
    *
    * @param {(Buffer | string)[]} logoFileSources
+   * @param {(Buffer | string)[]} logoMaskableFileSources
    * @param {{[key: string]: any}} baseManifest
    * @param {import('webpack').Compilation} compilation
    * @param {string} resolvedPublicPath
@@ -366,6 +419,7 @@ class FaviconsWebpackPlugin {
    */
   async generateFaviconsLight(
     logoFileSources,
+    logoMaskableFileSources,
     baseManifest,
     compilation,
     resolvedPublicPath,
@@ -418,6 +472,7 @@ class FaviconsWebpackPlugin {
    * supports all common browsers and devices
    *
    * @param {(Buffer | string)[]} logoFileSources
+   * @param {(Buffer | string)[]} logoMaskableFileSources
    * @param {{[key: string]: any}} baseManifest
    * @param {import('webpack').Compilation} compilation
    * @param {string} resolvedPublicPath
@@ -425,6 +480,7 @@ class FaviconsWebpackPlugin {
    */
   async generateFaviconsWebapp(
     logoFileSources,
+    logoMaskableFileSources,
     baseManifest,
     compilation,
     resolvedPublicPath,
@@ -444,6 +500,10 @@ class FaviconsWebpackPlugin {
       // once it has been provided by the html-webpack-plugin
       path: '',
       ...this.options.favicons,
+      // set maskable icons
+      ...(logoMaskableFileSources.length !== 0 && {
+        manifestMaskable: logoMaskableFileSources,
+      }),
     });
 
     const modifiedFiles = files.map((file) => {

@@ -118,6 +118,8 @@ plugins: [
   new FaviconsWebpackPlugin({
     // Your source logo (required)
     logo: './src/logo.png',
+    // Your maskable source logo (optional)
+    logoMaskable: './src/logo-maskable.png',
     // Allow caching the assets across webpack builds. By default this will use
     // webpack's cache configuration, but can be set to false to disable caching.
     // Note: disabling caching may increase build times considerably.
