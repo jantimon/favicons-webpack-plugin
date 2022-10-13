@@ -302,20 +302,20 @@ class FaviconsWebpackPlugin {
   /**
    * Generate the favicons
    *
-   * @param {{content: Buffer | string, hash: string}} logo
+   * @param {{content: Buffer | string, hash: string}[]} logoFileSources
    * @param {Buffer | string} baseManifest - the content of the file from options.manifest
    * @param {import('webpack').Compilation} compilation
    * @param {string} outputPath
    */
   generateFavicons(logoFileSources, baseManifest, compilation, outputPath) {
-    const resolvedPublicPath = getResolvedPublicPath(
-      getContentHash(...logoFileSources.map((s) => s.content)),
-      compilation,
-      this.options
-    );
-
     const logoFileSourceContents = logoFileSources.map(
       (source) => source.content
+    );
+
+    const resolvedPublicPath = getResolvedPublicPath(
+      getContentHash(...logoFileSourceContents),
+      compilation,
+      this.options
     );
 
     /** @type {{[key: string]: any}} - the parsed manifest from options.manifest */
@@ -358,7 +358,7 @@ class FaviconsWebpackPlugin {
    * this is very fast but also very limited
    * it is the default mode for development
    *
-   * @param {Buffer | string} logoSource
+   * @param {(Buffer | string)[]} logoFileSources
    * @param {{[key: string]: any}} baseManifest
    * @param {import('webpack').Compilation} compilation
    * @param {string} resolvedPublicPath
@@ -417,7 +417,7 @@ class FaviconsWebpackPlugin {
    * this is not as fast as the light mode but
    * supports all common browsers and devices
    *
-   * @param {Buffer | string} logoSource
+   * @param {(Buffer | string)[]} logoFileSources
    * @param {{[key: string]: any}} baseManifest
    * @param {import('webpack').Compilation} compilation
    * @param {string} resolvedPublicPath
