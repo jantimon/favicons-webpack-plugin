@@ -1,6 +1,8 @@
 export interface FaviconWebpackPlugionOptions {
   /** our source logo - can be png or svg (required) */
   logo: string | string[],
+  /** our maskable source logo - can be png or svg (optional) */
+  logoMaskable?: string | string[],
   /** 
    * Enable caching
    *  Note: disabling caching may increase build times considerably
