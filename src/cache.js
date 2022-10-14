@@ -29,9 +29,9 @@ function asPromise(func) {
   });
 }
 
-/** @type {WeakMap<any, Promise<Snapshot>>} */
+/** @type {WeakMap<any, Snapshot>} */
 const snapshots = new WeakMap();
-/** @type {WeakMap<Promise<Snapshot>, Promise<any>>} */
+/** @type {WeakMap<Snapshot, any>} */
 const faviconCache = new WeakMap();
 
 /**
@@ -50,7 +50,7 @@ const faviconCache = new WeakMap();
  *
  * @returns {Promise<TResult>}
  */
-function runCached(
+async function runCached(
   absoluteFilePaths,
   pluginInstance,
   useWebpackCache,
@@ -61,46 +61,44 @@ function runCached(
 ) {
   const latestSnapShot = snapshots.get(pluginInstance);
 
-  /** @type {Promise<TResult> | undefined} */
-  const cachedFavicons = latestSnapShot && faviconCache.get(latestSnapShot);
+  if (latestSnapShot) {
+    const cachedFavicons = faviconCache.get(latestSnapShot);
+    if (cachedFavicons) {
+      const isValid = await asPromise((cb) =>
+        compilation.fileSystemInfo.checkSnapshotValid(latestSnapShot, cb)
+      );
 
-  if (latestSnapShot && cachedFavicons) {
-    return isSnapShotValid(latestSnapShot, compilation).then((isValid) => {
-      // If the source files have changed clear all caches
-      // and try again
-      if (!isValid) {
-        faviconCache.delete(latestSnapShot);
-
-        return runCached(
-          absoluteFilePaths,
-          pluginInstance,
-          useWebpackCache,
-          compilation,
-          eTags,
-          idGenerator,
-          generator
-        );
+      if (isValid) {
+        // If the cache is valid return the result directly from cache
+        return cachedFavicons;
       }
 
-      // If the cache is valid return the result directly from cache
-      return cachedFavicons;
-    });
+      // If the source files have changed clear all caches and try again
+      faviconCache.delete(latestSnapShot);
+    }
   }
 
   // Store a snapshot of the filesystem
   // to find out if the logo was changed
-  const newSnapShot = createSnapshot(
-    {
-      fileDependencies: absoluteFilePaths.filter(Boolean),
-      contextDependencies: [],
-      missingDependencies: [],
-    },
-    compilation
+  const newSnapShot = await asPromise((cb) =>
+    compilation.fileSystemInfo.createSnapshot(
+      new Date().getTime(),
+      absoluteFilePaths.filter(Boolean),
+      [],
+      [],
+      {},
+      cb
+    )
   );
+
+  if (!newSnapShot) {
+    throw new Error('Could not create Snapshot');
+  }
+
   snapshots.set(pluginInstance, newSnapShot);
 
   // Start generating the favicons
-  const faviconsGenerationsPromise = useWebpackCache
+  const faviconsGenerations = await (useWebpackCache
     ? runWithFileCache(
         absoluteFilePaths,
         compilation,
@@ -110,37 +108,12 @@ function runCached(
       )
     : readFiles(absoluteFilePaths, compilation).then((fileContents) =>
         generator(fileContents, idGenerator(fileContents))
-      );
+      ));
 
   // Store the promise of the favicon compilation in cache
-  faviconCache.set(newSnapShot, faviconsGenerationsPromise);
+  faviconCache.set(newSnapShot, faviconsGenerations);
 
-  return faviconsGenerationsPromise;
-}
-
-/**
- * Create a snapshot
- * @param {{fileDependencies: string[], contextDependencies: string[], missingDependencies: string[]}} fileDependencies
- * @param {WebpackCompilation} mainCompilation
- * @returns {Promise<Snapshot>}
- */
-async function createSnapshot(fileDependencies, mainCompilation) {
-  const snapshot = await asPromise((cb) =>
-    mainCompilation.fileSystemInfo.createSnapshot(
-      new Date().getTime(),
-      fileDependencies.fileDependencies,
-      fileDependencies.contextDependencies,
-      fileDependencies.missingDependencies,
-      {},
-      cb
-    )
-  );
-
-  if (!snapshot) {
-    throw new Error('Could not create Snapshot');
-  }
-
-  return snapshot;
+  return faviconsGenerations;
 }
 
 /**
@@ -206,23 +179,6 @@ function readFiles(absoluteFilePaths, compilation) {
       };
     })
   );
-}
-
-/**
- * Returns true if the files inside this snapshot
- * have not been changed
- *
- * @param {Promise<Snapshot>} snapshotPromise
- * @param {WebpackCompilation} mainCompilation
- * @returns {Promise<boolean>}
- */
-async function isSnapShotValid(snapshotPromise, mainCompilation) {
-  const snapshot = await snapshotPromise;
-  const isValid = await asPromise((cb) =>
-    mainCompilation.fileSystemInfo.checkSnapshotValid(snapshot, cb)
-  );
-
-  return Boolean(isValid);
 }
 
 module.exports = { runCached };
