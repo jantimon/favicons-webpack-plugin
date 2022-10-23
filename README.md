@@ -95,7 +95,7 @@ In combination with [html-webpack-plugin](https://github.com/jantimon/html-webpa
 <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="228x228" href="/assets/coast-228x228.png">
-<link rel="manifest" href="/assets/manifest.json">
+<link rel="manifest" href="/assets/manifest.webmanifest">
 <link rel="shortcut icon" href="/assets/favicon.ico">
 <link rel="yandex-tableau-widget" href="/assets/yandex-browser-manifest.json">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -232,7 +232,7 @@ This behaviour can be adjusted by setting the favicons `mode` and `devMode` opti
 
 ### Custom manifests
 
-The manifest options allows to overwrite values of the generated manifest.json with own values
+The manifest options allows to overwrite values of the generated manifest.webmanifest with own values
 
 ```javascript
 const FaviconsWebpackPlugin = require('favicons-webpack-plugin')
@@ -241,7 +241,7 @@ plugins: [
   new FaviconsWebpackPlugin({
     logo: './src/logo.png',
     mode: 'webapp',
-    manifest: './src/manifest.json'
+    manifest: './src/manifest.webmanifest'
   })
 ]
 ```

@@ -182,7 +182,7 @@ class FaviconsWebpackPlugin {
           compilation.fileDependencies.add(logoMaskable);
         }
 
-        // Watch for changes to the base manifest.json
+        // Watch for changes to the base manifest.webmanifest
         if (typeof this.options.manifest === 'string') {
           compilation.fileDependencies.add(this.options.manifest);
         }
@@ -439,9 +439,9 @@ class FaviconsWebpackPlugin {
 
     // If the manifest is not empty add it also to the light mode
     if (Object.keys(baseManifest).length > 0) {
-      tags.push('<link rel="manifest" href="manifest.json">');
+      tags.push('<link rel="manifest" href="manifest.webmanifest">');
       assets.push({
-        name: path.join(outputPath, 'manifest.json'),
+        name: path.join(outputPath, 'manifest.webmanifest'),
         contents: new RawSource(
           JSON.stringify(
             mergeManifests(baseManifest, {
@@ -507,7 +507,7 @@ class FaviconsWebpackPlugin {
     });
 
     const modifiedFiles = files.map((file) => {
-      if (file.name.endsWith('manifest.json')) {
+      if (file.name.endsWith('manifest.webmanifest')) {
         const generatedManifest = JSON.parse(file.contents);
 
         return {
@@ -600,7 +600,7 @@ function getResolvedPublicPath(logoContentHash, compilation, faviconOptions) {
 }
 
 /**
- * Merge two manifest.json files
+ * Merge two manifest.webmanifest files
  *
  * @param {{[key: string]: any}} manifest1
  * @param {{[key: string]: any}} manifest2
