@@ -55,7 +55,7 @@ export interface FaviconWebpackPlugionOptions {
    * which are websites that can be installed to a device’s homescreen without an app store.
    * @see https://developer.mozilla.org/en-US/docs/Web/Manifest
    * 
-   * The manifest option allows to provide a filepath to a base manifest.json file or a base manifest configuration
+   * The manifest option allows to provide a filepath to a base manifest.webmanifest file or a base manifest configuration
    */
   manifest?: string | { [key: string]: any }
   /**

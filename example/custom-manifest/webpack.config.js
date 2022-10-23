@@ -22,7 +22,7 @@ module.exports = (env, args) => {
       }),
       new FaviconsWebpackPlugin({
         logo: './src/favicon.png',
-        manifest: './src/manifest.json',
+        manifest: './src/manifest.webmanifest',
         mode: 'webapp'
 
       }),
