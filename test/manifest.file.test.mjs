@@ -21,7 +21,7 @@ test('should generate a result with custom manifest values', async (t) => {
     plugins: [
       new FaviconsWebpackPlugin({
         logo,
-        manifest: path.resolve(fixtures, 'manifest.json'),
+        manifest: path.resolve(fixtures, 'manifest.webmanifest'),
       }),
     ],
   });
