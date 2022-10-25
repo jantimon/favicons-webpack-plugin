@@ -75,7 +75,7 @@ export const snapshotCompilationAssets = (t, compilerStats) => {
     assetNames.map((assetName) => replaceHash(replaceBackSlashes(assetName)))
   );
   const htmlFiles = /\.html?$/;
-  const textFiles = /\.(json|html?|webapp|xml)$/;
+  const textFiles = /\.(json|html?|webapp|xml|webmanifest)$/;
   // CSS and JS files are not touched by this plugin
   // therefore those files are excluded from snapshots
   const ignoredFiles = /\.(js|css)$/;
