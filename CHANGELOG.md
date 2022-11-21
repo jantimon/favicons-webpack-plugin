@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [6.0.0](https://github.com/jantimon/favicons-webpack-plugin/compare/v6.0.0-alpha.2...v6.0.0) (2022-11-21)
+
+* update dependencies to their latest versions ([#342](https://github.com/jantimon/favicons-webpack-plugin/pull/342))
+
 ### [6.0.0-alpha.2](https://github.com/jantimon/favicons-webpack-plugin/compare/v6.0.0-alpha.1...v6.0.0-alpha.2) (2022-10-26)
 
 * support string array in `options.logo` ([#332](https://github.com/jantimon/favicons-webpack-plugin/pull/332))
