@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [6.0.0-alpha.2](https://github.com/jantimon/favicons-webpack-plugin/compare/v6.0.0-alpha.1...v6.0.0-alpha.2) (2022-10-26)
+
+* support string array in `options.logo` ([#332](https://github.com/jantimon/favicons-webpack-plugin/pull/332))
+* support `options.logoMaskable` ([#333](https://github.com/jantimon/favicons-webpack-plugin/pull/333))
+* update manifest file extension ([#341](https://github.com/jantimon/favicons-webpack-plugin/pull/341))
+
 ### [6.0.0-alpha.1](https://github.com/jantimon/favicons-webpack-plugin/compare/v5.0.2...v6.0.0-alpha.1) (2022-10-02)
 
 * Upgrage favicons to v7.0.1
