@@ -167,9 +167,20 @@ class FaviconsWebpackPlugin {
               logoFileSources,
               logoMaskableFileSources,
               manifestFileSource.content,
-              compilation,
-              outputPath
-            );
+              compilation
+            ).then((favicons) => {
+              const RawSource = compilation.compiler.webpack.sources.RawSource;
+
+              return {
+                ...favicons,
+                assets: favicons.assets.map((asset) => ({
+                  name: outputPath
+                    ? path.join(outputPath, asset.name)
+                    : asset.name,
+                  contents: new RawSource(asset.contents, false),
+                })),
+              };
+            });
           }
         );
 
@@ -342,14 +353,12 @@ class FaviconsWebpackPlugin {
    * @param {{content: Buffer | string, hash: string}[]} logoMaskableFileSources
    * @param {Buffer | string} baseManifest - the content of the file from options.manifest
    * @param {import('webpack').Compilation} compilation
-   * @param {string} outputPath
    */
   generateFavicons(
     logoFileSources,
     logoMaskableFileSources,
     baseManifest,
-    compilation,
-    outputPath
+    compilation
   ) {
     const logoFileSourceContents = logoFileSources.map(
       (source) => source.content
@@ -386,9 +395,7 @@ class FaviconsWebpackPlugin {
           logoFileSourceContents,
           logoMaskableFileSourceContents,
           parsedBaseManifest,
-          compilation,
-          resolvedPublicPath,
-          outputPath
+          resolvedPublicPath
         );
       case 'webapp':
       default:
@@ -398,9 +405,7 @@ class FaviconsWebpackPlugin {
           logoFileSourceContents,
           logoMaskableFileSourceContents,
           parsedBaseManifest,
-          compilation,
-          resolvedPublicPath,
-          outputPath
+          resolvedPublicPath
         );
     }
   }
@@ -413,27 +418,22 @@ class FaviconsWebpackPlugin {
    * @param {(Buffer | string)[]} logoFileSources
    * @param {(Buffer | string)[]} logoMaskableFileSources
    * @param {{[key: string]: any}} baseManifest
-   * @param {import('webpack').Compilation} compilation
    * @param {string} resolvedPublicPath
-   * @param {string} outputPath
    */
   async generateFaviconsLight(
     logoFileSources,
     logoMaskableFileSources,
     baseManifest,
-    compilation,
-    resolvedPublicPath,
-    outputPath
+    resolvedPublicPath
   ) {
     const faviconExt = path.extname(this.options.logo[0]);
     const faviconName = `favicon${faviconExt}`;
-    const RawSource = compilation.compiler.webpack.sources.RawSource;
 
     const tags = [`<link rel="icon" href="${faviconName}">`];
     const assets = [
       {
-        name: path.join(outputPath, faviconName),
-        contents: new RawSource(logoFileSources[0], false),
+        name: faviconName,
+        contents: logoFileSources[0],
       },
     ];
 
@@ -441,20 +441,17 @@ class FaviconsWebpackPlugin {
     if (Object.keys(baseManifest).length > 0) {
       tags.push('<link rel="manifest" href="manifest.webmanifest">');
       assets.push({
-        name: path.join(outputPath, 'manifest.webmanifest'),
-        contents: new RawSource(
-          JSON.stringify(
-            mergeManifests(baseManifest, {
-              icons: [
-                {
-                  src: faviconName,
-                },
-              ],
-            }),
-            null,
-            2
-          ),
-          false
+        name: 'manifest.webmanifest',
+        contents: JSON.stringify(
+          mergeManifests(baseManifest, {
+            icons: [
+              {
+                src: faviconName,
+              },
+            ],
+          }),
+          null,
+          2
         ),
       });
     }
@@ -474,19 +471,14 @@ class FaviconsWebpackPlugin {
    * @param {(Buffer | string)[]} logoFileSources
    * @param {(Buffer | string)[]} logoMaskableFileSources
    * @param {{[key: string]: any}} baseManifest
-   * @param {import('webpack').Compilation} compilation
    * @param {string} resolvedPublicPath
-   * @param {string} outputPath
    */
   async generateFaviconsWebapp(
     logoFileSources,
     logoMaskableFileSources,
     baseManifest,
-    compilation,
-    resolvedPublicPath,
-    outputPath
+    resolvedPublicPath
   ) {
-    const RawSource = compilation.compiler.webpack.sources.RawSource;
     const { favicons } = loadFaviconsLibrary();
 
     // Generate favicons using the npm favicons library
@@ -523,10 +515,7 @@ class FaviconsWebpackPlugin {
       return file;
     });
 
-    const assets = [...images, ...modifiedFiles].map(({ name, contents }) => ({
-      name: outputPath ? path.join(outputPath, name) : name,
-      contents: new RawSource(contents, false),
-    }));
+    const assets = [...images, ...modifiedFiles];
 
     return { assets, tags, publicPath: resolvedPublicPath };
   }
