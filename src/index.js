@@ -198,106 +198,85 @@ class FaviconsWebpackPlugin {
           compilation.fileDependencies.add(this.options.manifest);
         }
 
-        // Hook into the html-webpack-plugin processing and add the html
-        const HtmlWebpackPlugin = compiler.options.plugins
-          .map(({ constructor }) => constructor)
-          .find(
-            /**
-             * Find only HtmlWebpkackPlugin constructors
-             * @type {(constructor: Function) => constructor is typeof import('html-webpack-plugin')}
-             */
-            (constructor) =>
-              constructor && constructor.name === 'HtmlWebpackPlugin'
-          );
+        if (this.options.inject) {
+          // Hook into the html-webpack-plugin processing and add the html
+          findHtmlWebpackPlugin(compilation)
+            ?.getHooks(compilation)
+            .alterAssetTags.tapPromise(
+              'FaviconsWebpackPlugin',
+              async (htmlPluginData) => {
+                // Skip if a custom injectFunction returns false or if
+                // the htmlWebpackPlugin optuons includes a `favicons: false` flag
+                const isInjectionAllowed =
+                  typeof this.options.inject === 'function'
+                    ? this.options.inject(htmlPluginData.plugin)
+                    : this.options.inject !== false &&
+                      htmlPluginData.plugin.userOptions.favicon !== false &&
+                      htmlPluginData.plugin.userOptions.favicons !== false;
 
-        if (HtmlWebpackPlugin && this.options.inject) {
-          if (!verifyHtmlWebpackPluginVersion(HtmlWebpackPlugin)) {
-            compilation.errors.push(
-              new compiler.webpack.WebpackError(
-                `${
-                  'FaviconsWebpackPlugin - This FaviconsWebpackPlugin version is not compatible with your current HtmlWebpackPlugin version.\n' +
-                  'Please upgrade to HtmlWebpackPlugin >= 5 OR downgrade to FaviconsWebpackPlugin 2.x\n'
-                }${getHtmlWebpackPluginVersion()}`
-              )
-            );
+                if (isInjectionAllowed === false) {
+                  return htmlPluginData;
+                }
 
-            return;
-          }
-          HtmlWebpackPlugin.getHooks(compilation).alterAssetTags.tapPromise(
-            'FaviconsWebpackPlugin',
-            async (htmlPluginData) => {
-              // Skip if a custom injectFunction returns false or if
-              // the htmlWebpackPlugin optuons includes a `favicons: false` flag
-              const isInjectionAllowed =
-                typeof this.options.inject === 'function'
-                  ? this.options.inject(htmlPluginData.plugin)
-                  : this.options.inject !== false &&
-                    htmlPluginData.plugin.userOptions.favicon !== false &&
-                    htmlPluginData.plugin.userOptions.favicons !== false;
+                const faviconCompilationResult = await faviconCompilation;
+                // faviconCompilation.publicPath and htmlPluginData.publicPath can be:
+                // absolute:  http://somewhere.com/app1/
+                // absolute:  /demo/app1/
+                // relative:  my/app/
+                const publicPathFromHtml = url.resolve(
+                  htmlPluginData.publicPath,
+                  faviconCompilationResult.publicPath
+                );
 
-              if (isInjectionAllowed === false) {
+                // Prefix links to icons
+                const pathReplacer =
+                  !this.options.favicons.path ||
+                  this.getCurrentCompilationMode(compiler) === 'light'
+                    ? /** @param {string} url */ (url) =>
+                        typeof url === 'string' ? publicPathFromHtml + url : url
+                    : /** @param {string} url */ (url) => url;
+
+                htmlPluginData.assetTags.meta.push(
+                  ...faviconCompilationResult.tags
+                    .filter((tag) => tag && tag.length)
+                    .map((tag) => parse5.parseFragment(tag).childNodes[0])
+                    .map(({ tagName, attrs }) => {
+                      const htmlTag = {
+                        tagName,
+                        voidTag: true,
+                        meta: { plugin: 'favicons-webpack-plugin' },
+                        attributes: attrs.reduce(
+                          (obj, { name, value }) =>
+                            Object.assign(obj, { [name]: value }),
+                          {}
+                        ),
+                      };
+                      // Prefix link tags
+                      if (typeof htmlTag.attributes.href === 'string') {
+                        htmlTag.attributes.href = pathReplacer(
+                          htmlTag.attributes.href
+                        );
+                      }
+                      // Prefix meta tags
+                      if (
+                        htmlTag.tagName === 'meta' &&
+                        [
+                          'msapplication-TileImage',
+                          'msapplication-config',
+                        ].includes(htmlTag.attributes.name)
+                      ) {
+                        htmlTag.attributes.content = pathReplacer(
+                          htmlTag.attributes.content
+                        );
+                      }
+
+                      return htmlTag;
+                    })
+                );
+
                 return htmlPluginData;
               }
-
-              const faviconCompilationResult = await faviconCompilation;
-              // faviconCompilation.publicPath and htmlPluginData.publicPath can be:
-              // absolute:  http://somewhere.com/app1/
-              // absolute:  /demo/app1/
-              // relative:  my/app/
-              const publicPathFromHtml = url.resolve(
-                htmlPluginData.publicPath,
-                faviconCompilationResult.publicPath
-              );
-
-              // Prefix links to icons
-              const pathReplacer =
-                !this.options.favicons.path ||
-                this.getCurrentCompilationMode(compiler) === 'light'
-                  ? /** @param {string} url */ (url) =>
-                      typeof url === 'string' ? publicPathFromHtml + url : url
-                  : /** @param {string} url */ (url) => url;
-
-              htmlPluginData.assetTags.meta.push(
-                ...faviconCompilationResult.tags
-                  .filter((tag) => tag && tag.length)
-                  .map((tag) => parse5.parseFragment(tag).childNodes[0])
-                  .map(({ tagName, attrs }) => {
-                    const htmlTag = {
-                      tagName,
-                      voidTag: true,
-                      meta: { plugin: 'favicons-webpack-plugin' },
-                      attributes: attrs.reduce(
-                        (obj, { name, value }) =>
-                          Object.assign(obj, { [name]: value }),
-                        {}
-                      ),
-                    };
-                    // Prefix link tags
-                    if (typeof htmlTag.attributes.href === 'string') {
-                      htmlTag.attributes.href = pathReplacer(
-                        htmlTag.attributes.href
-                      );
-                    }
-                    // Prefix meta tags
-                    if (
-                      htmlTag.tagName === 'meta' &&
-                      [
-                        'msapplication-TileImage',
-                        'msapplication-config',
-                      ].includes(htmlTag.attributes.name)
-                    ) {
-                      htmlTag.attributes.content = pathReplacer(
-                        htmlTag.attributes.content
-                      );
-                    }
-
-                    return htmlTag;
-                  })
-              );
-
-              return htmlPluginData;
-            }
-          );
+            );
         }
 
         // Save the promise and execute the callback immediately to not block
@@ -627,6 +606,45 @@ function getHtmlWebpackPluginVersion() {
   } catch (e) {
     return 'html-webpack-plugin not found';
   }
+}
+
+/**
+ * Return `HtmlWebpackPlugin` if it is available.
+ *
+ * @param {import('webpack').Compilation} compilation
+ * @returns {typeof import('html-webpack-plugin') | undefined}
+ */
+function findHtmlWebpackPlugin(compilation) {
+  const compiler = compilation.compiler;
+
+  const HtmlWebpackPlugin = compiler.options.plugins
+    .map(({ constructor }) => constructor)
+    .find(
+      /**
+       * Find only HtmlWebpkackPlugin constructors
+       * @type {(constructor: Function) => constructor is typeof import('html-webpack-plugin')}
+       */
+      (constructor) => constructor && constructor.name === 'HtmlWebpackPlugin'
+    );
+
+  if (!HtmlWebpackPlugin) {
+    return undefined;
+  }
+
+  if (!verifyHtmlWebpackPluginVersion(HtmlWebpackPlugin)) {
+    compilation.errors.push(
+      new compiler.webpack.WebpackError(
+        `${
+          'FaviconsWebpackPlugin - This FaviconsWebpackPlugin version is not compatible with your current HtmlWebpackPlugin version.\n' +
+          'Please upgrade to HtmlWebpackPlugin >= 5 OR downgrade to FaviconsWebpackPlugin 2.x\n'
+        }${getHtmlWebpackPluginVersion()}`
+      )
+    );
+
+    return undefined;
+  }
+
+  return HtmlWebpackPlugin;
 }
 
 /**
