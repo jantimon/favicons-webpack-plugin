@@ -223,9 +223,9 @@ class FaviconsWebpackPlugin {
 
             return;
           }
-          HtmlWebpackPlugin.getHooks(compilation).alterAssetTags.tapAsync(
+          HtmlWebpackPlugin.getHooks(compilation).alterAssetTags.tapPromise(
             'FaviconsWebpackPlugin',
-            (htmlPluginData, htmlWebpackPluginCallback) => {
+            async (htmlPluginData) => {
               // Skip if a custom injectFunction returns false or if
               // the htmlWebpackPlugin optuons includes a `favicons: false` flag
               const isInjectionAllowed =
@@ -236,71 +236,66 @@ class FaviconsWebpackPlugin {
                     htmlPluginData.plugin.userOptions.favicons !== false;
 
               if (isInjectionAllowed === false) {
-                return htmlWebpackPluginCallback(null, htmlPluginData);
+                return htmlPluginData;
               }
 
-              faviconCompilation
-                .then((faviconCompilation) => {
-                  // faviconCompilation.publicPath and htmlPluginData.publicPath can be:
-                  // absolute:  http://somewhere.com/app1/
-                  // absolute:  /demo/app1/
-                  // relative:  my/app/
-                  const publicPathFromHtml = url.resolve(
-                    htmlPluginData.publicPath,
-                    faviconCompilation.publicPath
-                  );
+              const faviconCompilationResult = await faviconCompilation;
+              // faviconCompilation.publicPath and htmlPluginData.publicPath can be:
+              // absolute:  http://somewhere.com/app1/
+              // absolute:  /demo/app1/
+              // relative:  my/app/
+              const publicPathFromHtml = url.resolve(
+                htmlPluginData.publicPath,
+                faviconCompilationResult.publicPath
+              );
 
-                  // Prefix links to icons
-                  const pathReplacer =
-                    !this.options.favicons.path ||
-                    this.getCurrentCompilationMode(compiler) === 'light'
-                      ? /** @param {string} url */ (url) =>
-                          typeof url === 'string'
-                            ? publicPathFromHtml + url
-                            : url
-                      : /** @param {string} url */ (url) => url;
+              // Prefix links to icons
+              const pathReplacer =
+                !this.options.favicons.path ||
+                this.getCurrentCompilationMode(compiler) === 'light'
+                  ? /** @param {string} url */ (url) =>
+                      typeof url === 'string' ? publicPathFromHtml + url : url
+                  : /** @param {string} url */ (url) => url;
 
-                  htmlPluginData.assetTags.meta.push(
-                    ...faviconCompilation.tags
-                      .filter((tag) => tag && tag.length)
-                      .map((tag) => parse5.parseFragment(tag).childNodes[0])
-                      .map(({ tagName, attrs }) => {
-                        const htmlTag = {
-                          tagName,
-                          voidTag: true,
-                          meta: { plugin: 'favicons-webpack-plugin' },
-                          attributes: attrs.reduce(
-                            (obj, { name, value }) =>
-                              Object.assign(obj, { [name]: value }),
-                            {}
-                          ),
-                        };
-                        // Prefix link tags
-                        if (typeof htmlTag.attributes.href === 'string') {
-                          htmlTag.attributes.href = pathReplacer(
-                            htmlTag.attributes.href
-                          );
-                        }
-                        // Prefix meta tags
-                        if (
-                          htmlTag.tagName === 'meta' &&
-                          [
-                            'msapplication-TileImage',
-                            'msapplication-config',
-                          ].includes(htmlTag.attributes.name)
-                        ) {
-                          htmlTag.attributes.content = pathReplacer(
-                            htmlTag.attributes.content
-                          );
-                        }
+              htmlPluginData.assetTags.meta.push(
+                ...faviconCompilationResult.tags
+                  .filter((tag) => tag && tag.length)
+                  .map((tag) => parse5.parseFragment(tag).childNodes[0])
+                  .map(({ tagName, attrs }) => {
+                    const htmlTag = {
+                      tagName,
+                      voidTag: true,
+                      meta: { plugin: 'favicons-webpack-plugin' },
+                      attributes: attrs.reduce(
+                        (obj, { name, value }) =>
+                          Object.assign(obj, { [name]: value }),
+                        {}
+                      ),
+                    };
+                    // Prefix link tags
+                    if (typeof htmlTag.attributes.href === 'string') {
+                      htmlTag.attributes.href = pathReplacer(
+                        htmlTag.attributes.href
+                      );
+                    }
+                    // Prefix meta tags
+                    if (
+                      htmlTag.tagName === 'meta' &&
+                      [
+                        'msapplication-TileImage',
+                        'msapplication-config',
+                      ].includes(htmlTag.attributes.name)
+                    ) {
+                      htmlTag.attributes.content = pathReplacer(
+                        htmlTag.attributes.content
+                      );
+                    }
 
-                        return htmlTag;
-                      })
-                  );
+                    return htmlTag;
+                  })
+              );
 
-                  htmlWebpackPluginCallback(null, htmlPluginData);
-                })
-                .catch(htmlWebpackPluginCallback);
+              return htmlPluginData;
             }
           );
         }
