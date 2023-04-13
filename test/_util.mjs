@@ -3,7 +3,6 @@ import * as path from 'path';
 import { readFileSync } from 'fs';
 import { mkdtemp, rm } from 'fs/promises';
 import webpack from 'webpack';
-import { merge } from 'webpack-merge';
 import sizeOf from 'image-size';
 import formatHtml from 'diffable-html';
 import { fileURLToPath } from 'url';
@@ -30,17 +29,15 @@ export const withTempDirectory = (test) => {
 };
 
 export const compiler = (config) => {
-  config = merge(
-    {
-      entry: path.resolve(fixtures, 'entry.js'),
-      plugins: [],
-      output: {},
-      infrastructureLogging: {
-        level: 'info',
-      },
+  config = {
+    entry: path.resolve(fixtures, 'entry.js'),
+    plugins: [],
+    output: {},
+    infrastructureLogging: {
+      level: 'info',
     },
-    config
-  );
+    ...config,
+  };
 
   config.plugins
     .filter((plugin) => plugin.constructor.name === 'HtmlWebpackPlugin')

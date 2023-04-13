@@ -2,7 +2,7 @@
 
 // Import types
 /** @typedef {import("webpack").Compilation} WebpackCompilation */
-/** @typedef {Parameters<WebpackCompilation['fileSystemInfo']['checkSnapshotValid']>[0]} Snapshot */
+/** @typedef {ReturnType<WebpackCompilation['fileSystemInfo']['mergeSnapshots']>} Snapshot */
 
 const path = require('path');
 const { getContentHash } = require('./hash');

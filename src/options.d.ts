@@ -75,6 +75,7 @@ export interface FaviconWebpackPlugionOptions {
 
 export type FaviconWebpackPlugionInternalOptions = Required<Omit<FaviconWebpackPlugionOptions, 
   // Optional properties after applying defaults:
+  | 'logoMaskable'
   | 'mode' 
   | 'devMode'
   | 'publicPath'
