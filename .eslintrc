@@ -13,7 +13,6 @@
     "rules": {
         "semi": "error",
         "no-extra-semi": "error",
-        "newline-before-return": "error",
         "no-var": "error",
         "prefer-const": "error",
         "object-shorthand": "error",

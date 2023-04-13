@@ -14,19 +14,19 @@ const {
 const { webpackLogger } = require('./logger');
 
 class FaviconsWebpackPlugin {
+  /** @type {import('./options').FaviconWebpackPlugionInternalOptions} */
+  #options;
+
   /**
    * @param {import('./options').FaviconWebpackPlugionOptions | string} args
    */
   constructor(args) {
-    /* @type {import('./options').FaviconWebpackPlugionOptions} */
+    /** @type {import('./options').FaviconWebpackPlugionOptions} */
     const options = typeof args === 'string' ? { logo: args } : args;
-    /** @type {Partial<import('favicons').FaviconOptions>} */
-    const emptyFaviconsConfig = {};
-    /** @type {import('./options').FaviconWebpackPlugionInternalOptions} */
-    this.options = {
+    this.#options = {
       cache: true,
       inject: true,
-      favicons: emptyFaviconsConfig,
+      favicons: {},
       manifest: {},
       prefix: 'assets/',
       ...options,
@@ -38,14 +38,14 @@ class FaviconsWebpackPlugin {
    */
   apply(compiler) {
     compiler.hooks.initialize.tap('FaviconsWebpackPlugin', () => {
-      this.hookIntoCompiler(compiler);
+      this.#hookIntoCompiler(compiler);
     });
   }
 
   /**
    * @param {import('webpack').Compiler} compiler
    */
-  hookIntoCompiler(compiler) {
+  #hookIntoCompiler(compiler) {
     const webpack = compiler.webpack;
     const Compilation = webpack.Compilation;
     const oracle = new Oracle(compiler.context);
@@ -59,9 +59,9 @@ class FaviconsWebpackPlugin {
         version = oracle.guessVersion(),
         developerName = oracle.guessDeveloperName(),
         developerURL = oracle.guessDeveloperURL(),
-      } = this.options.favicons;
+      } = this.#options.favicons;
 
-      Object.assign(this.options.favicons, {
+      Object.assign(this.#options.favicons, {
         appName,
         appDescription,
         version,
@@ -70,47 +70,51 @@ class FaviconsWebpackPlugin {
       });
     }
 
-    if (this.options.logo === undefined) {
+    if (this.#options.logo === undefined) {
       const defaultLogo = path.resolve(compiler.context, 'logo.png');
       try {
+        // FIXME: use asynchronous call
+        // @ts-ignore
         compiler.inputFileSystem.statSync(defaultLogo);
-        this.options.logo = [defaultLogo];
+        this.#options.logo = [defaultLogo];
       } catch (e) {}
       // @ts-ignore
       assert(
-        typeof this.options.logo[0] === 'string',
+        typeof this.#options.logo[0] === 'string',
         'Could not find `logo.png` for the current webpack context'
       );
-    } else if (this.options.logo instanceof Array) {
-      this.options.logo = this.options.logo.map((logo) =>
+    } else if (this.#options.logo instanceof Array) {
+      this.#options.logo = this.#options.logo.map((logo) =>
         path.resolve(compiler.context, logo)
       );
     } else {
-      this.options.logo = [path.resolve(compiler.context, this.options.logo)];
+      this.#options.logo = [path.resolve(compiler.context, this.#options.logo)];
     }
 
-    if (this.options.logoMaskable !== undefined) {
-      if (typeof this.options.logoMaskable === 'string') {
-        this.options.logoMaskable = [this.options.logoMaskable];
+    /** @type {string[]} */
+    let logoMaskable;
+    if (this.#options.logoMaskable !== undefined) {
+      if (typeof this.#options.logoMaskable === 'string') {
+        logoMaskable = [this.#options.logoMaskable];
+      } else {
+        // @ts-ignore
+        assert(
+          this.#options.logoMaskable instanceof Array,
+          'options.logoMaskable must be string or array '
+        );
+
+        logoMaskable = this.#options.logoMaskable.map((logoMaskable) =>
+          path.resolve(compiler.context, logoMaskable)
+        );
       }
-
-      // @ts-ignore
-      assert(
-        this.options.logoMaskable instanceof Array,
-        'options.logoMaskable must be string or array '
-      );
-
-      this.options.logoMaskable = this.options.logoMaskable.map(
-        (logoMaskable) => path.resolve(compiler.context, logoMaskable)
-      );
     } else {
-      this.options.logoMaskable = [];
+      logoMaskable = [];
     }
 
-    if (typeof this.options.manifest === 'string') {
-      this.options.manifest = path.resolve(
+    if (typeof this.#options.manifest === 'string') {
+      this.#options.manifest = path.resolve(
         compiler.context,
-        this.options.manifest
+        this.#options.manifest
       );
     }
 
@@ -120,50 +124,44 @@ class FaviconsWebpackPlugin {
       'FaviconsWebpackPlugin',
       async (compilation) => {
         const manifestAbsoluteFilePath =
-          typeof this.options.manifest === 'string'
-            ? this.options.manifest
+          typeof this.#options.manifest === 'string'
+            ? this.#options.manifest
             : '';
 
         const faviconCompilation = runCached(
-          [
-            ...this.options.logo,
-            ...this.options.logoMaskable,
-            manifestAbsoluteFilePath,
-          ],
+          [...this.#options.logo, ...logoMaskable, manifestAbsoluteFilePath],
           this,
-          this.options.cache,
+          this.#options.cache,
           compilation,
           // Options which enforce a new recompilation
           [
-            JSON.stringify(this.options.publicPath),
-            JSON.stringify(this.options.mode),
+            JSON.stringify(this.#options.publicPath),
+            JSON.stringify(this.#options.mode),
             // Recompile filesystem cache if the user change the favicon options
-            JSON.stringify(this.options.favicons),
+            JSON.stringify(this.#options.favicons),
           ],
           // Recompile filesystem cache if any source based path change:
           (fileSources) =>
             getRelativeOutputPath(
               getContentHash(...fileSources.map((s) => s.content)),
               compilation,
-              this.options
+              this.#options
             ),
           (fileSources, outputPath) => {
             const logoFileSources = fileSources.slice(
               0,
-              this.options.logo.length
+              this.#options.logo.length
             );
 
             const logoMaskableFileSources = fileSources.slice(
-              this.options.logo.length,
-              this.options.logo.length + this.options.logoMaskable.length
+              this.#options.logo.length,
+              this.#options.logo.length + logoMaskable.length
             );
 
             const manifestFileSource =
-              fileSources[
-                this.options.logo.length + this.options.logoMaskable.length
-              ];
+              fileSources[this.#options.logo.length + logoMaskable.length];
 
-            return this.generateFavicons(
+            return this.#generateFavicons(
               logoFileSources,
               logoMaskableFileSources,
               manifestFileSource.content,
@@ -185,20 +183,20 @@ class FaviconsWebpackPlugin {
         );
 
         // Watch for changes to the logo
-        for (const logo of this.options.logo) {
+        for (const logo of this.#options.logo) {
           compilation.fileDependencies.add(logo);
         }
 
-        for (const logoMaskable of this.options.logoMaskable) {
-          compilation.fileDependencies.add(logoMaskable);
+        for (const logo of logoMaskable) {
+          compilation.fileDependencies.add(logo);
         }
 
         // Watch for changes to the base manifest.webmanifest
-        if (typeof this.options.manifest === 'string') {
-          compilation.fileDependencies.add(this.options.manifest);
+        if (typeof this.#options.manifest === 'string') {
+          compilation.fileDependencies.add(this.#options.manifest);
         }
 
-        if (this.options.inject) {
+        if (this.#options.inject) {
           // Hook into the html-webpack-plugin processing and add the html
           findHtmlWebpackPlugin(compilation)
             ?.getHooks(compilation)
@@ -208,9 +206,9 @@ class FaviconsWebpackPlugin {
                 // Skip if a custom injectFunction returns false or if
                 // the htmlWebpackPlugin optuons includes a `favicons: false` flag
                 const isInjectionAllowed =
-                  typeof this.options.inject === 'function'
-                    ? this.options.inject(htmlPluginData.plugin)
-                    : this.options.inject !== false &&
+                  typeof this.#options.inject === 'function'
+                    ? this.#options.inject(htmlPluginData.plugin)
+                    : this.#options.inject !== false &&
                       htmlPluginData.plugin.userOptions.favicon !== false &&
                       htmlPluginData.plugin.userOptions.favicons !== false;
 
@@ -230,8 +228,8 @@ class FaviconsWebpackPlugin {
 
                 // Prefix links to icons
                 const pathReplacer =
-                  !this.options.favicons.path ||
-                  this.getCurrentCompilationMode(compiler) === 'light'
+                  !this.#options.favicons.path ||
+                  this.#getCurrentCompilationMode(compiler) === 'light'
                     ? /** @param {string} url */ (url) =>
                         typeof url === 'string' ? publicPathFromHtml + url : url
                     : /** @param {string} url */ (url) => url;
@@ -296,13 +294,12 @@ class FaviconsWebpackPlugin {
           },
           async () => {
             const faviconCompilation = faviconCompilations.get(compilation);
-            if (!faviconCompilation) {
-              return;
+            if (faviconCompilation) {
+              const { assets } = await faviconCompilation;
+              assets.forEach(({ name, contents }) => {
+                compilation.emitAsset(name, contents);
+              });
             }
-            const faviconAssets = (await faviconCompilation).assets;
-            faviconAssets.forEach(({ name, contents }) => {
-              compilation.emitAsset(name, contents);
-            });
           }
         );
       }
@@ -312,10 +309,11 @@ class FaviconsWebpackPlugin {
     compiler.hooks.afterCompile.tapPromise(
       'FaviconsWebpackPlugin',
       async (compilation) => {
-        const faviconCompilation =
-          faviconCompilations.get(compilation) || Promise.resolve();
+        const faviconCompilation = faviconCompilations.get(compilation);
         faviconCompilations.delete(compilation);
-        await faviconCompilation;
+        if (faviconCompilation) {
+          await faviconCompilation;
+        }
       }
     );
   }
@@ -328,7 +326,7 @@ class FaviconsWebpackPlugin {
    * @param {Buffer | string} baseManifest - the content of the file from options.manifest
    * @param {import('webpack').Compilation} compilation
    */
-  generateFavicons(
+  #generateFavicons(
     logoFileSources,
     logoMaskableFileSources,
     baseManifest,
@@ -348,24 +346,24 @@ class FaviconsWebpackPlugin {
         ...logoMaskableFileSourceContents
       ),
       compilation,
-      this.options
+      this.#options
     );
 
     /** @type {{[key: string]: any}} - the parsed manifest from options.manifest */
     const parsedBaseManifest =
-      typeof this.options.manifest === 'string'
+      typeof this.#options.manifest === 'string'
         ? JSON.parse(baseManifest.toString() || '{}')
-        : this.options.manifest || {};
+        : this.#options.manifest || {};
 
-    switch (this.getCurrentCompilationMode(compilation.compiler)) {
+    switch (this.#getCurrentCompilationMode(compilation.compiler)) {
       case 'light':
-        if (!this.options.mode) {
+        if (!this.#options.mode) {
           webpackLogger(compilation).info(
             'generate only a single favicon for fast compilation time in development mode. This behaviour can be changed by setting the favicon mode option.'
           );
         }
 
-        return this.generateFaviconsLight(
+        return this.#generateFaviconsLight(
           logoFileSourceContents,
           logoMaskableFileSourceContents,
           parsedBaseManifest,
@@ -375,7 +373,7 @@ class FaviconsWebpackPlugin {
       default:
         webpackLogger(compilation).log('generate favicons');
 
-        return this.generateFaviconsWebapp(
+        return this.#generateFaviconsWebapp(
           logoFileSourceContents,
           logoMaskableFileSourceContents,
           parsedBaseManifest,
@@ -394,13 +392,13 @@ class FaviconsWebpackPlugin {
    * @param {{[key: string]: any}} baseManifest
    * @param {string} resolvedPublicPath
    */
-  async generateFaviconsLight(
+  async #generateFaviconsLight(
     logoFileSources,
     logoMaskableFileSources,
     baseManifest,
     resolvedPublicPath
   ) {
-    const faviconExt = path.extname(this.options.logo[0]);
+    const faviconExt = path.extname(this.#options.logo[0]);
     const faviconName = `favicon${faviconExt}`;
 
     const tags = [`<link rel="icon" href="${faviconName}">`];
@@ -447,7 +445,7 @@ class FaviconsWebpackPlugin {
    * @param {{[key: string]: any}} baseManifest
    * @param {string} resolvedPublicPath
    */
-  async generateFaviconsWebapp(
+  async #generateFaviconsWebapp(
     logoFileSources,
     logoMaskableFileSources,
     baseManifest,
@@ -465,7 +463,7 @@ class FaviconsWebpackPlugin {
       // to allow relative manifests and to set the final public path
       // once it has been provided by the html-webpack-plugin
       path: '',
-      ...this.options.favicons,
+      ...this.#options.favicons,
       // set maskable icons
       ...(logoMaskableFileSources.length !== 0 && {
         manifestMaskable: logoMaskableFileSources,
@@ -496,19 +494,22 @@ class FaviconsWebpackPlugin {
 
   /**
    * Returns wether the plugin should generate a light version or a full webapp
+   *
+   * @param {import('webpack').Compiler} compiler
+   * @returns {'webapp' | 'light'}
    */
-  getCurrentCompilationMode(compiler) {
+  #getCurrentCompilationMode(compiler) {
     // From https://github.com/webpack/webpack/blob/3366421f1784c449f415cda5930a8e445086f688/lib/WebpackOptionsDefaulter.js#L12-L14
     const isProductionLikeMode =
       compiler.options.mode === 'production' || !compiler.options.mode;
     // Read the current `mode` and `devMode` option
     const faviconDefaultMode = isProductionLikeMode ? 'webapp' : 'light';
 
-    const mode = this.options.mode === 'auto' ? undefined : this.options.mode;
+    const mode = this.#options.mode === 'auto' ? undefined : this.#options.mode;
 
     return isProductionLikeMode
       ? mode || faviconDefaultMode
-      : this.options.devMode || mode || faviconDefaultMode;
+      : this.#options.devMode || mode || faviconDefaultMode;
   }
 }
 

@@ -9,14 +9,15 @@
   "scripts": {
     "commit": "git-cz",
     "update-snapshots": "ava --timeout 10m --no-worker-threads -u \"test/*.test.{js,mjs}\"",
-    "declarations": "node_modules/.bin/tsc --declaration --allowJs src/index.js",
+    "declarations": "rimraf src/cache.d.ts src/hash.d.ts src/index.d.ts src/logger.d.ts src/oracle.d.ts && tsc -p ./tsconfig.json",
     "test": "ava --timeout 10m --no-worker-threads --fail-fast",
     "prettify:fix": "prettier --write \"src/*.{js,mjs}\" \"test/*.{js,mjs}\"",
     "prettify": "prettier --check \"src/*.{js,mjs}\" \"test/*.{js,mjs}\"",
     "lint:fix": "eslint \"src/*.{js,mjs}\" \"test/*.{js,mjs}\" --fix",
     "lint": "eslint \"src/*.{js,mjs}\" \"test/*.{js,mjs}\"",
     "coverage": "nyc npm test",
-    "release": "standard-version"
+    "release": "standard-version",
+    "prepare": "npm run declarations"
   },
   "repository": {
     "type": "git",
@@ -37,7 +38,8 @@
   "author": "Jan Nicklas <j.nicklas@me.com> (https://github.com/jantimon)",
   "contributors": [
     "Bruno Dutra <brunocodutra@gmail.com> (https://github.com/brunocodutra)",
-    "Jan Nicklas <j.nicklas@me.com> (https://github.com/jantimon)"
+    "Jan Nicklas <j.nicklas@me.com> (https://github.com/jantimon)",
+    "Andrey Kutejko <andy128k@gmail.com> (https://github.com/andy128k)"
   ],
   "license": "MIT",
   "bugs": {
@@ -56,12 +58,12 @@
     "image-size": "^1.0.2",
     "nyc": "^15.0.0",
     "prettier": "^2.7.1",
+    "rimraf": "^5.0.0",
     "standard-version": "^9.5.0",
-    "typescript": "^4.8.4",
+    "typescript": "^5.0.4",
     "webpack": "^5.78.0",
     "webpack-cli": "^5.0.0",
-    "webpack-dev-server": "^4.13.2",
-    "webpack-merge": "^5.8.0"
+    "webpack-dev-server": "^4.13.2"
   },
   "dependencies": {
     "find-root": "^1.1.0",
