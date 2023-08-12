@@ -58,7 +58,7 @@ export const run = (compiler) =>
     compiler.run((err, stats) =>
       err || stats.hasErrors()
         ? reject(err || stats.toJson().errors)
-        : compiler.close(() => (err ? reject(err) : resolve(stats)))
+        : compiler.close(() => (err ? reject(err) : resolve(stats))),
     );
   });
 
@@ -69,7 +69,7 @@ export const snapshotCompilationAssets = (t, compilerStats) => {
   const distPath = compilerStats.compilation.outputOptions.path;
   // Check if all files are generated correctly
   t.snapshot(
-    assetNames.map((assetName) => replaceHash(replaceBackSlashes(assetName)))
+    assetNames.map((assetName) => replaceHash(replaceBackSlashes(assetName))),
   );
   const htmlFiles = /\.html?$/;
   const textFiles = /\.(json|html?|webapp|xml|webmanifest)$/;
@@ -84,7 +84,7 @@ export const snapshotCompilationAssets = (t, compilerStats) => {
       const isTxtFile = textFiles.test(assetName);
       const content = readFileSync(filepath);
       const textContent = replaceHash(
-        !isTxtFile ? '' : content.toString('utf8')
+        !isTxtFile ? '' : content.toString('utf8'),
       );
       const formattedContent =
         textContent && htmlFiles.test(assetName)
@@ -123,7 +123,7 @@ function replaceHash(content) {
     /(prefix\/)([0-9A-Fa-f]*)(\/)/g,
     (_, prefix, hash, suffix) => {
       return `${prefix}__replaced_hash_${hash.length}${suffix}`;
-    }
+    },
   );
 }
 

@@ -81,11 +81,11 @@ class FaviconsWebpackPlugin {
       // @ts-ignore
       assert(
         typeof this.#options.logo[0] === 'string',
-        'Could not find `logo.png` for the current webpack context'
+        'Could not find `logo.png` for the current webpack context',
       );
     } else if (this.#options.logo instanceof Array) {
       this.#options.logo = this.#options.logo.map((logo) =>
-        path.resolve(compiler.context, logo)
+        path.resolve(compiler.context, logo),
       );
     } else {
       this.#options.logo = [path.resolve(compiler.context, this.#options.logo)];
@@ -100,11 +100,11 @@ class FaviconsWebpackPlugin {
         // @ts-ignore
         assert(
           this.#options.logoMaskable instanceof Array,
-          'options.logoMaskable must be string or array '
+          'options.logoMaskable must be string or array ',
         );
 
         logoMaskable = this.#options.logoMaskable.map((logoMaskable) =>
-          path.resolve(compiler.context, logoMaskable)
+          path.resolve(compiler.context, logoMaskable),
         );
       }
     } else {
@@ -114,7 +114,7 @@ class FaviconsWebpackPlugin {
     if (typeof this.#options.manifest === 'string') {
       this.#options.manifest = path.resolve(
         compiler.context,
-        this.#options.manifest
+        this.#options.manifest,
       );
     }
 
@@ -145,17 +145,17 @@ class FaviconsWebpackPlugin {
             getRelativeOutputPath(
               getContentHash(...fileSources.map((s) => s.content)),
               compilation,
-              this.#options
+              this.#options,
             ),
           (fileSources, outputPath) => {
             const logoFileSources = fileSources.slice(
               0,
-              this.#options.logo.length
+              this.#options.logo.length,
             );
 
             const logoMaskableFileSources = fileSources.slice(
               this.#options.logo.length,
-              this.#options.logo.length + logoMaskable.length
+              this.#options.logo.length + logoMaskable.length,
             );
 
             const manifestFileSource =
@@ -165,7 +165,7 @@ class FaviconsWebpackPlugin {
               logoFileSources,
               logoMaskableFileSources,
               manifestFileSource.content,
-              compilation
+              compilation,
             ).then((favicons) => {
               const RawSource = compilation.compiler.webpack.sources.RawSource;
 
@@ -179,7 +179,7 @@ class FaviconsWebpackPlugin {
                 })),
               };
             });
-          }
+          },
         );
 
         // Watch for changes to the logo
@@ -200,7 +200,7 @@ class FaviconsWebpackPlugin {
           // Hook into the html-webpack-plugin processing and add the html
           findHtmlWebpackPlugin(compilation)
             ?.getHooks(compilation)
-            .alterAssetTags.tapPromise(
+            ?.alterAssetTags?.tapPromise(
               'FaviconsWebpackPlugin',
               async (htmlPluginData) => {
                 // Skip if a custom injectFunction returns false or if
@@ -223,7 +223,7 @@ class FaviconsWebpackPlugin {
                 // relative:  my/app/
                 const publicPathFromHtml = url.resolve(
                   htmlPluginData.publicPath,
-                  faviconCompilationResult.publicPath
+                  faviconCompilationResult.publicPath,
                 );
 
                 // Prefix links to icons
@@ -246,13 +246,13 @@ class FaviconsWebpackPlugin {
                         attributes: attrs.reduce(
                           (obj, { name, value }) =>
                             Object.assign(obj, { [name]: value }),
-                          {}
+                          {},
                         ),
                       };
                       // Prefix link tags
                       if (typeof htmlTag.attributes.href === 'string') {
                         htmlTag.attributes.href = pathReplacer(
-                          htmlTag.attributes.href
+                          htmlTag.attributes.href,
                         );
                       }
                       // Prefix meta tags
@@ -264,16 +264,16 @@ class FaviconsWebpackPlugin {
                         ].includes(htmlTag.attributes.name)
                       ) {
                         htmlTag.attributes.content = pathReplacer(
-                          htmlTag.attributes.content
+                          htmlTag.attributes.content,
                         );
                       }
 
                       return htmlTag;
-                    })
+                    }),
                 );
 
                 return htmlPluginData;
-              }
+              },
             );
         }
 
@@ -281,7 +281,7 @@ class FaviconsWebpackPlugin {
         // the webpack build see the `afterCompile` FaviconsWebpackPlugin hook
         // implementation where the promise is picked up again
         faviconCompilations.set(compilation, faviconCompilation);
-      }
+      },
     );
 
     compiler.hooks.thisCompilation.tap(
@@ -300,9 +300,9 @@ class FaviconsWebpackPlugin {
                 compilation.emitAsset(name, contents);
               });
             }
-          }
+          },
         );
-      }
+      },
     );
 
     // Make sure that the build waits for the favicon generation to complete
@@ -314,7 +314,7 @@ class FaviconsWebpackPlugin {
         if (faviconCompilation) {
           await faviconCompilation;
         }
-      }
+      },
     );
   }
 
@@ -330,23 +330,23 @@ class FaviconsWebpackPlugin {
     logoFileSources,
     logoMaskableFileSources,
     baseManifest,
-    compilation
+    compilation,
   ) {
     const logoFileSourceContents = logoFileSources.map(
-      (source) => source.content
+      (source) => source.content,
     );
 
     const logoMaskableFileSourceContents = logoMaskableFileSources.map(
-      (source) => source.content
+      (source) => source.content,
     );
 
     const resolvedPublicPath = getResolvedPublicPath(
       getContentHash(
         ...logoFileSourceContents,
-        ...logoMaskableFileSourceContents
+        ...logoMaskableFileSourceContents,
       ),
       compilation,
-      this.#options
+      this.#options,
     );
 
     /** @type {{[key: string]: any}} - the parsed manifest from options.manifest */
@@ -359,7 +359,7 @@ class FaviconsWebpackPlugin {
       case 'light':
         if (!this.#options.mode) {
           webpackLogger(compilation).info(
-            'generate only a single favicon for fast compilation time in development mode. This behaviour can be changed by setting the favicon mode option.'
+            'generate only a single favicon for fast compilation time in development mode. This behaviour can be changed by setting the favicon mode option.',
           );
         }
 
@@ -367,7 +367,7 @@ class FaviconsWebpackPlugin {
           logoFileSourceContents,
           logoMaskableFileSourceContents,
           parsedBaseManifest,
-          resolvedPublicPath
+          resolvedPublicPath,
         );
       case 'webapp':
       default:
@@ -377,7 +377,7 @@ class FaviconsWebpackPlugin {
           logoFileSourceContents,
           logoMaskableFileSourceContents,
           parsedBaseManifest,
-          resolvedPublicPath
+          resolvedPublicPath,
         );
     }
   }
@@ -396,7 +396,7 @@ class FaviconsWebpackPlugin {
     logoFileSources,
     logoMaskableFileSources,
     baseManifest,
-    resolvedPublicPath
+    resolvedPublicPath,
   ) {
     const faviconExt = path.extname(this.#options.logo[0]);
     const faviconName = `favicon${faviconExt}`;
@@ -423,7 +423,7 @@ class FaviconsWebpackPlugin {
             ],
           }),
           null,
-          2
+          2,
         ),
       });
     }
@@ -449,7 +449,7 @@ class FaviconsWebpackPlugin {
     logoFileSources,
     logoMaskableFileSources,
     baseManifest,
-    resolvedPublicPath
+    resolvedPublicPath,
   ) {
     const { favicons } = loadFaviconsLibrary();
 
@@ -479,7 +479,7 @@ class FaviconsWebpackPlugin {
           contents: JSON.stringify(
             mergeManifests(generatedManifest, baseManifest),
             null,
-            2
+            2,
           ),
         };
       }
@@ -533,7 +533,7 @@ function getRelativeOutputPath(logoContentHash, compilation, faviconOptions) {
   const relativeOutputPath = faviconOptions.outputPath
     ? path.relative(
         compilationOutputPath,
-        path.resolve(compilationOutputPath, faviconOptions.outputPath)
+        path.resolve(compilationOutputPath, faviconOptions.outputPath),
       )
     : faviconOptions.prefix;
 
@@ -557,9 +557,9 @@ function getResolvedPublicPath(logoContentHash, compilation, faviconOptions) {
     resolvePublicPath(
       compilation,
       faviconOptions.publicPath || webpackPublicPath,
-      faviconOptions.prefix
+      faviconOptions.prefix,
     ),
-    logoContentHash
+    logoContentHash,
   );
 }
 
@@ -618,15 +618,10 @@ function getHtmlWebpackPluginVersion() {
 function findHtmlWebpackPlugin(compilation) {
   const compiler = compilation.compiler;
 
-  const HtmlWebpackPlugin = compiler.options.plugins
-    .map(({ constructor }) => constructor)
-    .find(
-      /**
-       * Find only HtmlWebpkackPlugin constructors
-       * @type {(constructor: Function) => constructor is typeof import('html-webpack-plugin')}
-       */
-      (constructor) => constructor && constructor.name === 'HtmlWebpackPlugin'
-    );
+  /** @type {*} HtmlWebpackPlugin */
+  const HtmlWebpackPlugin = compiler.options.plugins.find(
+    (p) => p?.constructor?.name === 'HtmlWebpackPlugin',
+  )?.constructor;
 
   if (!HtmlWebpackPlugin) {
     return undefined;
@@ -638,8 +633,8 @@ function findHtmlWebpackPlugin(compilation) {
         `${
           'FaviconsWebpackPlugin - This FaviconsWebpackPlugin version is not compatible with your current HtmlWebpackPlugin version.\n' +
           'Please upgrade to HtmlWebpackPlugin >= 5 OR downgrade to FaviconsWebpackPlugin 2.x\n'
-        }${getHtmlWebpackPluginVersion()}`
-      )
+        }${getHtmlWebpackPluginVersion()}`,
+      ),
     );
 
     return undefined;
@@ -660,8 +655,8 @@ function loadFaviconsLibrary() {
   } catch (e) {
     throw new Error(
       `Could not find the npm peerDependency "favicons".\nPlease run:\nnpm i favicons\n - or -\nyarn add favicons\n\n${String(
-        e
-      )}`
+        e,
+      )}`,
     );
   }
 }

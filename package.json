@@ -57,7 +57,7 @@
     "html-webpack-plugin": "^5.5.0",
     "image-size": "^1.0.2",
     "nyc": "^15.0.0",
-    "prettier": "^2.7.1",
+    "prettier": "^3.0.1",
     "rimraf": "^5.0.0",
     "standard-version": "^9.5.0",
     "typescript": "^5.0.4",

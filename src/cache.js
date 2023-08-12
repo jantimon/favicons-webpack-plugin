@@ -57,7 +57,7 @@ async function runCached(
   compilation,
   eTags,
   idGenerator,
-  generator
+  generator,
 ) {
   const latestSnapShot = snapshots.get(pluginInstance);
 
@@ -65,7 +65,7 @@ async function runCached(
     const cachedFavicons = faviconCache.get(latestSnapShot);
     if (cachedFavicons) {
       const isValid = await asPromise((cb) =>
-        compilation.fileSystemInfo.checkSnapshotValid(latestSnapShot, cb)
+        compilation.fileSystemInfo.checkSnapshotValid(latestSnapShot, cb),
       );
 
       if (isValid) {
@@ -87,8 +87,8 @@ async function runCached(
       [],
       [],
       {},
-      cb
-    )
+      cb,
+    ),
   );
 
   if (!newSnapShot) {
@@ -104,10 +104,10 @@ async function runCached(
         compilation,
         idGenerator,
         eTags,
-        generator
+        generator,
       )
     : readFiles(absoluteFilePaths, compilation).then((fileContents) =>
-        generator(fileContents, idGenerator(fileContents))
+        generator(fileContents, idGenerator(fileContents)),
       ));
 
   // Store the promise of the favicon compilation in cache
@@ -138,7 +138,7 @@ async function runWithFileCache(
   compilation,
   idGenerator,
   eTags,
-  generator
+  generator,
 ) {
   const fileSources = await readFiles(files, compilation);
   const webpackCache = compilation.getCache('favicons-webpack-plugin');
@@ -147,7 +147,7 @@ async function runWithFileCache(
   const cacheId = idGenerator(fileSources);
 
   return webpackCache.providePromise(cacheId, eTag, () =>
-    generator(fileSources, cacheId)
+    generator(fileSources, cacheId),
   );
 }
 
@@ -168,8 +168,8 @@ function readFiles(absoluteFilePaths, compilation) {
       const content = await asPromise((cb) =>
         compilation.inputFileSystem.readFile(
           path.resolve(compilation.compiler.context, absoluteFilePath),
-          cb
-        )
+          cb,
+        ),
       );
 
       return {
@@ -177,7 +177,7 @@ function readFiles(absoluteFilePaths, compilation) {
         hash: getContentHash(content),
         content,
       };
-    })
+    }),
   );
 }
 
