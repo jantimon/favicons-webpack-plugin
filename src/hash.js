@@ -21,7 +21,7 @@ function resolvePublicPath(compilation, publicPath, assetPath) {
 
   const fullAssetPath = url.resolve(
     appendSlash(publicPathString || ''),
-    assetPath
+    assetPath,
   );
 
   return fullAssetPath;

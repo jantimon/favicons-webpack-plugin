@@ -44,7 +44,7 @@ test('should infer missing information from the nearest parent package.json', as
     });
 
     const manifest = await readJson(
-      path.join(output, 'assets', 'manifest.webmanifest')
+      path.join(output, 'assets', 'manifest.webmanifest'),
     );
 
     t.is(manifest.name, 'app');
@@ -62,7 +62,7 @@ test('should infer missing information from the nearest parent package.json', as
     });
 
     const manifest = await readJson(
-      path.join(output, 'assets', 'manifest.webmanifest')
+      path.join(output, 'assets', 'manifest.webmanifest'),
     );
 
     t.is(manifest.name, undefined);
@@ -82,7 +82,7 @@ test('should handle missing package.json gracefully', async (t) => {
   });
 
   const manifest = await readJson(
-    path.join(output, 'assets', 'manifest.webmanifest')
+    path.join(output, 'assets', 'manifest.webmanifest'),
   );
 
   t.is(manifest.name, undefined);
@@ -108,7 +108,7 @@ test('should not reach for the package.json if metadata defined', async (t) => {
   });
 
   const manifest = await readJson(
-    path.join(output, 'assets', 'manifest.webmanifest')
+    path.join(output, 'assets', 'manifest.webmanifest'),
   );
 
   t.is(manifest.name, 'another-app');
