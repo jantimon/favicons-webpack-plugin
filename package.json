@@ -9,7 +9,7 @@
   "scripts": {
     "commit": "git-cz",
     "update-snapshots": "ava --timeout 10m --no-worker-threads -u \"test/*.test.{js,mjs}\"",
-    "declarations": "rimraf src/cache.d.ts src/hash.d.ts src/index.d.ts src/logger.d.ts src/oracle.d.ts && tsc -p ./tsconfig.json",
+    "declarations": "rimraf src/cache.d.ts src/hash.d.ts src/index.d.ts src/logger.d.ts src/oracle.d.ts src/url.d.ts && tsc -p ./tsconfig.json",
     "test": "ava --timeout 10m --no-worker-threads --fail-fast",
     "prettify:fix": "prettier --write \"src/*.{js,mjs}\" \"test/*.{js,mjs}\"",
     "prettify": "prettier --check \"src/*.{js,mjs}\" \"test/*.{js,mjs}\"",
