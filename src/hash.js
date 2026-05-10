@@ -4,7 +4,7 @@
 /** @typedef {import("webpack").Compilation} WebpackCompilation */
 
 const crypto = require('crypto');
-const url = require('url');
+const { resolveUrl } = require('./url');
 
 /**
  * Replaces [contenthash] and [fullhash] inside the given publicPath and assetPath
@@ -19,7 +19,7 @@ function resolvePublicPath(compilation, publicPath, assetPath) {
       ? compilation.getAssetPath(publicPath, { hash: compilation.hash })
       : publicPath;
 
-  const fullAssetPath = url.resolve(
+  const fullAssetPath = resolveUrl(
     appendSlash(publicPathString || ''),
     assetPath,
   );

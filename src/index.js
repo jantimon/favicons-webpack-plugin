@@ -5,12 +5,12 @@ const parse5 = require('parse5');
 const path = require('path');
 const { runCached } = require('./cache');
 const Oracle = require('./oracle');
-const url = require('url');
 const {
   resolvePublicPath,
   replaceContentHash,
   getContentHash,
 } = require('./hash');
+const { resolveUrl } = require('./url');
 const { webpackLogger } = require('./logger');
 
 class FaviconsWebpackPlugin {
@@ -221,7 +221,7 @@ class FaviconsWebpackPlugin {
                 // absolute:  http://somewhere.com/app1/
                 // absolute:  /demo/app1/
                 // relative:  my/app/
-                const publicPathFromHtml = url.resolve(
+                const publicPathFromHtml = resolveUrl(
                   htmlPluginData.publicPath,
                   faviconCompilationResult.publicPath,
                 );
