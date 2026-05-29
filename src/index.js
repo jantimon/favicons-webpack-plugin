@@ -1,7 +1,6 @@
 // @ts-check
 
 const assert = require('assert');
-const parse5 = require('parse5');
 const path = require('path');
 const { runCached } = require('./cache');
 const Oracle = require('./oracle');
@@ -235,41 +234,34 @@ class FaviconsWebpackPlugin {
                     : /** @param {string} url */ (url) => url;
 
                 htmlPluginData.assetTags.meta.push(
-                  ...faviconCompilationResult.tags
-                    .filter((tag) => tag && tag.length)
-                    .map((tag) => parse5.parseFragment(tag).childNodes[0])
-                    .map(({ tagName, attrs }) => {
-                      const htmlTag = {
-                        tagName,
-                        voidTag: true,
-                        meta: { plugin: 'favicons-webpack-plugin' },
-                        attributes: attrs.reduce(
-                          (obj, { name, value }) =>
-                            Object.assign(obj, { [name]: value }),
-                          {},
-                        ),
-                      };
-                      // Prefix link tags
-                      if (typeof htmlTag.attributes.href === 'string') {
-                        htmlTag.attributes.href = pathReplacer(
-                          htmlTag.attributes.href,
-                        );
-                      }
-                      // Prefix meta tags
-                      if (
-                        htmlTag.tagName === 'meta' &&
-                        [
-                          'msapplication-TileImage',
-                          'msapplication-config',
-                        ].includes(htmlTag.attributes.name)
-                      ) {
-                        htmlTag.attributes.content = pathReplacer(
-                          htmlTag.attributes.content,
-                        );
-                      }
+                  ...faviconCompilationResult.tags.map((tag) => {
+                    const htmlTag = {
+                      tagName: tag.tag,
+                      voidTag: true,
+                      meta: { plugin: 'favicons-webpack-plugin' },
+                      attributes: sortAttributes(tag.attrs),
+                    };
+                    // Prefix link tags
+                    if (typeof htmlTag.attributes.href === 'string') {
+                      htmlTag.attributes.href = pathReplacer(
+                        htmlTag.attributes.href,
+                      );
+                    }
+                    // Prefix meta tags
+                    if (
+                      htmlTag.tagName === 'meta' &&
+                      [
+                        'msapplication-TileImage',
+                        'msapplication-config',
+                      ].includes(htmlTag.attributes.name)
+                    ) {
+                      htmlTag.attributes.content = pathReplacer(
+                        htmlTag.attributes.content,
+                      );
+                    }
 
-                      return htmlTag;
-                    }),
+                    return htmlTag;
+                  }),
                 );
 
                 return htmlPluginData;
@@ -401,7 +393,7 @@ class FaviconsWebpackPlugin {
     const faviconExt = path.extname(this.#options.logo[0]);
     const faviconName = `favicon${faviconExt}`;
 
-    const tags = [`<link rel="icon" href="${faviconName}">`];
+    const tags = [{ tag: 'link', attrs: { rel: 'icon', href: faviconName } }];
     const assets = [
       {
         name: faviconName,
@@ -411,7 +403,10 @@ class FaviconsWebpackPlugin {
 
     // If the manifest is not empty add it also to the light mode
     if (Object.keys(baseManifest).length > 0) {
-      tags.push('<link rel="manifest" href="manifest.webmanifest">');
+      tags.push({
+        tag: 'link',
+        attrs: { rel: 'manifest', href: 'manifest.webmanifest' },
+      });
       assets.push({
         name: 'manifest.webmanifest',
         contents: JSON.stringify(
@@ -455,7 +450,7 @@ class FaviconsWebpackPlugin {
 
     // Generate favicons using the npm favicons library
     const {
-      html: tags,
+      htmlTags: tags,
       images,
       files,
     } = await favicons(logoFileSources, {
@@ -659,6 +654,34 @@ function loadFaviconsLibrary() {
       )}`,
     );
   }
+}
+
+/**
+ * Attribute's key used for sorting
+ *
+ * @param {string} key
+ * @returns {string}
+ */
+function attrSorkKey(key) {
+  const attrs = ['name', 'rel', 'type', 'media', 'sizes'];
+  const index = attrs.indexOf(key);
+  return index >= 0 ? `${index}_${key}` : `z_${key}`;
+}
+
+/**
+ * Re-creates an object inserting properties in a predictable order.
+ *
+ * @template T
+ * @param {Record<string, T>} attrs
+ * @returns {Record<string, T>}
+ */
+function sortAttributes(attrs) {
+  const keys = Object.keys(attrs);
+  keys.sort((a, b) => attrSorkKey(a).localeCompare(attrSorkKey(b)));
+  return keys.reduce(
+    (obj, attr) => Object.assign(obj, { [attr]: attrs[attr] }),
+    {},
+  );
 }
 
 module.exports = FaviconsWebpackPlugin;

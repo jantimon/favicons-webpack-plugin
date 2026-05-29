@@ -7,17 +7,14 @@
     "src/"
   ],
   "scripts": {
-    "commit": "git-cz",
-    "update-snapshots": "ava --timeout 10m --no-worker-threads -u \"test/*.test.{js,mjs}\"",
     "declarations": "rimraf src/cache.d.ts src/hash.d.ts src/index.d.ts src/logger.d.ts src/oracle.d.ts src/url.d.ts && tsc -p ./tsconfig.json",
-    "test": "ava --timeout 10m --no-worker-threads --fail-fast",
-    "prettify:fix": "prettier --write \"src/*.{js,mjs}\" \"test/*.{js,mjs}\"",
-    "prettify": "prettier --check \"src/*.{js,mjs}\" \"test/*.{js,mjs}\"",
-    "lint:fix": "eslint \"src/*.{js,mjs}\" \"test/*.{js,mjs}\" --fix",
-    "lint": "eslint \"src/*.{js,mjs}\" \"test/*.{js,mjs}\"",
-    "coverage": "nyc npm test",
-    "release": "standard-version",
-    "prepare": "npm run declarations"
+    "test": "c8 ava --timeout 10m --no-worker-threads",
+    "update-snapshots": "npm run test -- -u",
+    "fmt": "prettier --write src test",
+    "fmt:check": "prettier --check src test",
+    "lint": "eslint src test",
+    "lint:fix": "eslint src test --fix",
+    "prepublishOnly": "npm run declarations"
   },
   "repository": {
     "type": "git",
@@ -47,28 +44,24 @@
   },
   "homepage": "https://github.com/jantimon/favicons-webpack-plugin",
   "devDependencies": {
-    "ava": "^5.1.0",
-    "commitizen": "^4.2.5",
-    "cz-conventional-changelog": "^3.3.0",
-    "diffable-html": "^5.0.0",
-    "eslint": "^8.24.0",
-    "favicons": "^7.0.1",
-    "get-folder-size": "^4.0.0",
+    "@eslint/js": "^10.0.1",
+    "ava": "^7.0.0",
+    "c8": "^11.0.0",
+    "diffable-html": "^6.0.1",
+    "eslint": "^10.4.0",
+    "favicons": "^7.3.0",
+    "get-folder-size": "^5.0.0",
+    "globals": "^17.6.0",
     "html-webpack-plugin": "^5.5.0",
     "image-size": "^1.0.2",
-    "nyc": "^15.0.0",
     "prettier": "^3.0.1",
-    "rimraf": "^5.0.0",
-    "standard-version": "^9.5.0",
-    "typescript": "^5.0.4",
-    "webpack": "^5.78.0",
-    "webpack-cli": "^5.0.0",
-    "webpack-dev-server": "^4.13.2"
+    "rimraf": "^6.1.3",
+    "typescript": "^6.0.3",
+    "webpack": "^5.78.0"
   },
   "dependencies": {
     "find-root": "^1.1.0",
-    "parse-author": "^2.0.0",
-    "parse5": "^7.1.1"
+    "parse-author": "^2.0.0"
   },
   "peerDependencies": {
     "favicons": "^7.0.1",
@@ -76,6 +69,11 @@
   },
   "optionalDependencies": {
     "html-webpack-plugin": "^5.5.0"
+  },
+  "overrides": {
+    "c8": {
+      "yargs": "18.0.0"
+    }
   },
   "config": {
     "commitizen": {

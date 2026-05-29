@@ -97,8 +97,8 @@ export const snapshotCompilationAssets = (t, compilerStats) => {
           content.length === ''
             ? 'EMPTY FILE'
             : isTxtFile
-            ? formattedContent.replace(/\r/g, '')
-            : getFileDetails(assetName, content),
+              ? formattedContent.replace(/\r/g, '')
+              : getFileDetails(assetName, content),
       };
     });
   t.snapshot(assetContents);

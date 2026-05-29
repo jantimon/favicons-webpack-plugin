@@ -27,7 +27,7 @@ jobs:
         run: npm ci
 
       - name: Check Prettier
-        run: npm run prettify
+        run: npm run fmt:check
 
       - name: Check Lint
         run: npm run lint

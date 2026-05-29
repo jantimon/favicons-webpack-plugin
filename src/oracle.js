@@ -39,12 +39,12 @@ module.exports = class Oracle {
     return typeof this.pkg.author === 'string'
       ? parseAuthor(this.pkg.author)
       : typeof this.pkg.author === 'object' && this.pkg.author
-      ? {
-          name: this.pkg.author.name,
-          email: this.pkg.author.email,
-          url: this.pkg.author.url,
-        }
-      : {};
+        ? {
+            name: this.pkg.author.name,
+            email: this.pkg.author.email,
+            url: this.pkg.author.url,
+          }
+        : {};
   }
 
   /**
