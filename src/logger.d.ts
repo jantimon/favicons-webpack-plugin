@@ -1,4 +1,4 @@
-export type WebpackCompilation = import("webpack").Compilation;
+export type WebpackCompilation = import('webpack').Compilation;
 export type WebpackLogger = ReturnType<WebpackCompilation['getLogger']>;
 /** @typedef {import("webpack").Compilation} WebpackCompilation */
 /** @typedef {ReturnType<WebpackCompilation['getLogger']>} WebpackLogger */

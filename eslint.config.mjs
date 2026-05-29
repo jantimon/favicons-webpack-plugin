@@ -1,0 +1,82 @@
+import js from '@eslint/js';
+import globals from "globals";
+
+const rules = {
+  semi: 'error',
+  'no-extra-semi': 'error',
+  'no-var': 'error',
+  'prefer-const': 'error',
+  'object-shorthand': 'error',
+  'prefer-arrow-callback': 'error',
+  'prefer-numeric-literals': 'error',
+  'prefer-template': 'error',
+  'prefer-spread': 'error',
+  'prefer-rest-params': 'error',
+  yoda: 'error',
+  'callback-return': 'error',
+  'handle-callback-err': 'error',
+  'no-process-exit': 'error',
+  'no-buffer-constructor': 'error',
+  'no-mixed-requires': 'error',
+  'no-new-require': 'error',
+  quotes: ['error', 'single'],
+  'spaced-comment': ['error', 'always'],
+  'no-empty': ['error', { allowEmptyCatch: true }],
+  'no-constant-condition': ['error', { checkLoops: false }],
+  'array-callback-return': 'error',
+  'dot-notation': 'error',
+  eqeqeq: ['error', 'smart'],
+  'no-caller': 'error',
+  'no-else-return': 'error',
+  'no-eval': 'error',
+  'no-extend-native': 'error',
+  'no-extra-bind': 'error',
+  'no-implied-eval': 'error',
+  'no-multi-str': 'error',
+  'no-new-func': 'error',
+  'no-new-wrappers': 'error',
+  'no-octal-escape': 'error',
+  'no-proto': 'error',
+  'no-script-url': 'error',
+  'no-self-compare': 'error',
+  'no-sequences': 'error',
+  'no-unmodified-loop-condition': 'error',
+  'no-useless-call': 'error',
+  'no-useless-return': 'error',
+  strict: ['error', 'global'],
+  'no-undef-init': 'error',
+  'no-use-before-define': ['error', 'nofunc'],
+  'no-path-concat': 'error',
+  'no-duplicate-imports': 'error',
+  'no-useless-computed-key': 'error',
+  'no-useless-constructor': 'error',
+  'no-useless-rename': 'error',
+  'prefer-object-spread': 'error',
+  indent: 'off',
+  'no-unused-vars': ['error', { caughtErrors: 'none' }],
+  'preserve-caught-error': 'off'
+};
+
+export default [
+  js.configs.recommended,
+  {
+    files: ['src/*.{js,mjs}', 'test/*.{js,mjs}'],
+    languageOptions: {
+      ecmaVersion: 2022,
+      globals: globals.node,
+    },
+    rules
+  },
+  {
+    files: ['src/*.js'],
+    languageOptions: {
+      sourceType: 'module'
+    }
+  },
+  {
+    files: ['src/*.mjs', 'test/*.mjs'],
+    languageOptions: {
+      sourceType: 'module'
+    }
+  }
+];
