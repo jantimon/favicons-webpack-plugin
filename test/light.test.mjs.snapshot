@@ -1,0 +1,39 @@
+exports[`light > should automatically pick up the dev mode from webpack 1`] = `
+{
+  "files": [
+    "assets/favicon.png",
+    "index.html",
+    "main.js"
+  ],
+  "content": [
+    {
+      "assetName": "assets/favicon.png",
+      "content": "png 874x989"
+    },
+    {
+      "assetName": "index.html",
+      "content": "\\n<!DOCTYPE html>\\n<html>\\n  <head>\\n    <meta charset=\\"utf-8\\">\\n    <title>\\n      Webpack App\\n    </title>\\n    <link\\n      rel=\\"icon\\"\\n      href=\\"/assets/favicon.png\\"\\n    >\\n    <script\\n      defer\\n      src=\\"/main.js\\"\\n    >\\n    </script>\\n  </head>\\n  <body>\\n  </body>\\n</html>\\n"
+    }
+  ]
+}
+`;
+
+exports[`light > should work if manual set to light mode 1`] = `
+{
+  "files": [
+    "assets/favicon.png",
+    "index.html",
+    "main.js"
+  ],
+  "content": [
+    {
+      "assetName": "assets/favicon.png",
+      "content": "png 874x989"
+    },
+    {
+      "assetName": "index.html",
+      "content": "\\n<!doctype html>\\n<html>\\n  <head>\\n    <meta charset=\\"utf-8\\">\\n    <title>\\n      Webpack App\\n    </title>\\n    <link\\n      rel=\\"icon\\"\\n      href=\\"/assets/favicon.png\\"\\n    >\\n    <script\\n      defer=\\"defer\\"\\n      src=\\"/main.js\\"\\n    >\\n    </script>\\n  </head>\\n  <body>\\n  </body>\\n</html>\\n"
+    }
+  ]
+}
+`;

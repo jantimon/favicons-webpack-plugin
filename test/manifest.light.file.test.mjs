@@ -1,31 +1,40 @@
-import test from 'ava';
-import * as path from 'path';
+import { describe, it, beforeEach, afterEach } from 'node:test';
+import { join, resolve } from 'node:path';
 import FaviconsWebpackPlugin from '../src/index.js';
 import {
   logo,
-  withTempDirectory,
   generate,
   snapshotCompilationAssets,
   fixtures,
+  createTempDir,
+  removeTempDir,
 } from './_util.mjs';
 
-withTempDirectory(test);
-
-test('should generate a result with custom manifest values', async (t) => {
-  const dist = path.join(t.context.root, 'dist');
-  const compilationStats = await generate({
-    context: t.context.root,
-    output: {
-      path: dist,
-    },
-    plugins: [
-      new FaviconsWebpackPlugin({
-        logo,
-        mode: 'light',
-        manifest: path.resolve(fixtures, 'manifest.webmanifest'),
-      }),
-    ],
+describe('manifest light file', () => {
+  let root;
+  beforeEach(async (c) => {
+    root = await createTempDir(c.fullName);
+  });
+  afterEach(async () => {
+    await removeTempDir(root);
   });
 
-  snapshotCompilationAssets(t, compilationStats);
+  it('should generate a result with custom manifest values', async (t) => {
+    const dist = join(root, 'dist');
+    const compilationStats = await generate({
+      context: root,
+      output: {
+        path: dist,
+      },
+      plugins: [
+        new FaviconsWebpackPlugin({
+          logo,
+          mode: 'light',
+          manifest: resolve(fixtures, 'manifest.webmanifest'),
+        }),
+      ],
+    });
+
+    t.assert.snapshot(snapshotCompilationAssets(compilationStats));
+  });
 });

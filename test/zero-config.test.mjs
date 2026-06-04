@@ -1,29 +1,38 @@
-import test from 'ava';
-import * as path from 'path';
+import { describe, it, beforeEach, afterEach } from 'node:test';
+import { join } from 'node:path';
 import { writeFile, readFile } from 'fs/promises';
 import FaviconsWebpackPlugin from '../src/index.js';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import {
   logo,
-  withTempDirectory,
   generate,
   snapshotCompilationAssets,
+  createTempDir,
+  removeTempDir,
 } from './_util.mjs';
 
-withTempDirectory(test);
-
-test('should work without configuration', async (t) => {
-  const dist = path.join(t.context.root, 'dist');
-  await writeFile(path.join(t.context.root, 'logo.png'), await readFile(logo));
-  const compilationStats = await generate({
-    mode: 'development',
-    context: t.context.root,
-    output: {
-      path: dist,
-      publicPath: '/',
-    },
-    plugins: [new HtmlWebpackPlugin(), new FaviconsWebpackPlugin()],
+describe('zero-config', () => {
+  let root;
+  beforeEach(async (c) => {
+    root = await createTempDir(c.fullName);
+  });
+  afterEach(async () => {
+    await removeTempDir(root);
   });
 
-  snapshotCompilationAssets(t, compilationStats);
+  it('should work without configuration', async (t) => {
+    const dist = join(root, 'dist');
+    await writeFile(join(root, 'logo.png'), await readFile(logo));
+    const compilationStats = await generate({
+      mode: 'development',
+      context: root,
+      output: {
+        path: dist,
+        publicPath: '/',
+      },
+      plugins: [new HtmlWebpackPlugin(), new FaviconsWebpackPlugin()],
+    });
+
+    t.assert.snapshot(snapshotCompilationAssets(compilationStats));
+  });
 });

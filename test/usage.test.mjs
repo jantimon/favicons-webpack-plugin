@@ -1,37 +1,46 @@
-import * as path from 'path';
-import test from 'ava';
+import { describe, it, beforeEach, afterEach } from 'node:test';
+import { join } from 'node:path';
 import FaviconsWebpackPlugin from '../src/index.js';
 import {
   logo,
   generate,
-  withTempDirectory,
   snapshotCompilationAssets,
+  createTempDir,
+  removeTempDir,
 } from './_util.mjs';
 
-withTempDirectory(test);
-
-test('should take a string as argument', async (t) => {
-  const output = path.join(t.context.root, 'output');
-
-  const compilationStats = await generate({
-    output: {
-      path: output,
-    },
-    plugins: [new FaviconsWebpackPlugin(logo)],
+describe('usage', () => {
+  let root;
+  beforeEach(async (c) => {
+    root = await createTempDir(c.fullName);
+  });
+  afterEach(async () => {
+    await removeTempDir(root);
   });
 
-  snapshotCompilationAssets(t, compilationStats);
-});
+  it('should take a string as argument', async (t) => {
+    const output = join(root, 'output');
 
-test('should take an object with just the logo as argument', async (t) => {
-  const output = path.join(t.context.root, 'output');
+    const compilationStats = await generate({
+      output: {
+        path: output,
+      },
+      plugins: [new FaviconsWebpackPlugin(logo)],
+    });
 
-  const compilationStats = await generate({
-    output: {
-      path: output,
-    },
-    plugins: [new FaviconsWebpackPlugin({ logo })],
+    t.assert.snapshot(snapshotCompilationAssets(compilationStats));
   });
 
-  snapshotCompilationAssets(t, compilationStats);
+  it('should take an object with just the logo as argument', async (t) => {
+    const output = join(root, 'output');
+
+    const compilationStats = await generate({
+      output: {
+        path: output,
+      },
+      plugins: [new FaviconsWebpackPlugin({ logo })],
+    });
+
+    t.assert.snapshot(snapshotCompilationAssets(compilationStats));
+  });
 });

@@ -1,0 +1,59 @@
+exports[`public path light > should take the public path into account 1`] = `
+{
+  "files": [
+    "assets/favicon.png",
+    "index.html",
+    "main.js"
+  ],
+  "content": [
+    {
+      "assetName": "assets/favicon.png",
+      "content": "png 874x989"
+    },
+    {
+      "assetName": "index.html",
+      "content": "\\n<!doctype html>\\n<html>\\n  <head>\\n    <meta charset=\\"utf-8\\">\\n    <title>\\n      Webpack App\\n    </title>\\n    <link\\n      rel=\\"icon\\"\\n      href=\\"/public/path/assets/favicon.png\\"\\n    >\\n    <script\\n      defer=\\"defer\\"\\n      src=\\"/public/path/main.js\\"\\n    >\\n    </script>\\n  </head>\\n  <body>\\n  </body>\\n</html>\\n"
+    }
+  ]
+}
+`;
+
+exports[`public path light > should work with an empty public path 1`] = `
+{
+  "files": [
+    "assets/favicon.png",
+    "index.html",
+    "main.js"
+  ],
+  "content": [
+    {
+      "assetName": "assets/favicon.png",
+      "content": "png 874x989"
+    },
+    {
+      "assetName": "index.html",
+      "content": "\\n<!doctype html>\\n<html>\\n  <head>\\n    <meta charset=\\"utf-8\\">\\n    <title>\\n      Webpack App\\n    </title>\\n    <link\\n      rel=\\"icon\\"\\n      href=\\"assets/favicon.png\\"\\n    >\\n    <script\\n      defer=\\"defer\\"\\n      src=\\"main.js\\"\\n    >\\n    </script>\\n  </head>\\n  <body>\\n  </body>\\n</html>\\n"
+    }
+  ]
+}
+`;
+
+exports[`public path light > should work with an empty public path and a nested html file 1`] = `
+{
+  "files": [
+    "assets/favicon.png",
+    "demo/index.html",
+    "main.js"
+  ],
+  "content": [
+    {
+      "assetName": "assets/favicon.png",
+      "content": "png 874x989"
+    },
+    {
+      "assetName": "demo/index.html",
+      "content": "\\n<!doctype html>\\n<html>\\n  <head>\\n    <meta charset=\\"utf-8\\">\\n    <title>\\n      Webpack App\\n    </title>\\n    <link\\n      rel=\\"icon\\"\\n      href=\\"../assets/favicon.png\\"\\n    >\\n    <script\\n      defer=\\"defer\\"\\n      src=\\"../main.js\\"\\n    >\\n    </script>\\n  </head>\\n  <body>\\n  </body>\\n</html>\\n"
+    }
+  ]
+}
+`;
