@@ -8,8 +8,8 @@
   ],
   "scripts": {
     "declarations": "rimraf src/cache.d.ts src/hash.d.ts src/index.d.ts src/logger.d.ts src/oracle.d.ts src/url.d.ts && tsc -p ./tsconfig.json",
-    "test": "c8 ava --timeout 10m --no-worker-threads",
-    "update-snapshots": "npm run test -- -u",
+    "test": "c8 node --test",
+    "update-snapshots": "node --test --test-update-snapshots",
     "fmt": "prettier --write src test",
     "fmt:check": "prettier --check src test",
     "lint": "eslint src test",
@@ -45,7 +45,6 @@
   "homepage": "https://github.com/jantimon/favicons-webpack-plugin",
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "ava": "^7.0.0",
     "c8": "^11.0.0",
     "diffable-html": "^6.0.1",
     "eslint": "^10.4.0",

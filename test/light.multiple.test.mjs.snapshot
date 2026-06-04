@@ -1,0 +1,24 @@
+exports[`light.multiple > should generate multiple light icons 1`] = `
+{
+  "files": [
+    "assets/favicon.png",
+    "index.html",
+    "main.js",
+    "second/favicon.png"
+  ],
+  "content": [
+    {
+      "assetName": "assets/favicon.png",
+      "content": "png 874x989"
+    },
+    {
+      "assetName": "index.html",
+      "content": "\\n<!doctype html>\\n<html>\\n  <head>\\n    <meta charset=\\"utf-8\\">\\n    <title>\\n      Webpack App\\n    </title>\\n    <link\\n      rel=\\"icon\\"\\n      href=\\"/assets/favicon.png\\"\\n    >\\n    <link\\n      rel=\\"icon\\"\\n      href=\\"/second/favicon.png\\"\\n    >\\n    <script\\n      defer=\\"defer\\"\\n      src=\\"/main.js\\"\\n    >\\n    </script>\\n  </head>\\n  <body>\\n  </body>\\n</html>\\n"
+    },
+    {
+      "assetName": "second/favicon.png",
+      "content": "png 874x989"
+    }
+  ]
+}
+`;

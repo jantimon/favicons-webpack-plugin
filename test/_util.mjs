@@ -1,5 +1,6 @@
-import { tmpdir } from 'os';
-import * as path from 'path';
+import { createHash } from 'node:crypto';
+import { tmpdir } from 'node:os';
+import { join, resolve, dirname, sep } from 'node:path';
 import { readFileSync } from 'fs';
 import { mkdtemp, rm } from 'fs/promises';
 import webpack from 'webpack';
@@ -8,29 +9,29 @@ import formatHtml from 'diffable-html';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __dirname = dirname(__filename);
 
-export const fixtures = path.resolve(__dirname, 'fixtures');
-export const expected = path.resolve(fixtures, 'expected');
-export const logo = path.resolve(fixtures, 'logo.png');
-export const logoMaskable = path.resolve(fixtures, 'logo-maskable.png');
-export const empty = path.resolve(fixtures, 'empty.png');
-export const invalid = path.resolve(fixtures, 'invalid.png');
+export const fixtures = resolve(__dirname, 'fixtures');
+export const expected = resolve(fixtures, 'expected');
+export const logo = resolve(fixtures, 'logo.png');
+export const logoMaskable = resolve(fixtures, 'logo-maskable.png');
+export const empty = resolve(fixtures, 'empty.png');
+export const invalid = resolve(fixtures, 'invalid.png');
 /** the size of the webpack cache without favicons */
 export const cacheBaseSize = 60000;
 
-export const withTempDirectory = (test) => {
-  test.beforeEach(async (t) => {
-    t.context.root = await mkdtemp(path.join(tmpdir(), 'Favicons'));
-  });
-  test.afterEach(async (t) => {
-    await rm(t.context.root, { recursive: true, force: true });
-  });
+export const createTempDir = async (name) => {
+  const hash = createHash('md5').update(name).digest('hex');
+  return await mkdtemp(join(tmpdir(), `Favicons-${hash}`));
+};
+
+export const removeTempDir = async (dir) => {
+  await rm(dir, { recursive: true, force: true });
 };
 
 export const compiler = (config) => {
   config = {
-    entry: path.resolve(fixtures, 'entry.js'),
+    entry: resolve(fixtures, 'entry.js'),
     plugins: [],
     output: {},
     infrastructureLogging: {
@@ -46,7 +47,7 @@ export const compiler = (config) => {
         meta: {},
         minify: false,
         chunks: [],
-        template: path.resolve(fixtures, 'index.html'),
+        template: resolve(fixtures, 'index.html'),
       });
     });
 
@@ -58,19 +59,16 @@ export const run = (compiler) =>
     compiler.run((err, stats) =>
       err || stats.hasErrors()
         ? reject(err || stats.toJson().errors)
-        : compiler.close(() => (err ? reject(err) : resolve(stats))),
+        : compiler.close(() => resolve(stats)),
     );
   });
 
 export const generate = (config) => run(compiler(config));
 
-export const snapshotCompilationAssets = (t, compilerStats) => {
+export const snapshotCompilationAssets = (compilerStats) => {
   const assetNames = [...compilerStats.compilation.emittedAssets].sort();
   const distPath = compilerStats.compilation.outputOptions.path;
-  // Check if all files are generated correctly
-  t.snapshot(
-    assetNames.map((assetName) => replaceHash(replaceBackSlashes(assetName))),
-  );
+
   const htmlFiles = /\.html?$/;
   const textFiles = /\.(json|html?|webapp|xml|webmanifest)$/;
   // CSS and JS files are not touched by this plugin
@@ -80,7 +78,7 @@ export const snapshotCompilationAssets = (t, compilerStats) => {
   const assetContents = assetNames
     .filter((assetName) => !ignoredFiles.test(assetName))
     .map((assetName) => {
-      const filepath = path.resolve(distPath, assetName);
+      const filepath = resolve(distPath, assetName);
       const isTxtFile = textFiles.test(assetName);
       const content = readFileSync(filepath);
       const textContent = replaceHash(
@@ -101,7 +99,14 @@ export const snapshotCompilationAssets = (t, compilerStats) => {
               : getFileDetails(assetName, content),
       };
     });
-  t.snapshot(assetContents);
+
+  // Check if all files are generated correctly
+  return {
+    files: assetNames.map((assetName) =>
+      replaceHash(replaceBackSlashes(assetName)),
+    ),
+    content: assetContents,
+  };
 };
 
 function getFileDetails(assetName, buffer) {
@@ -136,5 +141,5 @@ function replaceHash(content) {
  * @param {string} content
  */
 function replaceBackSlashes(content) {
-  return content.split(path.sep).join('/');
+  return content.split(sep).join('/');
 }

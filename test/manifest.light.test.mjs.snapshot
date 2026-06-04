@@ -1,0 +1,19 @@
+exports[`manifest light > should generate a result with custom manifest values 1`] = `
+{
+  "files": [
+    "assets/favicon.png",
+    "assets/manifest.webmanifest",
+    "main.js"
+  ],
+  "content": [
+    {
+      "assetName": "assets/favicon.png",
+      "content": "png 874x989"
+    },
+    {
+      "assetName": "assets/manifest.webmanifest",
+      "content": "{\\n  \\"name\\": \\"FaviconsDemo\\",\\n  \\"short_name\\": \\"FaviconsDemo\\",\\n  \\"description\\": \\"Just a demo\\",\\n  \\"dir\\": \\"auto\\",\\n  \\"lang\\": \\"en\\",\\n  \\"display\\": \\"standalone\\",\\n  \\"background_color\\": \\"#fff\\",\\n  \\"theme_color\\": \\"#fff\\",\\n  \\"icons\\": [\\n    {\\n      \\"src\\": \\"favicon.png\\"\\n    }\\n  ]\\n}"
+    }
+  ]
+}
+`;

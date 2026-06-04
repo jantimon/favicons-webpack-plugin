@@ -1,55 +1,69 @@
-import test from 'ava';
-import * as path from 'path';
+import { describe, it, beforeEach, afterEach } from 'node:test';
+import { join } from 'node:path';
 import FaviconsWebpackPlugin from '../src/index.js';
-import { empty, invalid, generate, withTempDirectory } from './_util.mjs';
+import {
+  empty,
+  invalid,
+  generate,
+  createTempDir,
+  removeTempDir,
+} from './_util.mjs';
 
-withTempDirectory(test);
+describe('default', () => {
+  let root;
+  beforeEach(async (c) => {
+    root = await createTempDir(c.fullName);
+  });
+  afterEach(async () => {
+    await removeTempDir(root);
+  });
 
-test('should fail gracefully if path to logo is wrong', async (t) => {
-  const dist = path.join(t.context.root, 'dist');
-  const logo = path.join(t.context.root, 'missing.png');
+  it('should fail gracefully if path to logo is wrong', async (t) => {
+    const dist = join(root, 'dist');
+    const logo = join(root, 'missing.png');
 
-  try {
-    await generate({
-      context: t.context.root,
-      output: {
-        path: dist,
-      },
-      plugins: [new FaviconsWebpackPlugin({ logo })],
-    });
-  } catch (err) {
-    t.is(err.message, `ENOENT: no such file or directory, open '${logo}'`);
-  }
-});
+    await t.assert.rejects(
+      () =>
+        generate({
+          context: root,
+          output: {
+            path: dist,
+          },
+          plugins: [new FaviconsWebpackPlugin({ logo })],
+        }),
+      { message: `ENOENT: no such file or directory, open '${logo}'` },
+    );
+  });
 
-test('should fail gracefully if the image stream is empty', async (t) => {
-  const dist = path.join(t.context.root, 'dist');
-  try {
-    await generate({
-      context: t.context.root,
-      output: {
-        path: dist,
-      },
-      plugins: [new FaviconsWebpackPlugin({ logo: empty })],
-    });
-  } catch (err) {
-    const errorMessage = err.message;
-    t.is(errorMessage, 'Invalid image buffer');
-  }
-});
+  it('should fail gracefully if the image stream is empty', async (t) => {
+    const dist = join(root, 'dist');
 
-test('should fail gracefully if logo is not a valid image file', async (t) => {
-  const dist = path.join(t.context.root, 'dist');
-  try {
-    await generate({
-      context: t.context.root,
-      output: {
-        path: dist,
-      },
-      plugins: [new FaviconsWebpackPlugin({ logo: invalid })],
-    });
-  } catch (err) {
-    const errorMessage = err.message;
-    t.is(errorMessage, 'Invalid image buffer');
-  }
+    await t.assert.rejects(
+      () =>
+        generate({
+          context: root,
+          output: {
+            path: dist,
+          },
+          plugins: [new FaviconsWebpackPlugin({ logo: empty })],
+        }),
+      { message: 'Invalid image buffer' },
+    );
+  });
+
+  it('should fail gracefully if logo is not a valid image file', async (t) => {
+    const dist = join(root, 'dist');
+
+    await t.assert.rejects(
+      () =>
+        generate({
+          context: root,
+          output: {
+            path: dist,
+          },
+          plugins: [new FaviconsWebpackPlugin({ logo: invalid })],
+        }),
+      { message: 'Invalid image buffer' },
+    );
+  });
 });
