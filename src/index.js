@@ -180,6 +180,8 @@ class FaviconsWebpackPlugin {
             });
           },
         );
+        // Mark early rejections as handled; later awaits still propagate them.
+        faviconCompilation.catch(() => undefined);
 
         // Watch for changes to the logo
         for (const logo of this.#options.logo) {
