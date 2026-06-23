@@ -71,17 +71,11 @@ class FaviconsWebpackPlugin {
 
     if (this.#options.logo === undefined) {
       const defaultLogo = path.resolve(compiler.context, 'logo.png');
-      try {
-        // FIXME: use asynchronous call
-        // @ts-ignore
-        compiler.inputFileSystem.statSync(defaultLogo);
+      if (compiler.inputFileSystem.statSync(defaultLogo)) {
         this.#options.logo = [defaultLogo];
-      } catch (e) {}
-      // @ts-ignore
-      assert(
-        typeof this.#options.logo[0] === 'string',
-        'Could not find `logo.png` for the current webpack context',
-      );
+      } else {
+        throw new Error('Could not find `logo.png` for the current webpack context');
+      }
     } else if (this.#options.logo instanceof Array) {
       this.#options.logo = this.#options.logo.map((logo) =>
         path.resolve(compiler.context, logo),
