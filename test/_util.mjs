@@ -4,7 +4,7 @@ import { join, resolve, dirname, sep } from 'node:path';
 import { readFileSync } from 'fs';
 import { mkdtemp, rm } from 'fs/promises';
 import webpack from 'webpack';
-import sizeOf from 'image-size';
+import { imageSize } from 'image-size-next';
 import formatHtml from 'diffable-html';
 import { fileURLToPath } from 'url';
 
@@ -111,9 +111,13 @@ export const snapshotCompilationAssets = (compilerStats) => {
 
 function getFileDetails(assetName, buffer) {
   try {
-    const size = sizeOf(buffer);
+    const size = imageSize(buffer);
 
-    return `${size.type} ${size.width}x${size.height}`;
+    const sizes = size.images
+      ? size.images.map((i) => `${i.width}x${i.height}`).join(' ')
+      : `${size.width}x${size.height}`;
+
+    return `${size.type} ${sizes}`;
   } catch (e) {
     return `binary ${replaceBackSlashes(assetName)}`;
   }

@@ -320,7 +320,7 @@ exports[`output path option > should allow for overriding the output path of fav
     },
     {
       "assetName": "test/path/favicon.ico",
-      "content": "ico 16x16"
+      "content": "ico 16x16 24x24 32x32 48x48 64x64"
     },
     {
       "assetName": "test/path/manifest.webmanifest",

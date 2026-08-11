@@ -316,7 +316,7 @@ exports[`unprefixed > should correctly handle an empty prefix 1`] = `
     },
     {
       "assetName": "favicon.ico",
-      "content": "ico 16x16"
+      "content": "ico 16x16 24x24 32x32 48x48 64x64"
     },
     {
       "assetName": "index.html",

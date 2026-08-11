@@ -316,7 +316,7 @@ exports[`prefixed > should allow configuring the output prefix 1`] = `
     },
     {
       "assetName": "custom/prefix/__replaced_hash_8/favicon.ico",
-      "content": "ico 16x16"
+      "content": "ico 16x16 24x24 32x32 48x48 64x64"
     },
     {
       "assetName": "custom/prefix/__replaced_hash_8/manifest.webmanifest",
@@ -716,7 +716,7 @@ exports[`prefixed > should allow configuring the output prefix with a fullhash 1
     },
     {
       "assetName": "custom/prefix/__replaced_hash_8/favicon.ico",
-      "content": "ico 16x16"
+      "content": "ico 16x16 24x24 32x32 48x48 64x64"
     },
     {
       "assetName": "custom/prefix/__replaced_hash_8/manifest.webmanifest",
