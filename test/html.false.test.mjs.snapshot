@@ -316,7 +316,7 @@ exports[`html.false > should allow disabling html injection 1`] = `
     },
     {
       "assetName": "assets/favicon.ico",
-      "content": "ico 16x16"
+      "content": "ico 16x16 24x24 32x32 48x48 64x64"
     },
     {
       "assetName": "assets/manifest.webmanifest",
@@ -676,7 +676,7 @@ exports[`html.false > should respect HtmlWebpackPlugin@favicons flag 1`] = `
     },
     {
       "assetName": "assets/favicon.ico",
-      "content": "ico 16x16"
+      "content": "ico 16x16 24x24 32x32 48x48 64x64"
     },
     {
       "assetName": "assets/manifest.webmanifest",
@@ -1036,7 +1036,7 @@ exports[`html.false > should respect HtmlWebpackPlugin@inject flag 1`] = `
     },
     {
       "assetName": "assets/favicon.ico",
-      "content": "ico 16x16"
+      "content": "ico 16x16 24x24 32x32 48x48 64x64"
     },
     {
       "assetName": "assets/manifest.webmanifest",

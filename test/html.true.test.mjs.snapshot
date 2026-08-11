@@ -316,7 +316,7 @@ exports[`html.true > should work together with the html-webpack-plugin 1`] = `
     },
     {
       "assetName": "assets/favicon.ico",
-      "content": "ico 16x16"
+      "content": "ico 16x16 24x24 32x32 48x48 64x64"
     },
     {
       "assetName": "assets/manifest.webmanifest",
@@ -676,7 +676,7 @@ exports[`html.true > should work together with the html-webpack-plugin with no <
     },
     {
       "assetName": "assets/favicon.ico",
-      "content": "ico 16x16"
+      "content": "ico 16x16 24x24 32x32 48x48 64x64"
     },
     {
       "assetName": "assets/manifest.webmanifest",

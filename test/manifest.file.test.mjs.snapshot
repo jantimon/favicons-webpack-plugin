@@ -315,7 +315,7 @@ exports[`manifest file > should generate a result with custom manifest values 1`
     },
     {
       "assetName": "assets/favicon.ico",
-      "content": "ico 16x16"
+      "content": "ico 16x16 24x24 32x32 48x48 64x64"
     },
     {
       "assetName": "assets/manifest.webmanifest",
