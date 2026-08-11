@@ -1,3 +1,7 @@
+declare const _exports: {
+  runCached: typeof runCached;
+};
+export = _exports;
 export type WebpackCompilation = import('webpack').Compilation;
 export type Snapshot = ReturnType<
   WebpackCompilation['fileSystemInfo']['mergeSnapshots']
@@ -18,7 +22,7 @@ export type Snapshot = ReturnType<
  *
  * @returns {Promise<TResult>}
  */
-export function runCached<TResult>(
+declare function runCached<TResult>(
   absoluteFilePaths: string[],
   pluginInstance: any,
   useWebpackCache: boolean,

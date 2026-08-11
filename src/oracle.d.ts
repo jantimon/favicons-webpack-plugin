@@ -1,7 +1,7 @@
 export = Oracle;
 declare class Oracle {
-  constructor(context: any);
   pkg: any;
+  constructor(context: any);
   /**
    * Tries to guess the name from package.json
    */
