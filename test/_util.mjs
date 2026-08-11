@@ -4,7 +4,7 @@ import { join, resolve, dirname, sep } from 'node:path';
 import { readFileSync } from 'fs';
 import { mkdtemp, rm } from 'fs/promises';
 import webpack from 'webpack';
-import { imageSize } from 'image-size-next';
+import { imageSize } from 'image-size';
 import formatHtml from 'diffable-html';
 import { fileURLToPath } from 'url';
 
