@@ -1,11 +1,10 @@
+declare const _exports: {
+  getContentHash: typeof getContentHash;
+  resolvePublicPath: typeof resolvePublicPath;
+  replaceContentHash: typeof replaceContentHash;
+};
+export = _exports;
 export type WebpackCompilation = import('webpack').Compilation;
-/**
- * Returns the content hash for the given file content
- * @param {...(Buffer | string | undefined)} files
- */
-export function getContentHash(
-  ...files: (Buffer | string | undefined)[]
-): string;
 /**
  * Replaces [contenthash] and [fullhash] inside the given publicPath and assetPath
  *
@@ -13,7 +12,7 @@ export function getContentHash(
  * @param {undefined | string | ((...args:any[]) => string)} publicPath
  * @param {string} assetPath
  */
-export function resolvePublicPath(
+declare function resolvePublicPath(
   compilation: WebpackCompilation,
   publicPath: undefined | string | ((...args: any[]) => string),
   assetPath: string,
@@ -25,8 +24,15 @@ export function resolvePublicPath(
  * @param {string} assetPath
  * @param {string} hash
  */
-export function replaceContentHash(
+declare function replaceContentHash(
   compilation: WebpackCompilation,
   assetPath: string,
   hash: string,
+): string;
+/**
+ * Returns the content hash for the given file content
+ * @param {...(Buffer | string | undefined)} files
+ */
+declare function getContentHash(
+  ...files: (Buffer | string | undefined)[]
 ): string;

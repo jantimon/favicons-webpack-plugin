@@ -1,5 +1,6 @@
 export = FaviconsWebpackPlugin;
 declare class FaviconsWebpackPlugin {
+  #private;
   /**
    * @param {import('./options').FaviconWebpackPlugionOptions | string} args
    */
@@ -8,5 +9,4 @@ declare class FaviconsWebpackPlugin {
    * @param {import('webpack').Compiler} compiler
    */
   apply(compiler: import('webpack').Compiler): void;
-  #private;
 }
